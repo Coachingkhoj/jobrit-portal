@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jobrit - Indeed Style Global Job Portal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f4f5f7; color: #2d2d2d; }
+    
+    /* Header Navbar */
+    header { background: #ffffff; border-bottom: 1px solid #e0e0e0; padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 26px; font-weight: 800; color: #2557a7; text-decoration: none; letter-spacing: -0.5px; }
+    .nav-links button { padding: 9px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; }
+    .btn-secondary { background: transparent; border: none; color: #2557a7; margin-right: 8px; }
+    .btn-primary { background: #2557a7; border: none; color: white; }
+    .btn-primary:hover { background: #1f4888; }
+
+    /* Hero Search Bar */
+    .hero-search { background: #ffffff; padding: 35px 20px; text-align: center; border-bottom: 1px solid #e0e0e0; }
+    .search-form { display: inline-flex; gap: 8px; background: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #cccccc; flex-wrap: wrap; justify-content: center; }
+    .search-input-group { display: flex; flex-direction: column; text-align: left; }
+    .search-input-group label { font-size: 11px; font-weight: 700; color: #595959; margin-left: 6px; margin-bottom: 2px; }
+    .search-input-group input { padding: 10px 14px; border: 1px solid #d0d0d0; border-radius: 6px; width: 260px; font-size: 14px; outline: none; }
+    .search-input-group input:focus { border-color: #2557a7; }
+
+    /* Indeed Split View Layout */
+    .main-wrapper { max-width: 1200px; margin: 25px auto; padding: 0 20px; display: flex; gap: 20px; }
+    .job-list-column { flex: 1; max-width: 480px; }
+    .job-detail-column { flex: 1.2; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 25px; position: sticky; top: 90px; height: calc(100vh - 120px); overflow-y: auto; }
+
+    /* Job Cards */
+    .job-card { background: #ffffff; padding: 18px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 12px; cursor: pointer; transition: all 0.2s ease; }
+    .job-card:hover, .job-card.active { border-color: #2557a7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+    .job-card-title { font-size: 17px; font-weight: 700; color: #2557a7; margin-bottom: 4px; }
+    .job-card-company { font-size: 14px; font-weight: 600; color: #4b4b4b; margin-bottom: 8px; }
+    .badge-tag { display: inline-block; background: #e8f0fe; color: #174ea6; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .job-card-snippet { font-size: 13px; color: #595959; line-height: 1.4; }
+
+    /* Post Job Modal View */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; width: 500px; max-width: 90%; }
+    .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #ccc; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <a href="#" class="logo">Jobrit</a>
+    <div class="nav-links">
+      <button class="btn-secondary">Find Jobs</button>
+      <button class="btn-primary" onclick="toggleModal(true)">Post a Job (100% Free)</button>
+    </div>
+  </header>
+
+  <!-- Indeed Dual Search -->
+  <div class="hero-search">
+    <div class="search-form">
+      <div class="search-input-group">
+        <label>WHAT</label>
+        <input type="text" id="search-what" placeholder="Job title, keywords, or company">
+      </div>
+      <div class="search-input-group">
+        <label>WHERE</label>
+        <input type="text" id="search-where" placeholder="City, state, or remote">
+      </div>
+      <button class="btn-primary" style="margin-top: auto; height: 42px; padding: 0 24px;" onclick="filterJobs()">Find jobs</button>
+    </div>
+  </div>
+
+  <!-- Main Split-Screen Container -->
+  <div class="main-wrapper">
+    
+    <!-- Left Column: Job Feed -->
+    <div class="job-list-column" id="job-feed">
+      <h3 style="font-size: 16px; margin-bottom: 12px; color: #595959;">Jobs Feed</h3>
+      
+      <!-- Job 1 -->
+      <div class="job-card active" onclick="selectJob(0)">
+        <div class="job-card-title">Software Development Engineer</div>
+        <div class="job-card-company">Tech Global • Remote</div>
+        <span class="badge-tag">Full-Time</span>
+        <div class="job-card-snippet">Building backend microservices, database schemas, and REST APIs for scalable platforms.</div>
+      </div>
+
+      <!-- Job 2 -->
+      <div class="job-card" onclick="selectJob(1)">
+        <div class="job-card-title">Mechanical CAD Designer</div>
+        <div class="job-card-company">Aerospace Systems Ltd. • Delhi, India</div>
+        <span class="badge-tag">Contract</span>
+        <div class="job-card-snippet">Designing precision mechanical components, 3D CAD modeling, and drafting technical layouts.</div>
+      </div>
+    </div>
+
+    <!-- Right Column: Detail View (Indeed Style) -->
+    <div class="job-detail-column" id="job-detail">
+      <h1 id="detail-title" style="font-size: 22px; color: #1a1a1a; margin-bottom: 8px;">Software Development Engineer</h1>
+      <p id="detail-company" style="font-size: 15px; font-weight: 600; color: #4b4b4b; margin-bottom: 15px;">Tech Global • Remote</p>
+      <button class="btn-primary" style="padding: 10px 24px; font-size: 15px; margin-bottom: 20px;" onclick="alert('Application Sent!')">Easy Apply</button>
+      <hr style="border: 0; border-top: 1px solid #e0e0e0; margin-bottom: 20px;">
+      <h3 style="font-size: 16px; margin-bottom: 10px;">Full Job Description</h3>
+      <p id="detail-desc" style="font-size: 14px; line-height: 1.6; color: #333;">
+        We are seeking a Software Development Engineer to join our global engineering team. You will be responsible for building full-stack web applications, integrating modern APIs, managing cloud deployment pipelines, and collaborating with cross-functional technical teams.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Free Employer Post Job Modal -->
+  <div class="modal" id="post-modal">
+    <div class="modal-content">
+      <h2 style="margin-bottom: 15px; color: #2557a7;">Post a Job on Jobrit (Free)</h2>
+      <input type="text" id="new-title" placeholder="Job Title (e.g. Java Developer)">
+      <input type="text" id="new-company" placeholder="Company Name">
+      <input type="text" id="new-location" placeholder="Location (e.g. Delhi, Remote)">
+      <textarea id="new-desc" rows="4" placeholder="Job Description"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn-secondary" onclick="toggleModal(false)">Cancel</button>
+        <button class="btn-primary" onclick="addJob()">Publish Job</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const jobs = [
+      {
+        title: "Software Development Engineer",
+        company: "Tech Global • Remote",
+        tag: "Full-Time",
+        snippet: "Building backend microservices, database schemas, and REST APIs for scalable platforms.",
+        desc: "We are seeking a Software Development Engineer to join our global engineering team. You will be responsible for building full-stack web applications, integrating modern APIs, managing cloud deployment pipelines, and collaborating with cross-functional technical teams."
+      },
+      {
+        title: "Mechanical CAD Designer",
+        company: "Aerospace Systems Ltd. • Delhi, India",
+        tag: "Contract",
+        snippet: "Designing precision mechanical components, 3D CAD modeling, and drafting technical layouts.",
+        desc: "Aerospace Systems is looking for a Mechanical CAD Designer. Responsibilities include generating 3D component models, verifying engineering tolerance fits, preparing manufacturing drawings, and coordinating with technical sub-teams."
+      }
+    ];
+
+    function selectJob(index) {
+      const job = jobs[index];
+      document.getElementById('detail-title').innerText = job.title;
+      document.getElementById('detail-company').innerText = job.company;
+      document.getElementById('detail-desc').innerText = job.desc;
+    }
+
+    function toggleModal(show) {
+      document.
