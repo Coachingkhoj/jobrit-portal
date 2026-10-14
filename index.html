@@ -6,8 +6,8 @@
     <title>Jobrit - Free Job Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase JS SDK via unpkg (Reliable CDN) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -49,13 +49,12 @@
     <script>
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
-        
-        // Using var to avoid initialization timing issues
-        var _client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchJobs() {
             const listDiv = document.getElementById('jobList');
-            const { data, error } = await _client.from('jobs').select('*').order('created_at', { ascending: false });
+            const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            const { data, error } = await client.from('jobs').select('*').order('created_at', { ascending: false });
 
             if (error) {
                 listDiv.innerHTML = `<p class="text-red-500">Error loading jobs: ${error.message}</p>`;
@@ -85,6 +84,8 @@
             btn.disabled = true;
             btn.innerText = 'Posting...';
 
+            const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
             const newJob = {
                 title: document.getElementById('title').value,
                 company: document.getElementById('company').value,
@@ -93,7 +94,7 @@
                 description: document.getElementById('description').value
             };
 
-            const { error } = await _client.from('jobs').insert([newJob]);
+            const { error } = await client.from('jobs').insert([newJob]);
 
             if (error) {
                 alert('Error: ' + error.message);
