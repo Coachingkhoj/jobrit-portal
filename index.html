@@ -193,13 +193,19 @@
         async function deleteJob(jobId) {
             if (!confirm('Are you sure you want to delete this job posting?')) return;
 
-            // Fix: Number() hata diya hai taaki Supabase ki ID (UUID/String) sahi se match ho
-            const { data, error } = await client.from('jobs').delete().eq('id', jobId).select();
+            // Smart delete: Try deleting directly, if not found/error, try parsing as number
+            let { data, error } = await client.from('jobs').delete().eq('id', jobId).select();
+
+            if ((!data || data.length === 0) && !isNaN(jobId)) {
+                let res2 = await client.from('jobs').delete().eq('id', Number(jobId)).select();
+                data = res2.data;
+                error = res2.error;
+            }
 
             if (error) {
-                alert('Error deleting job: ' + error.message);
+                alert('❌ Error deleting job: ' + error.message);
             } else if (!data || data.length === 0) {
-                alert('⚠️ Row nahi mili! ID match nahi ho rahi.');
+                alert('⚠️ Database me ye ID match nahi ho rahi. Check karein ki table me row exist karti hai ya nahi.');
             } else {
                 alert('🗑️ Job deleted successfully!');
                 fetchJobs();
