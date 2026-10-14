@@ -74,8 +74,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Job Description (Supports Bullet points & Newlines)</label>
-                    <textarea id="job-description" rows="6" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none font-sans" placeholder="Paste job description here... Use Enter for new lines and bullet points for clean formatting."></textarea>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">
+                        Job Description (Use **text** for bold heading)
+                    </label>
+                    <textarea id="job-description" rows="8" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none font-sans" placeholder="Example:&#10;**Key Responsibilities:**&#10;• **Technical Support:** Resolve hardware & software issues&#10;• **Ticketing:** Manage tickets in ServiceNow"></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t">
@@ -155,9 +157,9 @@
                         </span>
                     </div>
 
-                    <!-- Description Container with whitespace-pre-line fix -->
+                    <!-- Description Container with whitespace-pre-line and Bold Formatting -->
                     <div class="text-gray-600 text-sm mb-6 whitespace-pre-line leading-relaxed border-t border-b py-3 my-3">
-                        ${escapeHtml(job.description)}
+                        ${formatJobDescription(job.description)}
                     </div>
 
                     <div class="flex flex-wrap justify-between items-center gap-3">
@@ -184,15 +186,22 @@
             `}).join('');
         }
 
+        // Helper function for Bold formatting (**text**)
+        function formatJobDescription(text) {
+            if (!text) return '';
+            let cleanText = escapeHtml(text);
+            // Replaces **bold** with <strong>bold</strong>
+            cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>');
+            return cleanText;
+        }
+
         // Action Handlers
         async function deleteJob(id) {
             if (!confirm("Kya aap sach me is job ko delete karna chahte hain?")) return;
 
-            // Update UI local state instantly
             jobsList = jobsList.filter(j => j.id != id);
             renderJobs();
 
-            // Sync with Supabase
             if (supabaseClient) {
                 try {
                     await supabaseClient.from("jobs").delete().eq("id", id);
@@ -258,7 +267,6 @@
             };
 
             if (id) {
-                // Edit existing job
                 const index = jobsList.findIndex(j => j.id == id);
                 if (index !== -1) {
                     jobsList[index] = { ...jobsList[index], ...jobData };
@@ -267,7 +275,6 @@
                     try { await supabaseClient.from("jobs").update(jobData).eq("id", id); } catch(e){}
                 }
             } else {
-                // Post new job
                 const newId = Date.now().toString();
                 const newJob = { id: newId, status: 'active', ...jobData };
                 jobsList.unshift(newJob);
