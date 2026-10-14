@@ -180,53 +180,56 @@
             }
 
             listDiv.innerHTML = jobs.map(job => {
-                const safeTitle = (job.title || '').replace(/'/g, "\\'");
-                const safeCompany = (job.company || '').replace(/'/g, "\\'");
-                const safeLocation = (job.location || '').replace(/'/g, "\\'");
-                const safeDesc = (job.description || '').replace(/'/g, "\\'").replace(/\n/g, '\\n');
+                const isOwner = currentUser && job.user_id === currentUser.id;
+                const isPaused = job.status === 'paused';
 
                 return `
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+                <div class="bg-white p-5 rounded-xl shadow-sm border ${isPaused ? 'border-yellow-300 bg-yellow-50/20' : 'border-gray-200'} hover:shadow-md transition">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
+                                ${isPaused ? '<span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Paused</span>' : ''}
+                            </div>
                             <p class="text-sm text-gray-700 font-semibold mt-0.5">${job.company} • <span class="text-gray-500 font-normal">${job.location}</span></p>
                         </div>
                         <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
                     </div>
                     <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
                     <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100 flex-wrap">
-                        <button onclick="openApplyModal('${job.id}', '${safeTitle}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
+                        <button onclick="openApplyModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
+                        
+                        ${isOwner ? `
                         <div class="flex gap-2">
-                            <button onclick="openEditModal('${job.id}', '${safeTitle}', '${safeCompany}', '${safeLocation}', '${job.type}', '${safeDesc}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-blue-200">✏️ Edit</button>
-                            <button onclick="holdJob('${job.id}')" class="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-yellow-200">⏸️ Hold</button>
+                            <button onclick='openEditModal(${JSON.stringify(job)})' class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-blue-200">✏️ Edit</button>
+                            <button onclick="toggleHoldJob('${job.id}', '${job.status || 'active'}')" class="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-yellow-200">${isPaused ? '▶️ Resume' : '⏸️ Hold'}</button>
                             <button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-red-200">🗑️ Delete</button>
                         </div>
+                        ` : ''}
                     </div>
                 </div>
                 `;
             }).join('');
         }
 
-        async function holdJob(jobId) {
-            alert('⏸️ Job status updated to Paused/Hold successfully!');
+        async function toggleHoldJob(jobId, currentStatus) {
+            const newStatus = currentStatus === 'paused' ? 'active' : 'paused';
+            const { error } = await client.from('jobs').update({ status: newStatus }).eq('id', jobId);
+
+            if (error) {
+                alert('Error updating status: ' + error.message);
+            } else {
+                fetchJobs();
+            }
         }
 
         async function deleteJob(jobId) {
             if (!confirm('Are you sure you want to delete this job posting?')) return;
 
-            let { data, error } = await client.from('jobs').delete().eq('id', jobId).select();
-
-            if ((!data || data.length === 0) && !isNaN(jobId)) {
-                let res2 = await client.from('jobs').delete().eq('id', Number(jobId)).select();
-                data = res2.data;
-                error = res2.error;
-            }
+            const { error } = await client.from('jobs').delete().eq('id', jobId);
 
             if (error) {
                 alert('❌ Error deleting job: ' + error.message);
-            } else if (!data || data.length === 0) {
-                alert('⚠️ Database me ye ID match nahi ho rahi.');
             } else {
                 alert('🗑️ Job deleted successfully!');
                 fetchJobs();
@@ -234,13 +237,13 @@
         }
 
         // Edit Job Handlers
-        function openEditModal(id, title, company, location, type, description) {
-            document.getElementById('editJobId').value = id;
-            document.getElementById('editTitle').value = title;
-            document.getElementById('editCompany').value = company;
-            document.getElementById('editLocation').value = location;
-            document.getElementById('editType').value = type;
-            document.getElementById('editDescription').value = description;
+        function openEditModal(job) {
+            document.getElementById('editJobId').value = job.id;
+            document.getElementById('editTitle').value = job.title;
+            document.getElementById('editCompany').value = job.company;
+            document.getElementById('editLocation').value = job.location;
+            document.getElementById('editType').value = job.type;
+            document.getElementById('editDescription').value = job.description;
             document.getElementById('editJobModal').classList.remove('hidden');
         }
 
@@ -263,8 +266,7 @@
                 description: document.getElementById('editDescription').value
             };
 
-            let parsedId = isNaN(jobId) ? jobId : Number(jobId);
-            const { error } = await client.from('jobs').update(updatedData).eq('id', parsedId);
+            const { error } = await client.from('jobs').update(updatedData).eq('id', jobId);
 
             if (error) {
                 alert('Error updating job: ' + error.message);
@@ -344,7 +346,14 @@
             alert('Logged out successfully.');
         }
 
-        function openModal() { document.getElementById('jobModal').classList.remove('hidden'); }
+        function openModal() { 
+            if (!currentUser) {
+                alert('Please login first to post a job.');
+                openAuthModal('login');
+                return;
+            }
+            document.getElementById('jobModal').classList.remove('hidden'); 
+        }
         function closeModal() { document.getElementById('jobModal').classList.add('hidden'); }
 
         async function postJob(e) {
@@ -358,7 +367,9 @@
                 company: document.getElementById('company').value,
                 location: document.getElementById('location').value,
                 type: document.getElementById('type').value,
-                description: document.getElementById('description').value
+                description: document.getElementById('description').value,
+                user_id: currentUser.id,
+                status: 'active'
             };
 
             const { error } = await client.from('jobs').insert([newJob]);
@@ -376,7 +387,8 @@
             btn.innerText = 'Submit Job';
         }
 
-        function openApplyModal(jobId, jobTitle) {
+        function openApplyModal(jobId, encodedTitle) {
+            const jobTitle = decodeURIComponent(encodedTitle);
             document.getElementById('applyJobId').value = jobId;
             document.getElementById('applyJobTitle').innerText = `Applying for: ${jobTitle}`;
             document.getElementById('applyModal').classList.remove('hidden');
@@ -386,9 +398,30 @@
 
         async function submitApplication(e) {
             e.preventDefault();
-            alert('🎉 Application submitted successfully!');
-            closeApplyModal();
-            document.getElementById('applyForm').reset();
+            const btn = document.getElementById('applySubmitBtn');
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+
+            const applicationData = {
+                job_id: document.getElementById('applyJobId').value,
+                full_name: document.getElementById('applicantName').value,
+                email: document.getElementById('applicantEmail').value,
+                cover_letter: document.getElementById('applicantCover').value,
+                resume_link: document.getElementById('applicantResume').value
+            };
+
+            const { error } = await client.from('applications').insert([applicationData]);
+
+            if (error) {
+                alert('❌ Error submitting application: ' + error.message);
+            } else {
+                alert('🎉 Application submitted successfully!');
+                closeApplyModal();
+                document.getElementById('applyForm').reset();
+            }
+
+            btn.disabled = false;
+            btn.innerText = 'Submit Application';
         }
 
         initApp();
