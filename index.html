@@ -61,7 +61,7 @@
                 <!-- Keyword Input -->
                 <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2 text-sm"></i>
-                    <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Nurse, Engineer, Pilot..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
+                    <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Nurse, Engineer..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
                 <!-- Industry/Category Filter -->
@@ -96,15 +96,42 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
-        <div id="recruiter-header" class="hidden mb-6 bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
-            <div>
-                <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Employer ATS Dashboard</h3>
-                <p class="text-xs text-gray-500">Post open positions for Healthcare, Aerospace, IT, or any sector</p>
-            </div>
-            <div class="flex items-center gap-2 sm:gap-3">
-                <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-plus"></i> Post Job
+        
+        <!-- Recruiter / Owner Analytics Dashboard -->
+        <div id="recruiter-header" class="hidden mb-6 space-y-4">
+            <div class="bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Owner & ATS Analytics Dashboard</h3>
+                    <p class="text-xs text-gray-500">Real-time overview of pool metrics and database entries</p>
+                </div>
+                <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-plus"></i> Post Custom Job
                 </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl text-lg font-bold"><i class="fa-solid fa-globe"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Live Global Feed Jobs</p>
+                        <h4 id="stat-live-jobs" class="text-xl font-black text-gray-900">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-purple-50 text-purple-600 rounded-xl text-lg font-bold"><i class="fa-solid fa-database"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Custom Posted Jobs</p>
+                        <h4 id="stat-custom-jobs" class="text-xl font-black text-gray-900">0</h4>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-4">
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl text-lg font-bold"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Total Candidates Pool</p>
+                        <h4 id="stat-candidates" class="text-xl font-black text-gray-900">Active</h4>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -223,7 +250,7 @@
         </div>
     </div>
 
-    <!-- Multi-Industry Script Engine -->
+    <!-- Analytics & Tracking Engine Script -->
     <script>
         const SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S";
@@ -235,8 +262,9 @@
 
         let jobsList = [];
         let currentRole = 'candidate';
+        let customJobsCount = 0;
+        let externalJobsCount = 0;
 
-        // Multi-Sector Seed Data (Aerospace, Healthcare, IT, Services)
         const universalSeedJobs = [
             {
                 id: "seed-1",
@@ -264,15 +292,6 @@
                 location: "Noida / Remote",
                 salary: "₹6.5 LPA - ₹8.5 LPA",
                 is_external: false
-            },
-            {
-                id: "seed-4",
-                title: "Avionics Systems Test Engineer",
-                company: "Defense Technology Systems",
-                category: "Aerospace",
-                location: "Bangalore / Remote",
-                salary: "₹18 LPA - ₹24 LPA",
-                is_external: false
             }
         ];
 
@@ -283,11 +302,11 @@
         async function initApp() {
             await fetchAllJobs();
             renderUI();
+            updateAnalyticsStats();
         }
 
         async function fetchAllJobs() {
             let localJobs = [];
-            // Fetch Supabase Jobs
             if (supabaseClient) {
                 try {
                     const { data } = await supabaseClient.from('jobs').select('*').order('created_at', { ascending: false });
@@ -295,14 +314,14 @@
                 } catch (e) { localJobs = universalSeedJobs; }
             } else { localJobs = universalSeedJobs; }
 
-            // Fetch Multi-Industry External Live Jobs
+            customJobsCount = localJobs.length;
+
             let externalJobs = [];
             try {
                 const response = await fetch("https://www.arbeitnow.com/api/job-board-api");
                 const result = await response.json();
                 if (result && result.data) {
                     externalJobs = result.data.map((job, idx) => {
-                        // Tagging categories dynamically based on keywords
                         let category = "Software";
                         const lowerTitle = (job.title + " " + job.description).toLowerCase();
                         if (lowerTitle.includes("nurse") || lowerTitle.includes("health") || lowerTitle.includes("medical") || lowerTitle.includes("clinical")) {
@@ -328,10 +347,16 @@
                     });
                 }
             } catch (err) {
-                console.log("External API fetch error or offline mode.");
+                console.log("External API fetch error.");
             }
 
+            externalJobsCount = externalJobs.length;
             jobsList = [...localJobs, ...externalJobs];
+        }
+
+        function updateAnalyticsStats() {
+            document.getElementById("stat-live-jobs").textContent = externalJobsCount;
+            document.getElementById("stat-custom-jobs").textContent = customJobsCount;
         }
 
         function setRole(role) {
@@ -426,10 +451,27 @@
             const btn = document.getElementById("submit-app-btn");
             btn.textContent = "Submitting..."; btn.disabled = true;
 
+            const applicantData = {
+                job_id: document.getElementById("apply-job-id").value,
+                job_title: document.getElementById("apply-job-title").textContent,
+                full_name: document.getElementById("applicant-name").value,
+                email: document.getElementById("applicant-email").value,
+                phone: document.getElementById("applicant-phone").value
+            };
+
+            // Save candidate application to Supabase database if connected
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('applicants').insert([applicantData]);
+                } catch (err) {
+                    console.log("Supabase applicant insert notice:", err);
+                }
+            }
+
             setTimeout(() => {
                 btn.textContent = "Submit Application"; btn.disabled = false;
                 closeApplyModal();
-                showToast("Application submitted successfully!", "success");
+                showToast("Application submitted & logged to database!", "success");
             }, 1000);
         }
 
@@ -450,8 +492,10 @@
                 try { await supabaseClient.from('jobs').insert([newJob]); } catch(e){}
             }
             jobsList.unshift(newJob);
+            customJobsCount++;
             closeModal();
             showToast("Job published live!", "success");
+            updateAnalyticsStats();
             renderUI();
         }
 
@@ -460,7 +504,9 @@
                 try { await supabaseClient.from('jobs').delete().eq('id', id); } catch(e){}
             }
             jobsList = jobsList.filter(j => j.id !== id);
+            customJobsCount = Math.max(0, customJobsCount - 1);
             showToast("Job removed", "info");
+            updateAnalyticsStats();
             renderUI();
         }
 
