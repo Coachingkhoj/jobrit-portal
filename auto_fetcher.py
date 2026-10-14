@@ -4,7 +4,7 @@ import re
 
 # Supabase Client Config
 SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co"
-SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iicscm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S"
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
@@ -33,20 +33,17 @@ def run_auto_job_fetcher():
                 raw_desc = entry.get('summary', 'High-impact global remote role.')
                 clean_desc = clean_html(raw_desc)[:350] + "..."
                 
-                # Deduplication Check
+                # Deduplication Check based on title
                 existing = supabase.table('jobs').select('id').eq('title', title).execute()
                 
                 if not existing.data:
+                    # Sirf wahi columns jo Supabase table me maujood hain
                     job_data = {
                         "title": title,
                         "company": company,
-                        "country": "United States",
                         "location": "Worldwide Remote",
-                        "is_worldwide": True,
-                        "job_type": "Full-Time",
-                        "salary": "Competitive / Global Remote",
-                        "description": f"{clean_desc}\n\n[Apply Directly on Source]: {link}",
-                        "status": "active"
+                        "type": "Full-Time",
+                        "description": f"{clean_desc}\n\n[Apply Directly on Source]: {link}"
                     }
                     supabase.table('jobs').insert([job_data]).execute()
                     total_added += 1
