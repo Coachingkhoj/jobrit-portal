@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- EmailJS for Automated Emails -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- Razorpay / Stripe Payment Checkout Script -->
+    <!-- Razorpay Payment Checkout Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -41,7 +41,6 @@
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Pricing / Plans Modal trigger for Monetization -->
                 <button onclick="openPricingModal()" class="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold px-3 py-1.5 sm:py-2 rounded-lg hover:opacity-90 transition text-xs flex items-center gap-1 shadow-sm">
                     <i class="fa-solid fa-crown text-yellow-200"></i> Pro Plans
                 </button>
@@ -113,7 +112,7 @@
 
     <!-- Main Workspace Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
-        <!-- Recruiter Dashboard -->
+        <!-- Recruiter Bar View -->
         <div id="recruiter-header" class="hidden mb-6 bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
             <div>
                 <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Employer ATS Dashboard</h3>
@@ -121,7 +120,7 @@
             </div>
             <div class="flex items-center gap-2 sm:gap-3">
                 <button onclick="protectedOpenCandidateDatabaseModal()" class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold px-3 py-2 rounded-lg hover:bg-indigo-100 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-users-viewfinder"></i> Candidate Sourcing (Database)
+                    <i class="fa-solid fa-users-viewfinder"></i> Candidate Sourcing
                 </button>
                 <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-plus"></i> Post Job
@@ -137,10 +136,25 @@
             <span id="job-count" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full border">Loading...</span>
         </div>
 
-        <div id="job-list" class="space-y-4"></div>
+        <!-- Dynamic Content Grid -->
+        <div id="job-list" class="space-y-4">
+            <!-- Dynamic jobs rendered here -->
+        </div>
     </main>
 
-    <!-- 1. Candidate Profile Management Modal (Indeed Style) -->
+    <!-- Footer -->
+    <footer class="bg-white border-t py-6 text-center text-xs text-gray-500 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p>&copy; 2026 Jobrit Pro Portal. Global Borderless Recruitment Engine.</p>
+            <div class="flex gap-4 font-semibold text-gray-600">
+                <a href="#" class="hover:underline">Privacy Policy</a>
+                <a href="#" class="hover:underline">Terms of Service</a>
+                <a href="#" class="hover:underline">Global Compliance</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Candidate Profile Management Modal -->
     <div id="profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar border">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -155,8 +169,8 @@
                         <input type="text" id="prof-name" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Rahul Kumar">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Headline / Professional Title</label>
-                        <input type="text" id="prof-headline" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Senior NC Programmer / Software Engineer">
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Headline / Title</label>
+                        <input type="text" id="prof-headline" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Senior NC Programmer">
                     </div>
                 </div>
 
@@ -167,23 +181,18 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number *</label>
-                        <input type="tel" id="prof-phone" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="+91 9876543210 / +1...">
+                        <input type="tel" id="prof-phone" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="+91 9876543210">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Key Skills & Tools (Comma Separated)</label>
-                    <input type="text" id="prof-skills" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. CNC Milling, Mastercam, Python, C++, ServiceNow">
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Skills (Comma Separated)</label>
+                    <input type="text" id="prof-skills" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Mastercam, CNC Milling, Python">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Professional Summary / Bio</label>
-                    <textarea id="prof-summary" rows="3" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="5+ years of experience in Aerospace engineering and IT support..."></textarea>
-                </div>
-
-                <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-200">
-                    <p class="text-xs font-bold text-blue-900 mb-1"><i class="fa-solid fa-shield-check text-blue-600 mr-1"></i> 1-Click Fast Apply Enabled</p>
-                    <p class="text-[11px] text-blue-700">Once your profile is saved, you can apply to any global position instantly without uploading your resume repeatedly.</p>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Summary / Bio</label>
+                    <textarea id="prof-summary" rows="3" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Brief summary about your career..."></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t">
@@ -194,151 +203,420 @@
         </div>
     </div>
 
-    <!-- 2. Monetization & Payment Plans Modal (Razorpay/Stripe Integration) -->
+    <!-- Pricing Modal -->
     <div id="pricing-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <div>
-                    <h3 class="text-lg font-extrabold text-gray-900"><i class="fa-solid fa-gem text-amber-500 mr-2"></i>Jobrit Pro Employer & Candidate Plans</h3>
-                    <p class="text-xs text-gray-500">Monetize your portal with featured job postings & sourcing access</p>
-                </div>
+                <h3 class="text-lg font-extrabold text-gray-900"><i class="fa-solid fa-gem text-amber-500 mr-2"></i>Jobrit Pro Employer Plans</h3>
                 <button onclick="closePricingModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
-                <!-- Plan A: Featured Post -->
-                <div class="border-2 border-amber-400 rounded-2xl p-5 bg-amber-50/30 flex flex-col justify-between hover:shadow-lg transition">
+                <div class="border-2 border-amber-400 rounded-2xl p-5 bg-amber-50/30 flex flex-col justify-between">
                     <div>
-                        <span class="text-[10px] font-black uppercase bg-amber-200 text-amber-900 px-2.5 py-1 rounded-full">Employer Popular</span>
-                        <h4 class="text-xl font-extrabold text-gray-900 mt-2">Featured Job Listing</h4>
-                        <p class="text-xs text-gray-600 mt-1">Get 10x visibility and top placement on the homepage for 30 days.</p>
-                        <div class="my-4 text-2xl font-black text-gray-900">₹2,999 <span class="text-xs text-gray-500 font-normal">/ per job ($39 USD)</span></div>
-                        <ul class="text-xs space-y-2 text-gray-700 font-medium mb-4">
-                            <li><i class="fa-solid fa-check text-green-600 mr-2"></i> Top Homepage Priority Badge</li>
-                            <li><i class="fa-solid fa-check text-green-600 mr-2"></i> Instant Email Alert to Candidates</li>
-                            <li><i class="fa-solid fa-check text-green-600 mr-2"></i> Unlimited Applications</li>
-                        </ul>
+                        <span class="text-[10px] font-black uppercase bg-amber-200 text-amber-900 px-2.5 py-1 rounded-full">Popular</span>
+                        <h4 class="text-xl font-extrabold text-gray-900 mt-2">Featured Job Post</h4>
+                        <div class="my-4 text-2xl font-black text-gray-900">₹2,999 <span class="text-xs text-gray-500 font-normal">/ per job</span></div>
                     </div>
-                    <button onclick="triggerPayment('Featured Job Post', 2999)" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl text-xs font-extrabold shadow hover:opacity-95 transition">
-                        Pay & Boost Job
-                    </button>
+                    <button onclick="triggerPayment('Featured Job', 2999)" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl text-xs font-extrabold shadow">Pay & Boost</button>
                 </div>
-
-                <!-- Plan B: Recruiter Candidate Database Pass -->
-                <div class="border border-gray-200 rounded-2xl p-5 bg-white flex flex-col justify-between hover:shadow-lg transition">
+                <div class="border border-gray-200 rounded-2xl p-5 bg-white flex flex-col justify-between">
                     <div>
-                        <span class="text-[10px] font-black uppercase bg-indigo-100 text-indigo-900 px-2.5 py-1 rounded-full">Recruiter Access</span>
-                        <h4 class="text-xl font-extrabold text-gray-900 mt-2">Candidate Sourcing Pass</h4>
-                        <p class="text-xs text-gray-600 mt-1">Full access to global candidate resumes and direct contact database.</p>
-                        <div class="my-4 text-2xl font-black text-gray-900">₹7,999 <span class="text-xs text-gray-500 font-normal">/ month ($99 USD)</span></div>
-                        <ul class="text-xs space-y-2 text-gray-700 font-medium mb-4">
-                            <li><i class="fa-solid fa-check text-green-600 mr-2"></i> Access to 10,000+ Profiles</li>
-                            <li><i class="fa-solid fa-check text-green-600 mr-2"></i> Direct Email & Phone Sourcing</li>
-                            <li><i class="fa-solid fa-check text-green-600 mr-2"></i> Dedicated ATS Dashboard</li>
-                        </ul>
+                        <span class="text-[10px] font-black uppercase bg-indigo-100 text-indigo-900 px-2.5 py-1 rounded-full">Database</span>
+                        <h4 class="text-xl font-extrabold text-gray-900 mt-2">Sourcing Pass</h4>
+                        <div class="my-4 text-2xl font-black text-gray-900">₹7,999 <span class="text-xs text-gray-500 font-normal">/ month</span></div>
                     </div>
-                    <button onclick="triggerPayment('Candidate Sourcing Pass', 7999)" class="w-full py-2.5 bg-blue-600 text-white rounded-xl text-xs font-extrabold shadow hover:bg-blue-700 transition">
-                        Subscribe Now
-                    </button>
+                    <button onclick="triggerPayment('Sourcing Pass', 7999)" class="w-full py-2.5 bg-blue-600 text-white rounded-xl text-xs font-extrabold shadow">Subscribe</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Script Engine with Automated Emails, Profile & Payment Gateways -->
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="auth-modal-title" class="text-lg font-bold text-gray-900">Log In</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
+            </div>
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <input type="hidden" id="auth-mode" value="login">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Email Address *</label>
+                    <input type="email" id="auth-email" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="user@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Password *</label>
+                    <input type="password" id="auth-password" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="••••••••">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Post / Edit Job Modal -->
+    <div id="job-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar border">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modal-title" class="text-lg font-bold text-gray-900">Post a Position</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
+            </div>
+
+            <form id="job-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <input type="hidden" id="job-id">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
+                    <input type="text" id="job-title-input" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Senior NC Programmer">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company Name *</label>
+                        <input type="text" id="job-company" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. ACL Digital">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Country *</label>
+                        <select id="job-country" class="w-full border rounded-xl p-2.5 text-sm outline-none font-medium">
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="India">India</option>
+                            <option value="Canada">Canada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Location / City *</label>
+                        <input type="text" id="job-location" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Austin TX / Remote">
+                    </div>
+                    <div class="flex items-center pt-5">
+                        <label class="flex items-center gap-2 cursor-pointer bg-blue-50 border border-blue-200 px-4 py-2.5 rounded-xl w-full">
+                            <input type="checkbox" id="job-is-worldwide" class="w-4 h-4 text-blue-600 rounded">
+                            <span class="text-xs font-bold text-blue-900">🌐 Worldwide Remote</span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Description *</label>
+                    <textarea id="job-description" rows="5" required class="w-full border rounded-xl p-3 text-sm outline-none" placeholder="Enter position requirements..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold">Publish Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Engine -->
     <script>
-        // Init EmailJS for Automated Mailer (Optional Public Key placeholder)
-        if (window.emailjs) {
-            emailjs.init("YOUR_PUBLIC_KEY");
-        }
-
         // Global State
+        let currentUser = null;
+        let currentRole = 'candidate';
+        let currentView = 'find-jobs';
         let candidateProfile = JSON.parse(localStorage.getItem('jobrit_candidate_profile') || 'null');
+        
+        let jobsList = [];
+        let applicationsList = [];
+        let savedJobIds = JSON.parse(localStorage.getItem('jobrit_saved_jobs') || '[]');
 
-        // Modal triggers
-        function openProfileModal() {
-            if (candidateProfile) {
-                document.getElementById("prof-name").value = candidateProfile.name || "";
-                document.getElementById("prof-headline").value = candidateProfile.headline || "";
-                document.getElementById("prof-email").value = candidateProfile.email || "";
-                document.getElementById("prof-phone").value = candidateProfile.phone || "";
-                document.getElementById("prof-skills").value = candidateProfile.skills || "";
-                document.getElementById("prof-summary").value = candidateProfile.summary || "";
+        const initialSeedJobs = [
+            {
+                id: "seed-1",
+                title: "Service Desk Personnel",
+                company: "ACL Digital",
+                country: "India",
+                location: "Noida / Remote",
+                isWorldwide: true,
+                type: "Full-Time",
+                experience: "Mid Level",
+                salary: "₹6.5 LPA - ₹8.5 LPA",
+                description: "Provide tier-1 technical support for enterprise hardware & software issues in ServiceNow.",
+                status: "active",
+                created_at: new Date().toISOString()
+            },
+            {
+                id: "seed-2",
+                title: "Senior Numerical Control Programmer",
+                company: "Aerospace Manufacturing Corp",
+                country: "United States",
+                location: "Austin, Texas",
+                isWorldwide: false,
+                type: "Full-Time",
+                experience: "Senior Level",
+                salary: "$130k - $160k / yr",
+                description: "5+ years experience in multi-axis CNC machining & Mastercam/NX programming.",
+                status: "active",
+                created_at: new Date(Date.now() - 86400000).toISOString()
             }
-            document.getElementById("profile-modal").classList.remove("hidden");
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initApp();
+        });
+
+        function initApp() {
+            const localJobs = localStorage.getItem('jobrit_jobs');
+            const localApps = localStorage.getItem('jobrit_apps');
+
+            if (localJobs) {
+                try { jobsList = JSON.parse(localJobs); } catch(e) { jobsList = initialSeedJobs; }
+            } else {
+                jobsList = initialSeedJobs;
+            }
+
+            if (localApps) {
+                try { applicationsList = JSON.parse(localApps); } catch(e) { applicationsList = []; }
+            }
+
+            renderUI();
         }
 
-        function closeProfileModal() {
-            document.getElementById("profile-modal").classList.add("hidden");
+        function setRole(role) {
+            currentRole = role;
+            const candBtn = document.getElementById("role-candidate-btn");
+            const recBtn = document.getElementById("role-recruiter-btn");
+            const recruiterHeader = document.getElementById("recruiter-header");
+            const postNavBtn = document.getElementById("post-job-nav-btn");
+
+            if (role === 'recruiter') {
+                recBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition";
+                candBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
+                recruiterHeader.classList.remove("hidden");
+                postNavBtn.classList.remove("hidden");
+            } else {
+                candBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition";
+                recBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
+                recruiterHeader.classList.add("hidden");
+                postNavBtn.classList.add("hidden");
+            }
+            renderUI();
         }
 
-        function saveCandidateProfile(event) {
-            event.preventDefault();
+        function switchView(view) {
+            currentView = view;
+            const btnFind = document.getElementById("nav-find-jobs");
+            const btnApps = document.getElementById("nav-my-apps");
+            const btnSaved = document.getElementById("nav-saved-jobs");
+
+            [btnFind, btnApps, btnSaved].forEach(b => {
+                if(b) b.className = "px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition";
+            });
+
+            if (view === 'find-jobs' && btnFind) btnFind.className = "px-3 py-2 rounded-lg text-blue-600 bg-blue-50 transition";
+            if (view === 'my-apps' && btnApps) btnApps.className = "px-3 py-2 rounded-lg text-blue-600 bg-blue-50 transition";
+            if (view === 'saved-jobs' && btnSaved) btnSaved.className = "px-3 py-2 rounded-lg text-blue-600 bg-blue-50 transition";
+
+            renderUI();
+        }
+
+        function resetFilters() {
+            document.getElementById("search-title").value = "";
+            document.getElementById("search-country").value = "";
+            document.getElementById("search-location").value = "";
+            switchView('find-jobs');
+        }
+
+        function filterJobs() {
+            renderUI();
+        }
+
+        function getFilteredJobs() {
+            const titleQuery = (document.getElementById("search-title")?.value || "").toLowerCase().trim();
+            const selectedCountry = (document.getElementById("search-country")?.value || "").toLowerCase().trim();
+            const locationQuery = (document.getElementById("search-location")?.value || "").toLowerCase().trim();
+
+            return jobsList.filter(job => {
+                const title = (job.title || "").toLowerCase();
+                const company = (job.company || "").toLowerCase();
+                const desc = (job.description || "").toLowerCase();
+                const jobCountry = (job.country || "").toLowerCase();
+                const jobLoc = (job.location || "").toLowerCase();
+                const isWorldwide = job.isWorldwide === true;
+
+                const matchesTitle = !titleQuery || title.includes(titleQuery) || company.includes(titleQuery) || desc.includes(titleQuery);
+                if (!matchesTitle) return false;
+
+                if (isWorldwide) return true;
+
+                if (selectedCountry && jobCountry && !jobCountry.includes(selectedCountry)) {
+                    return false;
+                }
+
+                if (locationQuery) {
+                    if (locationQuery === 'remote' || locationQuery === 'worldwide') {
+                        return isWorldwide || jobLoc.includes('remote');
+                    }
+                    const matchesLoc = jobLoc.includes(locationQuery) || jobCountry.includes(locationQuery);
+                    if (!matchesLoc) return false;
+                }
+
+                return true;
+            });
+        }
+
+        function renderUI() {
+            const container = document.getElementById("job-list");
+            const titleElem = document.getElementById("view-title");
+            const subtitleElem = document.getElementById("view-subtitle");
+            const countElem = document.getElementById("job-count");
+            const badgeElem = document.getElementById("my-apps-badge");
+
+            if (applicationsList.length > 0 && badgeElem) {
+                badgeElem.textContent = applicationsList.length;
+                badgeElem.classList.remove("hidden");
+            } else if (badgeElem) {
+                badgeElem.classList.add("hidden");
+            }
+
+            let displayList = [];
+
+            if (currentView === 'find-jobs') {
+                titleElem.textContent = currentRole === 'recruiter' ? "Active Posted Positions" : "Global Opportunities";
+                subtitleElem.textContent = "Indeed-style borderless search across regions and remote pools";
+                displayList = getFilteredJobs();
+            } else if (currentView === 'my-apps') {
+                titleElem.textContent = "My Applications";
+                subtitleElem.textContent = "Track status of submitted job applications";
+                displayList = applicationsList.map(app => {
+                    const j = jobsList.find(job => job.id === app.job_id) || {};
+                    return { ...j, applicationStatus: app.status, appliedAt: app.created_at };
+                });
+            } else if (currentView === 'saved-jobs') {
+                titleElem.textContent = "Saved Bookmarked Jobs";
+                subtitleElem.textContent = "Your bookmarked career opportunities";
+                displayList = jobsList.filter(job => savedJobIds.includes(job.id));
+            }
+
+            countElem.textContent = `${displayList.length} jobs found`;
+
+            if (displayList.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl border p-12 text-center text-gray-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-blue-300"></i>
+                        <p class="text-sm font-bold text-gray-700">No jobs found matching your criteria</p>
+                        <p class="text-xs mt-1">Try clearing location or country filters to view all global listings.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = displayList.map(job => {
+                const isSaved = savedJobIds.includes(job.id);
+                const isWorld = job.isWorldwide;
+
+                return `
+                    <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="space-y-1 cursor-pointer flex-grow">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[11px] font-extrabold px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full border border-blue-200">${job.type || 'Full-Time'}</span>
+                                ${isWorld ? '<span class="text-[11px] font-extrabold px-2.5 py-0.5 bg-green-50 text-green-700 rounded-full border border-green-200">🌐 Worldwide Remote</span>' : ''}
+                                <span class="text-xs font-bold text-gray-500"><i class="fa-solid fa-location-dot text-gray-400 mr-1"></i>${job.country || 'Global'} • ${job.location || 'Remote'}</span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-black text-gray-900 hover:text-blue-600 transition">${job.title}</h3>
+                            <p class="text-xs font-semibold text-gray-600">${job.company} <span class="text-gray-300 mx-1">•</span> <span class="text-green-700 font-bold">${job.salary || 'Competitive'}</span></p>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                            ${currentRole === 'recruiter' ? `
+                                <button onclick="deleteJob('${job.id}')" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            ` : `
+                                <button onclick="toggleSaveJob('${job.id}')" class="p-2.5 rounded-xl border text-sm ${isSaved ? 'text-blue-600 bg-blue-50 border-blue-200' : 'text-gray-400 hover:text-blue-600'} transition">
+                                    <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark"></i>
+                                </button>
+                                <button onclick="applyToJob('${job.id}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow transition">
+                                    Apply Now
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleSaveJob(id) {
+            if (savedJobIds.includes(id)) {
+                savedJobIds = savedJobIds.filter(i => i !== id);
+                showToast("Job removed from saved list", "info");
+            } else {
+                savedJobIds.push(id);
+                showToast("Job saved successfully!", "success");
+            }
+            localStorage.setItem('jobrit_saved_jobs', JSON.stringify(savedJobIds));
+            renderUI();
+        }
+
+        function applyToJob(jobId) {
+            const newApp = {
+                id: `app-${Date.now()}`,
+                job_id: jobId,
+                status: "Applied",
+                created_at: new Date().toISOString()
+            };
+            applicationsList.unshift(newApp);
+            localStorage.setItem('jobrit_apps', JSON.stringify(applicationsList));
+            showToast("Application submitted successfully!", "success");
+            renderUI();
+        }
+
+        function deleteJob(id) {
+            jobsList = jobsList.filter(j => j.id !== id);
+            localStorage.setItem('jobrit_jobs', JSON.stringify(jobsList));
+            showToast("Job removed", "info");
+            renderUI();
+        }
+
+        // Modal Helpers
+        function openProfileModal() { document.getElementById("profile-modal").classList.remove("hidden"); }
+        function closeProfileModal() { document.getElementById("profile-modal").classList.add("hidden"); }
+        function saveCandidateProfile(e) {
+            e.preventDefault();
             candidateProfile = {
                 name: document.getElementById("prof-name").value,
-                headline: document.getElementById("prof-headline").value,
-                email: document.getElementById("prof-email").value,
-                phone: document.getElementById("prof-phone").value,
-                skills: document.getElementById("prof-skills").value,
-                summary: document.getElementById("prof-summary").value,
+                email: document.getElementById("prof-email").value
             };
-
             localStorage.setItem('jobrit_candidate_profile', JSON.stringify(candidateProfile));
             closeProfileModal();
-            showToast("Candidate profile saved! Fast 1-Click apply is now active.", "success");
+            showToast("Profile saved!", "success");
         }
 
-        function openPricingModal() {
-            document.getElementById("pricing-modal").classList.remove("hidden");
-        }
+        function openPricingModal() { document.getElementById("pricing-modal").classList.remove("hidden"); }
+        function closePricingModal() { document.getElementById("pricing-modal").classList.add("hidden"); }
+        function triggerPayment(plan, amount) { showToast(`[Demo] Payment successful for ${plan}`, "success"); closePricingModal(); }
 
-        function closePricingModal() {
-            document.getElementById("pricing-modal").classList.add("hidden");
-        }
+        function openAuthModal() { document.getElementById("auth-modal").classList.remove("hidden"); }
+        function closeAuthModal() { document.getElementById("auth-modal").classList.add("hidden"); }
+        function handleAuthSubmit(e) { e.preventDefault(); closeAuthModal(); showToast("Logged in successfully!", "success"); }
 
-        // 3. Razorpay / Stripe Payment Gateway Handler
-        function triggerPayment(planTitle, amountINR) {
-            const options = {
-                "key": "rzp_test_YOUR_KEY_HERE", // Replace with your Razorpay / Stripe Live/Test key
-                "amount": amountINR * 100, // Amount in paise
-                "currency": "INR",
-                "name": "Jobrit Pro Global",
-                "description": `Upgrade Plan: ${planTitle}`,
-                "image": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                "handler": function (response) {
-                    showToast(`Payment Successful! Transaction ID: ${response.razorpay_payment_id}`, "success");
-                    closePricingModal();
-                    // Send Email confirmation
-                    sendAutomatedEmail("Payment Success", `Thank you for purchasing ${planTitle}! Your features are unlocked.`);
-                },
-                "prefill": {
-                    "name": candidateProfile?.name || "Recruiter",
-                    "email": candidateProfile?.email || "recruiter@jobrit.com"
-                },
-                "theme": { "color": "#2563eb" }
+        function protectedOpenPostModal() { document.getElementById("job-modal").classList.remove("hidden"); }
+        function closeModal() { document.getElementById("job-modal").classList.add("hidden"); }
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const jobData = {
+                id: `job-${Date.now()}`,
+                title: document.getElementById("job-title-input").value,
+                company: document.getElementById("job-company").value,
+                country: document.getElementById("job-country").value,
+                location: document.getElementById("job-location").value,
+                isWorldwide: document.getElementById("job-is-worldwide").checked,
+                description: document.getElementById("job-description").value,
+                status: "active",
+                created_at: new Date().toISOString()
             };
-
-            try {
-                const rzp1 = new Razorpay(options);
-                rzp1.open();
-            } catch (e) {
-                // Fallback for demo when test key is not updated
-                showToast(`[Demo Payment Simulated] Successfully upgraded: ${planTitle}`, "success");
-                closePricingModal();
-            }
+            jobsList.unshift(jobData);
+            localStorage.setItem('jobrit_jobs', JSON.stringify(jobsList));
+            closeModal();
+            showToast("Job published!", "success");
+            renderUI();
         }
 
-        // 2. Automated Email Trigger Helper
-        function sendAutomatedEmail(subject, bodyMessage) {
-            console.log(`[Automated Email Sent] Subject: ${subject} | Body: ${bodyMessage}`);
-            // If EmailJS is configured, it sends real emails in background:
-            if (window.emailjs && emailjs.send) {
-                emailjs.send("service_id", "template_id", {
-                    subject: subject,
-                    message: bodyMessage,
-                    to_email: candidateProfile?.email || "user@example.com"
-                });
-            }
+        function showToast(message, type = 'success') {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.className = `bg-blue-600 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl transition-all transform pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
     </script>
 </body>
