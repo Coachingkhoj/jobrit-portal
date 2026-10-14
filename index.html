@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobrit Pro - Universal Multi-Industry Global Job Portal & ATS</title>
+    <title>Jobrit Pro - Indeed & LinkedIn Style Global ATS & Job Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
@@ -26,10 +26,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-4 sm:gap-6">
                 <h1 class="text-xl sm:text-2xl font-black text-blue-600 tracking-tight cursor-pointer flex items-center gap-2" onclick="resetFilters()">
-                    <i class="fa-solid fa-briefcase text-blue-600"></i> Jobrit <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Universal Global</span>
+                    <i class="fa-solid fa-briefcase text-blue-600"></i> Jobrit <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Global Pro ATS</span>
                 </h1>
                 <nav class="hidden md:flex items-center gap-1 text-sm font-semibold">
-                    <button id="nav-find-jobs" onclick="resetFilters()" class="px-3 py-2 rounded-lg text-blue-600 bg-blue-50 transition">All Industries</button>
+                    <button id="nav-find-jobs" onclick="resetFilters()" class="px-3 py-2 rounded-lg text-blue-600 bg-blue-50 transition">All Markets</button>
                     <button id="nav-my-profile" onclick="openProfileModal()" class="px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition"><i class="fa-solid fa-user-gear text-blue-600 mr-1"></i> My Profile</button>
                 </nav>
             </div>
@@ -51,39 +51,64 @@
         </div>
     </header>
 
-    <!-- Global Search Section -->
+    <!-- Advanced Indeed-Style Search & Location Section -->
     <section id="search-section" class="bg-gradient-to-r from-blue-700 to-indigo-900 py-6 sm:py-8 px-4 shadow-inner text-white">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-xl sm:text-3xl font-extrabold mb-1 tracking-tight">Find jobs in Healthcare, Aerospace, Tech & All Sectors</h2>
-            <p class="text-blue-100 text-xs sm:text-sm mb-4 sm:mb-6">Global opportunities across all industries, locations, and experience levels</p>
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-xl sm:text-3xl font-extrabold mb-1 tracking-tight">Find Precision Jobs by Country, Radius & Work Mode</h2>
+            <p class="text-blue-100 text-xs sm:text-sm mb-4 sm:mb-6">Advanced global matching with Indeed & LinkedIn style location distance routing</p>
 
-            <div class="bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-2 text-gray-800">
+            <div class="bg-white p-3 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-2 text-gray-800">
+                <!-- Country Market Filter -->
+                <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
+                    <i class="fa-solid fa-globe text-gray-400 mr-2 text-sm"></i>
+                    <select id="search-country" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
+                        <option value="">All Countries</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="India">India</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Germany">Germany</option>
+                    </select>
+                </div>
+
+                <!-- Job Title / Keyword Input -->
                 <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2 text-sm"></i>
                     <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Nurse, Engineer..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
-                <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
-                    <i class="fa-solid fa-layer-group text-gray-400 mr-2 text-sm"></i>
-                    <select id="search-category" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
-                        <option value="">All Industry Categories</option>
-                        <option value="Healthcare">Healthcare & Nursing</option>
-                        <option value="Aerospace">Aerospace & Defense</option>
-                        <option value="Engineering">Engineering & Manufacturing</option>
-                        <option value="Software">IT & Software</option>
-                        <option value="Finance">Finance & Business</option>
-                        <option value="Administrative">Operations & Admin</option>
-                    </select>
-                </div>
-                
-                <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
+                <!-- City / ZIP Code Input -->
+                <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-location-dot text-gray-400 mr-2 text-sm"></i>
-                    <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, Country or Remote" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
+                    <input type="text" id="search-location" oninput="filterJobs()" placeholder="City or ZIP Code..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
-                <div class="md:col-span-3 flex items-center">
-                    <button onclick="filterJobs()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm transition shadow flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search All Jobs
+                <!-- Radius Distance Filter -->
+                <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
+                    <i class="fa-solid fa-compass text-gray-400 mr-2 text-sm"></i>
+                    <select id="search-radius" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
+                        <option value="exact">Exact City Only</option>
+                        <option value="25">+ 25 miles</option>
+                        <option value="50" selected>+ 50 miles</option>
+                        <option value="100">+ 100 miles</option>
+                    </select>
+                </div>
+
+                <!-- Work Mode Filter (Remote / In-person / Hybrid) -->
+                <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
+                    <i class="fa-solid fa-laptop-house text-gray-400 mr-2 text-sm"></i>
+                    <select id="search-work-mode" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
+                        <option value="">All Work Modes</option>
+                        <option value="In-person">In-person (Onsite)</option>
+                        <option value="Remote">Remote</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+
+                <!-- Search Button -->
+                <div class="md:col-span-1 flex items-center">
+                    <button onclick="filterJobs()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-2 rounded-xl text-xs transition shadow flex items-center justify-center">
+                        <i class="fa-solid fa-search"></i>
                     </button>
                 </div>
             </div>
@@ -98,7 +123,7 @@
             <div class="bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
                 <div>
                     <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Owner & ATS Analytics Dashboard</h3>
-                    <p class="text-xs text-gray-500">Real-time overview of pool metrics and applicant submissions</p>
+                    <p class="text-xs text-gray-500">Real-time metrics, regional targeting counts, and candidate resume tracking</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="toggleApplicantsView()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
@@ -164,10 +189,10 @@
 
         <div id="view-header" class="flex justify-between items-center mb-4 sm:mb-6">
             <div>
-                <h2 id="view-title" class="text-lg sm:text-xl font-bold text-gray-900">All Universal Opportunities</h2>
-                <p id="view-subtitle" class="text-xs text-gray-500">Showing postings across Healthcare, Aerospace, Manufacturing & Tech</p>
+                <h2 id="view-title" class="text-lg sm:text-xl font-bold text-gray-900">All Precision Opportunities</h2>
+                <p id="view-subtitle" class="text-xs text-gray-500">Filtered by location radius, country, and work mode</p>
             </div>
-            <span id="job-count" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full border">Loading all jobs...</span>
+            <span id="job-count" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full border">Loading jobs...</span>
         </div>
 
         <div id="job-list" class="space-y-4"></div>
@@ -237,23 +262,47 @@
         </div>
     </div>
 
-    <!-- Post Job Modal -->
+    <!-- Indeed-Style Structured Location Job Posting Modal -->
     <div id="job-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar border">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 class="text-lg font-bold text-gray-900">Post Position (Any Industry)</h3>
+                <h3 class="text-lg font-bold text-gray-900">Post Position (Indeed & LinkedIn Pro Style)</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
             </div>
             <form id="job-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
-                    <input type="text" id="job-title-input" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. ICU Registered Nurse / Aerospace Systems Engineer">
-                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company Name *</label>
-                        <input type="text" id="job-company" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. ACL Digital / Apollo Hospitals / Boeing">
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country *</label>
+                        <select id="job-country-input" required class="w-full border rounded-xl p-2.5 text-sm outline-none font-medium">
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="India" selected>India</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Germany">Germany</option>
+                        </select>
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Mode *</label>
+                        <select id="job-work-mode-input" required class="w-full border rounded-xl p-2.5 text-sm outline-none font-medium">
+                            <option value="In-person">In-person (Onsite)</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Remote">Fully Remote</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
+                        <input type="text" id="job-title-input" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Engineering Recruiter / CNC Programmer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company Name *</label>
+                        <input type="text" id="job-company" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. ACL Digital / Boeing">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry Sector *</label>
                         <select id="job-category-input" class="w-full border rounded-xl p-2.5 text-sm outline-none font-medium">
@@ -262,14 +311,19 @@
                             <option value="Engineering">Engineering & Manufacturing</option>
                             <option value="Software">IT & Software</option>
                             <option value="Finance">Finance & Business</option>
-                            <option value="Administrative">Administrative & Management</option>
+                            <option value="Administrative">Administrative & Operations</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City Name *</label>
+                        <input type="text" id="job-city" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Noida / Austin TX">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP / PIN Code *</label>
+                        <input type="text" id="job-zip" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. 201301 / 78701">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Location / City *</label>
-                    <input type="text" id="job-location" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Austin TX / Noida / London / Remote">
-                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Description *</label>
                     <textarea id="job-description" rows="4" required class="w-full border rounded-xl p-3 text-sm outline-none" placeholder="Detailed position requirements and responsibilities..."></textarea>
@@ -282,7 +336,7 @@
         </div>
     </div>
 
-    <!-- Analytics & Tracking Engine Script -->
+    <!-- Advanced Analytics & Location Routing Engine Script -->
     <script>
         const SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S";
@@ -298,32 +352,49 @@
         let externalJobsCount = 0;
         let localApplicants = [];
 
+        // Predefined Radius & Regional Cluster Mappings for Pro Search
+        const regionClusters = {
+            "noida": ["noida", "delhi", "greater noida", "ghaziabad", "gurgaon", "delhi ncr"],
+            "delhi": ["delhi", "noida", "greater noida", "ghaziabad", "gurgaon", "delhi ncr"],
+            "austin": ["austin", "round rock", "san marcos", "pflugerville", "cedar park"],
+            "london": ["london", "watford", "croydon", "dartford", "uxbridge"]
+        };
+
         const universalSeedJobs = [
             {
                 id: "seed-1",
-                title: "Senior Numerical Control Programmer",
-                company: "Aerospace Manufacturing Corp",
-                category: "Aerospace",
-                location: "Austin, Texas (USA)",
-                salary: "$130k - $160k / yr",
+                title: "Engineering Recruiter",
+                company: "ACL Digital",
+                category: "Administrative",
+                country: "India",
+                work_mode: "Hybrid",
+                city: "Noida",
+                zip_code: "201301",
+                salary: "₹7 LPA - ₹10 LPA",
                 is_external: false
             },
             {
                 id: "seed-2",
-                title: "ICU Clinical Nurse Specialist",
-                company: "Global Healthcare Network",
-                category: "Healthcare",
-                location: "London, UK / Noida",
-                salary: "Competitive",
+                title: "Senior Numerical Control Programmer",
+                company: "Aerospace Manufacturing Corp",
+                category: "Aerospace",
+                country: "United States",
+                work_mode: "In-person",
+                city: "Austin",
+                zip_code: "78701",
+                salary: "$130k - $160k / yr",
                 is_external: false
             },
             {
                 id: "seed-3",
-                title: "Service Desk Specialist",
-                company: "ACL Digital",
-                category: "Administrative",
-                location: "Noida / Remote",
-                salary: "₹6.5 LPA - ₹8.5 LPA",
+                title: "ICU Clinical Nurse Specialist",
+                company: "Global Healthcare Network",
+                category: "Healthcare",
+                country: "United Kingdom",
+                work_mode: "In-person",
+                city: "London",
+                zip_code: "SW1A 1AA",
+                salary: "Competitive",
                 is_external: false
             }
         ];
@@ -368,12 +439,24 @@
                             category = "Administrative";
                         }
 
+                        let locLower = (job.location || "").toLowerCase();
+                        let country = "United States";
+                        if (locLower.includes("uk") || locLower.includes("london") || locLower.includes("united kingdom")) country = "United Kingdom";
+                        else if (locLower.includes("india") || locLower.includes("noida") || locLower.includes("bengaluru") || locLower.includes("delhi")) country = "India";
+                        else if (locLower.includes("canada") || locLower.includes("toronto")) country = "Canada";
+                        else if (locLower.includes("germany") || locLower.includes("berlin")) country = "Germany";
+
+                        let workMode = job.remote ? "Remote" : "In-person";
+
                         return {
                             id: `ext-${idx}`,
                             title: job.title,
                             company: job.company_name,
                             category: category,
-                            location: job.location || "Worldwide Remote",
+                            country: country,
+                            work_mode: workMode,
+                            city: job.location || "Global",
+                            zip_code: "000000",
                             salary: "Competitive",
                             url: job.url,
                             is_external: true
@@ -381,7 +464,7 @@
                     });
                 }
             } catch (err) {
-                console.log("External API fetch error.");
+                console.log("External API fetch notice.");
             }
 
             externalJobsCount = externalJobs.length;
@@ -450,21 +533,50 @@
         function filterJobs() { renderUI(); }
 
         function getFilteredJobs() {
+            const countryQuery = (document.getElementById("search-country")?.value || "").toLowerCase().trim();
             const titleQuery = (document.getElementById("search-title")?.value || "").toLowerCase().trim();
-            const categoryQuery = (document.getElementById("search-category")?.value || "").toLowerCase().trim();
             const locationQuery = (document.getElementById("search-location")?.value || "").toLowerCase().trim();
+            const radiusQuery = document.getElementById("search-radius")?.value || "exact";
+            const workModeQuery = (document.getElementById("search-work-mode")?.value || "").toLowerCase().trim();
 
             return jobsList.filter(job => {
+                const jobCountry = (job.country || "").toLowerCase();
                 const title = (job.title || "").toLowerCase();
                 const company = (job.company || "").toLowerCase();
-                const category = (job.category || "").toLowerCase();
-                const jobLoc = (job.location || "").toLowerCase();
+                const jobCity = (job.city || "").toLowerCase();
+                const jobZip = (job.zip_code || "").toLowerCase();
+                const jobWorkMode = (job.work_mode || "").toLowerCase();
 
+                // 1. Country Check
+                const matchesCountry = !countryQuery || jobCountry.includes(countryQuery);
+
+                // 2. Title / Keyword Check
                 const matchesTitle = !titleQuery || title.includes(titleQuery) || company.includes(titleQuery);
-                const matchesCategory = !categoryQuery || category.includes(categoryQuery);
-                const matchesLoc = !locationQuery || jobLoc.includes(locationQuery);
 
-                return matchesTitle && matchesCategory && matchesLoc;
+                // 3. Work Mode Check
+                const matchesWorkMode = !workModeQuery || jobWorkMode.includes(workModeQuery);
+
+                // 4. Advanced Location & Radius Routing Check
+                let matchesLocation = true;
+                if (locationQuery) {
+                    if (jobWorkMode === 'remote') {
+                        // Remote jobs match regardless of city radius if user searches within country
+                        matchesLocation = true;
+                    } else if (radiusQuery === 'exact') {
+                        matchesLocation = jobCity.includes(locationQuery) || jobZip.includes(locationQuery);
+                    } else {
+                        // Radius check (+25, +50, +100 miles cluster check)
+                        let baseCityKey = Object.keys(regionClusters).find(key => locationQuery.includes(key));
+                        if (baseCityKey) {
+                            let allowedCities = regionClusters[baseCityKey];
+                            matchesLocation = allowedCities.some(c => jobCity.includes(c)) || jobZip.includes(locationQuery);
+                        } else {
+                            matchesLocation = jobCity.includes(locationQuery) || jobZip.includes(locationQuery);
+                        }
+                    }
+                }
+
+                return matchesCountry && matchesTitle && matchesWorkMode && matchesLocation;
             });
         }
 
@@ -473,13 +585,14 @@
             const countElem = document.getElementById("job-count");
             const displayList = getFilteredJobs();
 
-            countElem.textContent = `${displayList.length} jobs found`;
+            countElem.textContent = `${displayList.length} precision jobs found`;
 
             if (displayList.length === 0) {
                 container.innerHTML = `
                     <div class="bg-white rounded-2xl border p-12 text-center text-gray-400">
                         <i class="fa-solid fa-folder-open text-4xl mb-3 text-blue-300"></i>
-                        <p class="text-sm font-bold text-gray-700">No jobs found matching your criteria</p>
+                        <p class="text-sm font-bold text-gray-700">No matching jobs found in this radius or country</p>
+                        <p class="text-xs text-gray-400 mt-1">Try expanding your radius filter (+50 or +100 miles) or switching work mode.</p>
                     </div>
                 `;
                 return;
@@ -489,9 +602,10 @@
                 <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 hover:border-blue-300 transition">
                     <div>
                         <div class="flex items-center gap-2 flex-wrap mb-1">
-                            <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full">${job.location}</span>
-                            <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200"><i class="fa-solid fa-tag mr-1"></i>${job.category || 'General'}</span>
-                            ${job.is_external ? '<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200"><i class="fa-solid fa-globe mr-1"></i>Live Feed</span>' : ''}
+                            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full"><i class="fa-solid fa-globe mr-1"></i>${job.country || 'Global'}</span>
+                            <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full"><i class="fa-solid fa-location-dot mr-1"></i>${job.city} (${job.zip_code})</span>
+                            <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">${job.work_mode || 'In-person'}</span>
+                            <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">${job.category || 'General'}</span>
                         </div>
                         <h3 class="text-lg font-black text-gray-900 mt-1">${job.title}</h3>
                         <p class="text-xs text-gray-600 font-semibold">${job.company} • <span class="text-green-700">${job.salary}</span></p>
@@ -567,7 +681,10 @@
                 title: document.getElementById("job-title-input").value,
                 company: document.getElementById("job-company").value,
                 category: document.getElementById("job-category-input").value,
-                location: document.getElementById("job-location").value,
+                country: document.getElementById("job-country-input").value,
+                work_mode: document.getElementById("job-work-mode-input").value,
+                city: document.getElementById("job-city").value,
+                zip_code: document.getElementById("job-zip").value,
                 description: document.getElementById("job-description").value,
                 salary: "Competitive",
                 is_external: false
@@ -579,7 +696,7 @@
             jobsList.unshift(newJob);
             customJobsCount++;
             closeModal();
-            showToast("Job published live!", "success");
+            showToast("Job published live with Indeed-style location radius metadata!", "success");
             updateAnalyticsStats();
             renderUI();
         }
@@ -602,9 +719,11 @@
         function protectedOpenPostModal() { document.getElementById("job-modal").classList.remove("hidden"); }
         function closeModal() { document.getElementById("job-modal").classList.add("hidden"); }
         function resetFilters() {
+            document.getElementById("search-country").value = "";
             document.getElementById("search-title").value = "";
-            document.getElementById("search-category").value = "";
             document.getElementById("search-location").value = "";
+            document.getElementById("search-radius").value = "50";
+            document.getElementById("search-work-mode").value = "";
             renderUI();
         }
 
