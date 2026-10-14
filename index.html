@@ -23,9 +23,9 @@
 
     <!-- Header / Navbar -->
     <header class="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
-            <div class="flex items-center gap-6">
-                <h1 class="text-2xl font-black text-blue-600 tracking-tight cursor-pointer flex items-center gap-2" onclick="resetFilters()">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-4 sm:gap-6">
+                <h1 class="text-xl sm:text-2xl font-black text-blue-600 tracking-tight cursor-pointer flex items-center gap-2" onclick="resetFilters()">
                     <i class="fa-solid fa-briefcase text-blue-600"></i> Jobrit <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Pro</span>
                 </h1>
                 <nav class="hidden md:flex items-center gap-1 text-sm font-semibold">
@@ -35,49 +35,56 @@
                 </nav>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <!-- Role Switcher Control -->
                 <div class="bg-gray-100 p-1 rounded-xl flex items-center text-xs font-bold border border-gray-200">
-                    <button id="role-candidate-btn" onclick="setRole('candidate')" class="px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition">
+                    <button id="role-candidate-btn" onclick="setRole('candidate')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition">
                         <i class="fa-solid fa-user-graduate mr-1"></i> Job Seeker
                     </button>
-                    <button id="role-recruiter-btn" onclick="setRole('recruiter')" class="px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition">
+                    <button id="role-recruiter-btn" onclick="setRole('recruiter')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition">
                         <i class="fa-solid fa-user-tie mr-1"></i> Employer / ATS
                     </button>
                 </div>
 
                 <!-- Auth Buttons -->
                 <div id="auth-nav-container">
-                    <button id="login-nav-btn" onclick="openAuthModal('login')" class="bg-gray-100 text-gray-700 font-bold px-3.5 py-2 rounded-lg hover:bg-gray-200 transition text-xs">
+                    <button id="login-nav-btn" onclick="openAuthModal('login')" class="bg-gray-100 text-gray-700 font-bold px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-200 transition text-xs">
                         Log In
                     </button>
-                    <button id="user-profile-btn" onclick="handleLogout()" class="hidden bg-red-50 text-red-600 border border-red-200 font-bold px-3.5 py-2 rounded-lg hover:bg-red-100 transition text-xs flex items-center gap-1">
+                    <button id="user-profile-btn" onclick="handleLogout()" class="hidden bg-red-50 text-red-600 border border-red-200 font-bold px-3 py-1.5 sm:py-2 rounded-lg hover:bg-red-100 transition text-xs flex items-center gap-1">
                         <i class="fa-solid fa-right-from-bracket"></i> <span id="user-display-email">Sign Out</span>
                     </button>
                 </div>
 
-                <button id="post-job-nav-btn" onclick="protectedOpenPostModal()" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 shadow-sm text-sm hidden">
-                    <i class="fa-solid fa-plus"></i> Post a Job
+                <button id="post-job-nav-btn" onclick="protectedOpenPostModal()" class="bg-blue-600 text-white font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm text-xs sm:text-sm hidden">
+                    <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Post Job</span>
                 </button>
             </div>
+        </div>
+
+        <!-- Mobile Navigation Sub-bar -->
+        <div class="flex md:hidden border-t bg-gray-50 px-4 py-2 justify-around text-xs font-bold text-gray-600">
+            <button onclick="switchView('find-jobs')" class="hover:text-blue-600">Find Jobs</button>
+            <button onclick="switchView('my-apps')" class="hover:text-blue-600">My Applications</button>
+            <button onclick="switchView('saved-jobs')" class="hover:text-blue-600">Saved Jobs</button>
         </div>
     </header>
 
     <!-- Candidate Search Bar Section -->
-    <section id="search-section" class="bg-gradient-to-r from-blue-700 to-indigo-800 py-8 px-4 shadow-inner text-white">
+    <section id="search-section" class="bg-gradient-to-r from-blue-700 to-indigo-800 py-6 sm:py-8 px-4 shadow-inner text-white">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-2xl sm:text-3xl font-extrabold mb-2 tracking-tight">Find your next career move</h2>
-            <p class="text-blue-100 text-sm mb-6">Explore thousands of top tech, engineering, and remote positions</p>
+            <h2 class="text-xl sm:text-3xl font-extrabold mb-1 tracking-tight">Find your next career move</h2>
+            <p class="text-blue-100 text-xs sm:text-sm mb-4 sm:mb-6">Explore thousands of top tech, engineering, and remote positions</p>
 
-            <div class="bg-white p-2 sm:p-3 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-2 text-gray-800">
+            <div class="bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-2 text-gray-800">
                 <div class="md:col-span-4 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
-                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2"></i>
-                    <input type="text" id="search-title" oninput="filterJobs()" placeholder="Job title, keywords, or company" class="w-full bg-transparent text-sm focus:outline-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2 text-sm"></i>
+                    <input type="text" id="search-title" oninput="filterJobs()" placeholder="Job title, keywords, or company" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
                 
                 <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
-                    <i class="fa-solid fa-location-dot text-gray-400 mr-2"></i>
-                    <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, state, or 'Remote'" class="w-full bg-transparent text-sm focus:outline-none">
+                    <i class="fa-solid fa-location-dot text-gray-400 mr-2 text-sm"></i>
+                    <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, state, or 'Remote'" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
                 <div class="md:col-span-3 grid grid-cols-2 gap-2">
@@ -99,7 +106,7 @@
                 </div>
 
                 <div class="md:col-span-2 flex items-center justify-end">
-                    <button onclick="filterJobs()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow">
+                    <button onclick="filterJobs()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm transition shadow">
                         Search Jobs
                     </button>
                 </div>
@@ -108,27 +115,27 @@
     </section>
 
     <!-- Main Workspace Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
         
         <!-- Recruiter Bar View -->
         <div id="recruiter-header" class="hidden mb-6 bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
             <div>
-                <h3 class="font-bold text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Employer ATS Dashboard</h3>
+                <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Employer ATS Dashboard</h3>
                 <p class="text-xs text-gray-500">Manage posted job opportunities and review incoming applicants</p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 <button onclick="protectedOpenCandidateDatabaseModal()" class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold px-3 py-2 rounded-lg hover:bg-indigo-100 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-users-viewfinder"></i> Candidate Sourcing Database
+                    <i class="fa-solid fa-users-viewfinder"></i> Candidate Sourcing
                 </button>
-                <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-plus"></i> Post New Job
+                <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-plus"></i> Post Job
                 </button>
             </div>
         </div>
 
-        <div id="view-header" class="flex justify-between items-center mb-6">
+        <div id="view-header" class="flex justify-between items-center mb-4 sm:mb-6">
             <div>
-                <h2 id="view-title" class="text-xl font-bold text-gray-900">Recommended Opportunities</h2>
+                <h2 id="view-title" class="text-lg sm:text-xl font-bold text-gray-900">Recommended Opportunities</h2>
                 <p id="view-subtitle" class="text-xs text-gray-500">Showing top open positions for you</p>
             </div>
             <span id="job-count" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full border">Loading...</span>
@@ -269,7 +276,7 @@
         </div>
     </div>
 
-    <!-- Job Details & Fast Apply Modal -->
+    <!-- Job Details Modal -->
     <div id="detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col justify-between">
             <div>
@@ -305,7 +312,7 @@
         </div>
     </div>
 
-    <!-- Apply Modal -->
+    <!-- Direct File Upload Apply Modal -->
     <div id="apply-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -330,15 +337,22 @@
                     <input type="tel" id="applicant-phone" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="+91 9876543210">
                 </div>
 
+                <!-- Direct File Upload Field -->
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Resume Link / Cloud Storage URL *</label>
-                    <input type="url" id="applicant-resume" required class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://drive.google.com/file/d/...">
-                    <p class="text-[11px] text-gray-400 mt-1">Provide a public link to your PDF or Word resume on Google Drive, Dropbox, or LinkedIn.</p>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Upload Resume (PDF / Word) *</label>
+                    <div class="border-2 border-dashed border-blue-200 rounded-xl p-4 text-center bg-blue-50/50 hover:bg-blue-50 transition cursor-pointer relative" onclick="document.getElementById('applicant-resume-file').click()">
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-600 text-2xl mb-1"></i>
+                        <p id="file-upload-label" class="text-xs font-bold text-gray-700">Click to select PDF or DOCX file</p>
+                        <p class="text-[10px] text-gray-400 mt-0.5">Max size: 5MB</p>
+                        <input type="file" id="applicant-resume-file" accept=".pdf,.doc,.docx" required onchange="handleFileSelect(event)" class="hidden">
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onclick="closeApplyModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md">Submit Application</button>
+                    <button type="submit" id="submit-app-btn" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md">
+                        Submit Application
+                    </button>
                 </div>
             </form>
         </div>
@@ -398,6 +412,7 @@
         let currentUser = null;
         let currentRole = 'candidate'; // 'candidate' | 'recruiter'
         let currentView = 'find-jobs';  // 'find-jobs' | 'my-apps' | 'saved-jobs'
+        let selectedFile = null;
         
         let jobsList = [];
         let applicationsList = [];
@@ -435,7 +450,6 @@
         });
 
         async function initApp() {
-            // Local Fallback Load
             const localJobs = localStorage.getItem('jobrit_jobs');
             const localApps = localStorage.getItem('jobrit_apps');
 
@@ -446,7 +460,6 @@
 
             renderUI();
 
-            // Check Active Auth Session
             if (supabaseClient) {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session?.user) {
@@ -454,7 +467,6 @@
                     updateAuthUI();
                 }
 
-                // Auth listener
                 supabaseClient.auth.onAuthStateChange((_event, session) => {
                     currentUser = session?.user || null;
                     updateAuthUI();
@@ -481,7 +493,7 @@
             renderUI();
         }
 
-        // Auth Modal Controls
+        // Auth Modals
         function openAuthModal(mode = 'login') {
             document.getElementById("auth-form").reset();
             const title = document.getElementById("auth-modal-title");
@@ -546,7 +558,7 @@
                     });
 
                     if (error) throw error;
-                    showToast("Account created successfully! Logging in...");
+                    showToast("Account created successfully!");
                     if (data?.user) currentUser = data.user;
                 } else {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -571,7 +583,6 @@
             showToast("Signed out successfully");
         }
 
-        // Protected Actions Guard
         function protectedOpenPostModal() {
             if (!currentUser && currentRole === 'recruiter') {
                 showToast("Please log in as a Recruiter to post jobs");
@@ -623,15 +634,15 @@
             const postBtnNav = document.getElementById("post-job-nav-btn");
 
             if (role === 'recruiter') {
-                recBtn.className = "px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition font-bold";
-                candBtn.className = "px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
+                recBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition font-bold";
+                candBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
                 recruiterHeader.classList.remove("hidden");
                 searchSection.classList.add("hidden");
                 postBtnNav.classList.remove("hidden");
                 showToast("Switched to Recruiter ATS Mode");
             } else {
-                candBtn.className = "px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition font-bold";
-                recBtn.className = "px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
+                candBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition font-bold";
+                recBtn.className = "px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition";
                 recruiterHeader.classList.add("hidden");
                 searchSection.classList.remove("hidden");
                 postBtnNav.classList.add("hidden");
@@ -696,7 +707,7 @@
 
             if (jobsToRender.length === 0) {
                 listEl.innerHTML = `
-                    <div class="bg-white rounded-2xl p-12 text-center border text-gray-500 shadow-sm">
+                    <div class="bg-white rounded-2xl p-8 sm:p-12 text-center border text-gray-500 shadow-sm">
                         <i class="fa-solid fa-folder-open text-4xl text-gray-300 mb-3"></i>
                         <h4 class="font-bold text-gray-700">No jobs match your search</h4>
                         <p class="text-xs mt-1">Try clearing filters or check back again later.</p>
@@ -710,13 +721,13 @@
                 const appCount = applicationsList.filter(a => a.job_id == job.id).length;
 
                 return `
-                <div class="bg-white rounded-2xl shadow-sm border p-5 sm:p-6 transition hover:shadow-md ${isHeld ? 'opacity-60 bg-gray-50' : ''}">
+                <div class="bg-white rounded-2xl shadow-sm border p-4 sm:p-6 transition hover:shadow-md ${isHeld ? 'opacity-60 bg-gray-50' : ''}">
                     <div class="flex justify-between items-start gap-4 mb-2">
                         <div>
-                            <span class="text-[10px] uppercase font-black px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
+                            <span class="text-[10px] uppercase font-black px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
                                 ${escapeHtml(job.type || 'Full-Time')}
                             </span>
-                            <h3 onclick="openDetailModal('${job.id}')" class="text-xl font-black text-gray-900 hover:text-blue-600 transition cursor-pointer mt-1">
+                            <h3 onclick="openDetailModal('${job.id}')" class="text-lg sm:text-xl font-black text-gray-900 hover:text-blue-600 transition cursor-pointer mt-1">
                                 ${escapeHtml(job.title)}
                             </h3>
                             <p class="text-xs font-bold text-gray-600">
@@ -749,19 +760,13 @@
                         </div>
 
                         ${currentRole === 'recruiter' ? `
-                            <div class="flex items-center gap-1.5 bg-gray-50 p-1.5 rounded-xl border">
+                            <div class="flex flex-wrap items-center gap-1.5 bg-gray-50 p-1.5 rounded-xl border">
                                 <button onclick="viewApplicationsForJob('${job.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-2.5 py-1.5 rounded-lg font-bold">
                                     <i class="fa-solid fa-users mr-1"></i> Apps (${appCount})
                                 </button>
-                                <button onclick="openEditModal('${job.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs px-2 py-1.5 rounded-lg font-bold">
-                                    Edit
-                                </button>
-                                <button onclick="toggleHoldJob('${job.id}')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-2 py-1.5 rounded-lg font-bold">
-                                    ${isHeld ? 'Resume' : 'Hold'}
-                                </button>
-                                <button onclick="deleteJob('${job.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2 py-1.5 rounded-lg font-bold">
-                                    Delete
-                                </button>
+                                <button onclick="openEditModal('${job.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs px-2 py-1.5 rounded-lg font-bold">Edit</button>
+                                <button onclick="toggleHoldJob('${job.id}')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs px-2 py-1.5 rounded-lg font-bold">${isHeld ? 'Resume' : 'Hold'}</button>
+                                <button onclick="deleteJob('${job.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-2 py-1.5 rounded-lg font-bold">Delete</button>
                             </div>
                         ` : ''}
                     </div>
@@ -821,7 +826,7 @@
 
             if (applicationsList.length === 0) {
                 listEl.innerHTML = `
-                    <div class="bg-white rounded-2xl p-12 text-center border text-gray-500 shadow-sm">
+                    <div class="bg-white rounded-2xl p-8 sm:p-12 text-center border text-gray-500 shadow-sm">
                         <i class="fa-solid fa-paper-plane text-4xl text-gray-300 mb-3"></i>
                         <h4 class="font-bold text-gray-700">No applications submitted yet</h4>
                         <p class="text-xs mt-1">Browse open listings and click 'Fast Apply' to start tracking.</p>
@@ -839,17 +844,17 @@
                 if (stage === 'Rejected') statusBadge = "bg-red-100 text-red-800 border-red-200";
 
                 return `
-                    <div class="bg-white rounded-2xl border p-5 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+                    <div class="bg-white rounded-2xl border p-4 sm:p-5 flex flex-wrap justify-between items-center gap-4 shadow-sm">
                         <div>
                             <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${statusBadge}">
                                 ${stage}
                             </span>
-                            <h4 class="text-lg font-black text-gray-900 mt-1">${escapeHtml(job.title)}</h4>
+                            <h4 class="text-base sm:text-lg font-black text-gray-900 mt-1">${escapeHtml(job.title)}</h4>
                             <p class="text-xs font-semibold text-gray-500">${escapeHtml(job.company)} • Applied on ${new Date(app.applied_at || Date.now()).toLocaleDateString()}</p>
                         </div>
 
                         <a href="${escapeHtml(app.resume_link)}" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-pdf text-red-500"></i> View Submitted Resume
+                            <i class="fa-solid fa-file-pdf text-red-500"></i> View Resume File
                         </a>
                     </div>
                 `;
@@ -995,6 +1000,8 @@
             document.getElementById("apply-job-id").value = jobId;
             document.getElementById("apply-job-title").textContent = jobTitle;
             document.getElementById("apply-form").reset();
+            selectedFile = null;
+            document.getElementById("file-upload-label").textContent = "Click to select PDF or DOCX file";
 
             if (currentUser) {
                 document.getElementById("applicant-email").value = currentUser.email;
@@ -1007,29 +1014,75 @@
             document.getElementById("apply-modal").classList.add("hidden");
         }
 
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById("file-upload-label").textContent = `Selected: ${file.name}`;
+            }
+        }
+
         async function submitApplication(e) {
             e.preventDefault();
-            const appData = {
-                id: Date.now().toString(),
-                job_id: document.getElementById("apply-job-id").value,
-                name: document.getElementById("applicant-name").value.trim(),
-                email: document.getElementById("applicant-email").value.trim(),
-                phone: document.getElementById("applicant-phone").value.trim(),
-                resume_link: document.getElementById("applicant-resume").value.trim(),
-                status: 'Under Review',
-                applied_at: new Date().toISOString()
-            };
+            const submitBtn = document.getElementById("submit-app-btn");
+            submitBtn.textContent = "Uploading Resume...";
+            submitBtn.disabled = true;
 
-            applicationsList.unshift(appData);
-            localStorage.setItem('jobrit_apps', JSON.stringify(applicationsList));
+            let resumePublicUrl = "#";
 
-            if (supabaseClient) {
-                try { await supabaseClient.from("applications").insert([appData]); } catch(e){}
+            try {
+                // Supabase File Storage Upload
+                if (supabaseClient && selectedFile) {
+                    const fileExt = selectedFile.name.split('.').pop();
+                    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+                    const { data: uploadData, error: uploadError } = await supabaseClient
+                        .storage
+                        .from('resumes')
+                        .upload(fileName, selectedFile);
+
+                    if (uploadError) {
+                        console.warn("Storage upload failed, falling back to local file name", uploadError);
+                        resumePublicUrl = `https://fksiepwvbygkcojvjyzy.supabase.co/storage/v1/object/public/resumes/${fileName}`;
+                    } else {
+                        const { data: urlData } = supabaseClient
+                            .storage
+                            .from('resumes')
+                            .getPublicUrl(fileName);
+                        
+                        resumePublicUrl = urlData.publicUrl;
+                    }
+                } else if (selectedFile) {
+                    resumePublicUrl = URL.createObjectURL(selectedFile);
+                }
+
+                const appData = {
+                    id: Date.now().toString(),
+                    job_id: document.getElementById("apply-job-id").value,
+                    name: document.getElementById("applicant-name").value.trim(),
+                    email: document.getElementById("applicant-email").value.trim(),
+                    phone: document.getElementById("applicant-phone").value.trim(),
+                    resume_link: resumePublicUrl,
+                    status: 'Under Review',
+                    applied_at: new Date().toISOString()
+                };
+
+                applicationsList.unshift(appData);
+                localStorage.setItem('jobrit_apps', JSON.stringify(applicationsList));
+
+                if (supabaseClient) {
+                    try { await supabaseClient.from("applications").insert([appData]); } catch(e){}
+                }
+
+                showToast("Application & Resume uploaded successfully!");
+                closeApplyModal();
+                renderUI();
+            } catch (err) {
+                alert("Error submitting application: " + err.message);
+            } finally {
+                submitBtn.textContent = "Submit Application";
+                submitBtn.disabled = false;
             }
-
-            closeApplyModal();
-            showToast("Application submitted successfully!");
-            renderUI();
         }
 
         function viewApplicationsForJob(jobId) {
@@ -1113,7 +1166,7 @@
                         <p class="text-xs text-gray-500">${escapeHtml(app.email)} • ${escapeHtml(app.phone || 'No phone')}</p>
                     </div>
                     <a href="${escapeHtml(app.resume_link)}" target="_blank" class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-100 transition">
-                        View Profile Resume
+                        View Resume File
                     </a>
                 </div>
             `).join('');
