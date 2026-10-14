@@ -257,7 +257,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Salary Range</label>
-                        <input type="text" id="job-salary" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. $80k - $100k / Year">
+                        <input type="text" id="job-salary" class="w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. ₹8 LPA - ₹12 LPA">
                     </div>
                 </div>
 
@@ -410,8 +410,8 @@
 
         // Global State
         let currentUser = null;
-        let currentRole = 'candidate'; // 'candidate' | 'recruiter'
-        let currentView = 'find-jobs';  // 'find-jobs' | 'my-apps' | 'saved-jobs'
+        let currentRole = 'candidate';
+        let currentView = 'find-jobs';
         let selectedFile = null;
         
         let jobsList = [];
@@ -493,7 +493,6 @@
             renderUI();
         }
 
-        // Auth Modals
         function openAuthModal(mode = 'login') {
             document.getElementById("auth-form").reset();
             const title = document.getElementById("auth-modal-title");
@@ -853,7 +852,7 @@
                             <p class="text-xs font-semibold text-gray-500">${escapeHtml(job.company)} • Applied on ${new Date(app.applied_at || Date.now()).toLocaleDateString()}</p>
                         </div>
 
-                        <a href="${escapeHtml(app.resume_link)}" target="_blank" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+                        <a href="${escapeHtml(app.resume_link)}" target="_blank" rel="noopener noreferrer" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
                             <i class="fa-solid fa-file-pdf text-red-500"></i> View Resume File
                         </a>
                     </div>
@@ -933,8 +932,7 @@
                 salary: document.getElementById("job-salary").value.trim(),
                 description: document.getElementById("job-description").value.trim(),
                 employer_id: currentUser?.id || null,
-                status: 'active',
-                created_at: new Date().toISOString()
+                status: 'active'
             };
 
             if (id) {
@@ -946,7 +944,7 @@
                 showToast("Job opportunity updated successfully");
             } else {
                 const newId = Date.now().toString();
-                const newJob = { id: newId, ...jobData };
+                const newJob = { id: newId, ...jobData, created_at: new Date().toISOString() };
                 jobsList.unshift(newJob);
                 if (supabaseClient) {
                     try { await supabaseClient.from("jobs").insert([newJob]); } catch(e){}
@@ -1031,7 +1029,6 @@
             let resumePublicUrl = "#";
 
             try {
-                // Supabase File Storage Upload
                 if (supabaseClient && selectedFile) {
                     const fileExt = selectedFile.name.split('.').pop();
                     const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -1039,19 +1036,18 @@
                     const { data: uploadData, error: uploadError } = await supabaseClient
                         .storage
                         .from('resumes')
-                        .upload(fileName, selectedFile);
+                        .upload(fileName, selectedFile, { upsert: true });
 
                     if (uploadError) {
-                        console.warn("Storage upload failed, falling back to local file name", uploadError);
-                        resumePublicUrl = `https://fksiepwvbygkcojvjyzy.supabase.co/storage/v1/object/public/resumes/${fileName}`;
-                    } else {
-                        const { data: urlData } = supabaseClient
-                            .storage
-                            .from('resumes')
-                            .getPublicUrl(fileName);
-                        
-                        resumePublicUrl = urlData.publicUrl;
+                        console.warn("Storage upload warning:", uploadError);
                     }
+
+                    const { data: urlData } = supabaseClient
+                        .storage
+                        .from('resumes')
+                        .getPublicUrl(fileName);
+                    
+                    resumePublicUrl = urlData?.publicUrl || `https://fksiepwvbygkcojvjyzy.supabase.co/storage/v1/object/public/resumes/${fileName}`;
                 } else if (selectedFile) {
                     resumePublicUrl = URL.createObjectURL(selectedFile);
                 }
@@ -1108,7 +1104,7 @@
                                 <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
                             </select>
 
-                            <a href="${escapeHtml(app.resume_link)}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
+                            <a href="${escapeHtml(app.resume_link)}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1">
                                 <i class="fa-solid fa-file-pdf"></i> Resume
                             </a>
                         </div>
@@ -1165,7 +1161,7 @@
                         <h4 class="font-bold text-gray-900">${escapeHtml(app.name)}</h4>
                         <p class="text-xs text-gray-500">${escapeHtml(app.email)} • ${escapeHtml(app.phone || 'No phone')}</p>
                     </div>
-                    <a href="${escapeHtml(app.resume_link)}" target="_blank" class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-100 transition">
+                    <a href="${escapeHtml(app.resume_link)}" target="_blank" rel="noopener noreferrer" class="bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-100 transition">
                         View Resume File
                     </a>
                 </div>
