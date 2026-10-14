@@ -58,13 +58,11 @@
             <p class="text-blue-100 text-xs sm:text-sm mb-4 sm:mb-6">Global opportunities across all industries, locations, and experience levels</p>
 
             <div class="bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-2 text-gray-800">
-                <!-- Keyword Input -->
                 <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2 text-sm"></i>
                     <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Nurse, Engineer..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
-                <!-- Industry/Category Filter -->
                 <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-layer-group text-gray-400 mr-2 text-sm"></i>
                     <select id="search-category" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
@@ -78,13 +76,11 @@
                     </select>
                 </div>
                 
-                <!-- Location Input -->
                 <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-location-dot text-gray-400 mr-2 text-sm"></i>
                     <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, Country or Remote" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
-                <!-- Search Button -->
                 <div class="md:col-span-3 flex items-center">
                     <button onclick="filterJobs()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-2.5 px-4 rounded-xl text-xs sm:text-sm transition shadow flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-magnifying-glass"></i> Search All Jobs
@@ -102,11 +98,16 @@
             <div class="bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
                 <div>
                     <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Owner & ATS Analytics Dashboard</h3>
-                    <p class="text-xs text-gray-500">Real-time overview of pool metrics and database entries</p>
+                    <p class="text-xs text-gray-500">Real-time overview of pool metrics and applicant submissions</p>
                 </div>
-                <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-plus"></i> Post Custom Job
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleApplicantsView()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-users"></i> <span id="view-applicants-btn-text">View Applicants List</span>
+                    </button>
+                    <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-plus"></i> Post Custom Job
+                    </button>
+                </div>
             </div>
 
             <!-- Stats Grid -->
@@ -126,11 +127,37 @@
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-4">
-                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl text-lg font-bold"><i class="fa-solid fa-users"></i></div>
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl text-lg font-bold"><i class="fa-solid fa-user-check"></i></div>
                     <div>
-                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Total Candidates Pool</p>
-                        <h4 id="stat-candidates" class="text-xl font-black text-gray-900">Active</h4>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Applications Received</p>
+                        <h4 id="stat-applicants-count" class="text-xl font-black text-emerald-600">0</h4>
                     </div>
+                </div>
+            </div>
+
+            <!-- Applicants Table Container -->
+            <div id="applicants-section" class="hidden bg-white p-5 rounded-2xl border shadow-sm space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h4 class="font-bold text-gray-900 text-sm"><i class="fa-solid fa-id-card text-emerald-600 mr-2"></i>Candidate Applications (With Resume Links)</h4>
+                    <button onclick="fetchApplicantsFromSupabase()" class="text-xs font-bold text-blue-600 hover:text-blue-800"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-gray-600">
+                        <thead class="bg-gray-50 text-gray-800 uppercase font-bold border-b">
+                            <tr>
+                                <th class="p-3">Candidate Name</th>
+                                <th class="p-3">Applied Position</th>
+                                <th class="p-3">Email Address</th>
+                                <th class="p-3">Phone</th>
+                                <th class="p-3 text-center">Resume CV</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicants-table-body" class="divide-y">
+                            <tr>
+                                <td colspan="5" class="p-4 text-center text-gray-400">Loading applicants...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -166,6 +193,11 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number *</label>
                     <input type="tel" id="applicant-phone" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="+91 9876543210">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Resume Link (Google Drive / PDF URL) *</label>
+                    <input type="url" id="applicant-resume" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="https://drive.google.com/your-resume-link">
+                    <p class="text-[10px] text-gray-400 mt-1">Provide a public Google Drive, Dropbox, or LinkedIn PDF link</p>
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onclick="closeApplyModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600">Cancel</button>
@@ -264,6 +296,7 @@
         let currentRole = 'candidate';
         let customJobsCount = 0;
         let externalJobsCount = 0;
+        let localApplicants = [];
 
         const universalSeedJobs = [
             {
@@ -301,6 +334,7 @@
 
         async function initApp() {
             await fetchAllJobs();
+            await fetchApplicantsFromSupabase();
             renderUI();
             updateAnalyticsStats();
         }
@@ -354,9 +388,56 @@
             jobsList = [...localJobs, ...externalJobs];
         }
 
+        async function fetchApplicantsFromSupabase() {
+            if (supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('applicants').select('*').order('created_at', { ascending: false });
+                    if (data) localApplicants = data;
+                } catch (err) { console.log("Applicants fetch error:", err); }
+            }
+            renderApplicantsTable();
+            updateAnalyticsStats();
+        }
+
+        function renderApplicantsTable() {
+            const tableBody = document.getElementById("applicants-table-body");
+            if (!tableBody) return;
+
+            if (localApplicants.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 font-medium">No candidate applications recorded yet</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = localApplicants.map(app => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-3 font-bold text-gray-900">${app.full_name || 'N/A'}</td>
+                    <td class="p-3 text-blue-700 font-semibold">${app.job_title || 'N/A'}</td>
+                    <td class="p-3 text-gray-600">${app.email || 'N/A'}</td>
+                    <td class="p-3 text-gray-600">${app.phone || 'N/A'}</td>
+                    <td class="p-3 text-center">
+                        ${app.resume_url ? `
+                            <a href="${app.resume_url}" target="_blank" class="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg font-bold hover:bg-blue-100 transition inline-flex items-center gap-1">
+                                <i class="fa-solid fa-file-pdf"></i> View Resume
+                            </a>
+                        ` : '<span class="text-gray-400">Not Provided</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleApplicantsView() {
+            const sec = document.getElementById("applicants-section");
+            const btnText = document.getElementById("view-applicants-btn-text");
+            const isHidden = sec.classList.contains("hidden");
+            
+            sec.classList.toggle("hidden", !isHidden);
+            btnText.textContent = isHidden ? "Hide Applicants List" : "View Applicants List";
+        }
+
         function updateAnalyticsStats() {
             document.getElementById("stat-live-jobs").textContent = externalJobsCount;
             document.getElementById("stat-custom-jobs").textContent = customJobsCount;
+            document.getElementById("stat-applicants-count").textContent = localApplicants.length;
         }
 
         function setRole(role) {
@@ -456,10 +537,10 @@
                 job_title: document.getElementById("apply-job-title").textContent,
                 full_name: document.getElementById("applicant-name").value,
                 email: document.getElementById("applicant-email").value,
-                phone: document.getElementById("applicant-phone").value
+                phone: document.getElementById("applicant-phone").value,
+                resume_url: document.getElementById("applicant-resume").value
             };
 
-            // Save candidate application to Supabase database if connected
             if (supabaseClient) {
                 try {
                     await supabaseClient.from('applicants').insert([applicantData]);
@@ -468,10 +549,14 @@
                 }
             }
 
+            localApplicants.unshift(applicantData);
+            renderApplicantsTable();
+            updateAnalyticsStats();
+
             setTimeout(() => {
                 btn.textContent = "Submit Application"; btn.disabled = false;
                 closeApplyModal();
-                showToast("Application submitted & logged to database!", "success");
+                showToast("Application & Resume URL saved successfully!", "success");
             }, 1000);
         }
 
