@@ -70,7 +70,7 @@
                 <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Login</button>
             </form>
             <p id="authSwitchText" class="text-xs text-center text-gray-500 mt-4">
-                Don't have an account? <span onclick="toggleAuthMode()" class="text-blue-600 font-semibold cursor-pointer hover:underline">Sign Up</span>
+                Don't have an account? <span onclick="openAuthModal('signup')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Sign Up</span>
             </p>
         </div>
     </div>
@@ -142,22 +142,24 @@
 
             if (currentUser) {
                 authArea.innerHTML = `
-                    <span class="text-xs text-gray-600 hidden md:inline">${currentUser.email} (${userRole.toUpperCase()})</span>
+                    <span class="text-xs text-gray-600 hidden md:inline font-medium">${currentUser.email} (${userRole.toUpperCase()})</span>
                     <button onclick="handleLogout()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Logout</button>
                 `;
                 
                 if (userRole === 'employer') {
-                    postBtnContainer.innerHTML = `<button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Post a Job</button>`;
+                    postBtnContainer.innerHTML = `<button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">+ Post a Job</button>`;
                 } else {
-                    postBtnContainer.innerHTML = `<span class="text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg">Job Seeker Account</span>`;
+                    postBtnContainer.innerHTML = `<span class="text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg font-medium">Job Seeker Mode</span>`;
                 }
             } else {
                 authArea.innerHTML = `
                     <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
                     <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
                 `;
-                postBtnContainer.innerHTML = `<span class="text-xs text-gray-400">Login to post jobs</span>`;
+                postBtnContainer.innerHTML = `<span class="text-xs text-gray-400">Login as Employer to post/manage jobs</span>`;
             }
+            // Re-render job list so delete buttons appear/disappear according to role
+            if (allJobsCache.length > 0) displayJobs(allJobsCache);
         }
 
         async function fetchJobs() {
@@ -182,8 +184,9 @@
             }
 
             listDiv.innerHTML = jobs.map(job => {
-                const deleteBtnHtml = (userRole === 'employer') ? 
-                    `<button onclick="deleteJob('${job.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition">Delete Job</button>` : '';
+                // Show delete button ONLY if user is logged in as an employer
+                const deleteBtnHtml = (currentUser && userRole === 'employer') ? 
+                    `<button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-red-200">🗑️ Delete Job</button>` : '';
 
                 return `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
@@ -195,7 +198,7 @@
                         <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
                     </div>
                     <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
-                    <div class="mt-4 flex gap-2 items-center justify-between">
+                    <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100">
                         <button onclick="openApplyModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
                         ${deleteBtnHtml}
                     </div>
