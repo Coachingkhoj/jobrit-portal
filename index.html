@@ -3,286 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobrit - Global Job Portal</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Jobrit - Free Job Portal</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase Stable CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-100 font-sans">
 
-    <!-- Header / Navbar -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-8">
-                <span class="text-2xl font-extrabold text-blue-600 tracking-tight cursor-pointer" onclick="fetchJobs()">Jobrit</span>
-            </div>
-            <div class="flex items-center space-x-4">
-                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium hidden sm:inline" onclick="fetchJobs()">Find Jobs</a>
-                <button onclick="openPostModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition shadow-sm">
-                    Post a Job (100% Free)
-                </button>
-            </div>
-        </div>
-    </header>
+    <!-- Navbar -->
+    <nav class="bg-white shadow p-4 flex justify-between items-center max-w-4xl mx-auto rounded-b-lg">
+        <h1 class="text-xl font-bold text-blue-600">Jobrit</h1>
+        <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700">Post a Job</button>
+    </nav>
 
-    <!-- Search Bar Section -->
-    <section class="bg-white border-b border-gray-200 py-4 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center bg-white border-2 border-blue-600 rounded-lg p-1.5 shadow-inner">
-                <div class="flex items-center w-full px-3 py-2 border-b md:border-b-0 md:border-r border-gray-200">
-                    <span class="text-xs font-bold text-gray-500 uppercase mr-2">What</span>
-                    <input type="text" id="searchWhat" placeholder="Job title, keywords, or company" class="w-full focus:outline-none text-sm text-gray-700">
-                </div>
-                <div class="flex items-center w-full px-3 py-2">
-                    <span class="text-xs font-bold text-gray-500 uppercase mr-2">Where</span>
-                    <input type="text" id="searchWhere" placeholder="City, Country, or Worldwide / Remote" class="w-full focus:outline-none text-sm text-gray-700">
-                </div>
-                <button onclick="searchJobs()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-2.5 rounded-md transition mt-2 md:mt-0">
-                    Find jobs
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Content Layout -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-            
-            <!-- Left Panel: Job Feed List -->
-            <div class="md:col-span-5 space-y-4">
-                <h2 class="text-lg font-bold text-gray-800">Jobs Feed</h2>
-                <div id="jobListContainer" class="space-y-3">
-                    <p class="text-gray-500 text-sm">Loading jobs from database...</p>
-                </div>
-            </div>
-
-            <!-- Right Panel: Detailed Job View -->
-            <div class="md:col-span-7 bg-white border border-gray-200 rounded-lg p-6 shadow-sm sticky top-24 h-[calc(100vh-120px)] overflow-y-auto">
-                <div id="jobDetailContainer">
-                    <div class="flex flex-col items-center justify-center h-full text-center text-gray-400 py-20">
-                        <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.035-.84 1.875-1.875 1.875H5.625A1.875 1.875 0 013.75 18.4v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.75c0-1.035-.84-1.875-1.875-1.875H5.625A1.875 1.875 0 003.75 8.75v3.739c0 .644.273 1.262.75 1.661m16.5 0h-16.5"></path></svg>
-                        <p class="text-lg font-medium">Select a job from the list to view full description</p>
-                    </div>
-                </div>
-            </div>
-
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto p-4 mt-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-700">Latest Job Listings</h2>
+        <div id="jobList" class="space-y-3">
+            <p class="text-gray-500">Loading jobs...</p>
         </div>
     </main>
 
     <!-- Post Job Modal -->
-    <div id="postJobModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-lg w-full p-6 shadow-xl relative">
-            <button onclick="closePostModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Post a New Job</h3>
-            <form id="postJobForm" onsubmit="handlePostJob(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Job Title</label>
-                    <input type="text" id="jobTitle" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. IT Support Specialist">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Company Name</label>
-                    <input type="text" id="jobCompany" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. ACL Digital">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Location (Worldwide / Any City / Remote)</label>
-                    <input type="text" id="jobLocation" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Remote, Worldwide, Delhi, etc.">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Job Type</label>
-                    <select id="jobType" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="Full-Time">Full-Time</option>
-                        <option value="Part-Time">Part-Time</option>
-                        <option value="Contract">Contract</option>
-                        <option value="Worldwide / Remote">Worldwide / Remote</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Job Description</label>
-                    <textarea id="jobDescription" rows="4" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe duties, requirements, and responsibilities..."></textarea>
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closePostModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">Submit Job</button>
-                </div>
+    <div id="jobModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-lg max-w-md w-full shadow-lg relative">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 font-bold text-xl">&times;</button>
+            <h3 class="text-lg font-bold mb-4">Post a New Job</h3>
+            <form id="jobForm" onsubmit="postJob(event)" class="space-y-3">
+                <input type="text" id="title" placeholder="Job Title (e.g. Python Developer)" required class="w-full border p-2 rounded text-sm">
+                <input type="text" id="company" placeholder="Company Name" required class="w-full border p-2 rounded text-sm">
+                <input type="text" id="location" placeholder="Location (e.g. Remote / Delhi)" required class="w-full border p-2 rounded text-sm">
+                <select id="type" class="w-full border p-2 rounded text-sm">
+                    <option value="Full-Time">Full-Time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Remote">Remote</option>
+                </select>
+                <textarea id="description" placeholder="Job Description..." rows="3" required class="w-full border p-2 rounded text-sm"></textarea>
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700">Submit</button>
             </form>
         </div>
     </div>
 
-    <!-- Application Modal -->
-    <div id="applyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-xl relative">
-            <button onclick="closeApplyModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Apply for Job</h3>
-            <p id="applyJobTitleSubtitle" class="text-sm text-blue-600 font-medium mb-4"></p>
-            <form onsubmit="handleApplySubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Full Name</label>
-                    <input type="text" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your Name">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Email Address</label>
-                    <input type="email" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="name@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Upload Resume (PDF/Doc)</label>
-                    <input type="file" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeApplyModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">Send Application</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- JavaScript Logic -->
+    <!-- Script Logic -->
     <script>
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
         
-        // Initialize client properly
         const _client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let allJobs = [];
-        let selectedJobId = null;
-
         async function fetchJobs() {
-            const container = document.getElementById('jobListContainer');
-            container.innerHTML = '<p class="text-gray-500 text-sm p-4">Loading jobs...</p>';
+            const listDiv = document.getElementById('jobList');
+            const { data, error } = await _client.from('jobs').select('*').order('created_at', { ascending: false });
 
-            try {
-                const { data, error } = await _client
-                    .from('jobs')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                allJobs = data || [];
-                renderJobList(allJobs);
-                if (allJobs.length > 0) {
-                    selectJob(allJobs[0].id);
-                } else {
-                    document.getElementById('jobDetailContainer').innerHTML = '<p class="text-center text-gray-400 py-20">No jobs posted yet. Click "Post a Job" to add one!</p>';
-                }
-            } catch (err) {
-                console.error('Error fetching jobs:', err);
-                container.innerHTML = '<p class="text-red-500 text-sm p-4">Error loading jobs from database.</p>';
-            }
-        }
-
-        function renderJobList(jobs) {
-            const container = document.getElementById('jobListContainer');
-            if (jobs.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-sm p-4">No matching jobs found.</p>';
+            if (error) {
+                listDiv.innerHTML = `<p class="text-red-500">Error loading jobs: ${error.message}</p>`;
                 return;
             }
 
-            container.innerHTML = jobs.map(job => `
-                <div onclick="selectJob(${job.id})" id="job-card-${job.id}" class="p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition shadow-sm">
-                    <h3 class="font-bold text-blue-600 text-base">${job.title}</h3>
-                    <p class="text-sm text-gray-700 font-medium">${job.company} • ${job.location}</p>
-                    <span class="inline-block mt-2 px-2.5 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded">${job.type}</span>
+            if (!data || data.length === 0) {
+                listDiv.innerHTML = `<p class="text-gray-500">No jobs posted yet. Be the first to post!</p>`;
+                return;
+            }
+
+            listDiv.innerHTML = data.map(job => `
+                <div class="bg-white p-4 rounded shadow border border-gray-200">
+                    <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
+                    <p class="text-sm text-gray-700 font-medium">${job.company} • ${job.location} <span class="ml-2 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">${job.type}</span></p>
+                    <p class="text-sm text-gray-600 mt-2">${job.description}</p>
                 </div>
             `).join('');
         }
 
-        function selectJob(id) {
-            selectedJobId = id;
-            const job = allJobs.find(j => j.id === id);
-            if (!job) return;
+        function openModal() { document.getElementById('jobModal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('jobModal').classList.add('hidden'); }
 
-            document.querySelectorAll('[id^="job-card-"]').forEach(card => card.classList.remove('border-blue-600', 'ring-1', 'ring-blue-600'));
-            const activeCard = document.getElementById(`job-card-${id}`);
-            if (activeCard) activeCard.classList.add('border-blue-600', 'ring-1', 'ring-blue-600');
-
-            const detailContainer = document.getElementById('jobDetailContainer');
-            detailContainer.innerHTML = `
-                <h1 class="text-2xl font-bold text-gray-900 mb-1">${job.title}</h1>
-                <p class="text-sm text-gray-600 font-medium mb-4">${job.company} • ${job.location}</p>
-                <button onclick="openApplyModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition shadow-sm mb-6">
-                    Easy Apply
-                </button>
-                <hr class="border-gray-200 mb-6">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Full Job Description</h3>
-                    <p class="text-gray-700 text-sm whitespace-pre-line leading-relaxed">${job.description}</p>
-                </div>
-            `;
-        }
-
-        function searchJobs() {
-            const what = document.getElementById('searchWhat').value.toLowerCase();
-            const where = document.getElementById('searchWhere').value.toLowerCase();
-
-            const filtered = allJobs.filter(job => {
-                const matchWhat = job.title.toLowerCase().includes(what) || job.company.toLowerCase().includes(what) || job.description.toLowerCase().includes(what);
-                const matchWhere = job.location.toLowerCase().includes(where);
-                return matchWhat && matchWhere;
-            });
-
-            renderJobList(filtered);
-        }
-
-        function openPostModal() {
-            document.getElementById('postJobModal').classList.remove('hidden');
-        }
-
-        function closePostModal() {
-            document.getElementById('postJobModal').classList.add('hidden');
-        }
-
-        async function handlePostJob(event) {
-            event.preventDefault();
+        async function postJob(e) {
+            e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = 'Posting...';
 
             const newJob = {
-                title: document.getElementById('jobTitle').value,
-                company: document.getElementById('jobCompany').value,
-                location: document.getElementById('jobLocation').value,
-                type: document.getElementById('jobType').value,
-                description: document.getElementById('jobDescription').value
+                title: document.getElementById('title').value,
+                company: document.getElementById('company').value,
+                location: document.getElementById('location').value,
+                type: document.getElementById('type').value,
+                description: document.getElementById('description').value
             };
 
-            try {
-                const { data, error } = await _client.from('jobs').insert([newJob]).select();
-                if (error) throw error;
+            const { error } = await _client.from('jobs').insert([newJob]);
 
-                alert('🎉 Job posted successfully to live database!');
-                closePostModal();
-                document.getElementById('postJobForm').reset();
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('Job posted successfully!');
+                closeModal();
+                document.getElementById('jobForm').reset();
                 fetchJobs();
-            } catch (err) {
-                alert('Error posting job: ' + err.message);
-                console.error(err);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Submit Job';
             }
+
+            btn.disabled = false;
+            btn.innerText = 'Submit';
         }
 
-        function openApplyModal() {
-            const job = allJobs.find(j => j.id === selectedJobId);
-            if (job) {
-                document.getElementById('applyJobTitleSubtitle').innerText = `${job.title} at ${job.company}`;
-            }
-            document.getElementById('applyModal').classList.remove('hidden');
-        }
-
-        function closeApplyModal() {
-            document.getElementById('applyModal').classList.add('hidden');
-        }
-
-        function handleApplySubmit(event) {
-            event.preventDefault();
-            alert('Application submitted successfully!');
-            closeApplyModal();
-        }
-
-        window.onload = fetchJobs;
+        // Load jobs when page opens
+        fetchJobs();
     </script>
 </body>
 </html>
