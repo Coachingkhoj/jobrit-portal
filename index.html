@@ -164,7 +164,6 @@
             }
 
             listDiv.innerHTML = jobs.map(job => {
-                // Har job card par Delete aur Pause/Hold ka button ab turant dikega
                 return `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
                     <div class="flex justify-between items-start">
@@ -194,7 +193,8 @@
         async function deleteJob(jobId) {
             if (!confirm('Are you sure you want to delete this job posting?')) return;
 
-            const { error } = await client.from('jobs').delete().eq('id', jobId);
+            // Yahan Number(jobId) lagane se string ID properly bigint se match ho jayegi
+            const { error } = await client.from('jobs').delete().eq('id', Number(jobId));
 
             if (error) {
                 alert('Error deleting job: ' + error.message);
