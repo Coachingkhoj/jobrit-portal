@@ -50,7 +50,8 @@
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
         
-        const _client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Using var to avoid initialization timing issues
+        var _client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchJobs() {
             const listDiv = document.getElementById('jobList');
@@ -97,7 +98,7 @@
             if (error) {
                 alert('Error: ' + error.message);
             } else {
-                alert('Job posted successfully!');
+                alert('🎉 Job posted successfully!');
                 closeModal();
                 document.getElementById('jobForm').reset();
                 fetchJobs();
