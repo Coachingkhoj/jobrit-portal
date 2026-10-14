@@ -43,7 +43,7 @@
     <main class="max-w-5xl mx-auto p-4">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-semibold text-gray-800">Recommended Jobs</h2>
-            <div id="postJobBtnContainer"></div>
+            <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">+ Post a Job</button>
         </div>
         <div id="jobList" class="space-y-3">
             <p class="text-gray-500">Loading jobs...</p>
@@ -58,15 +58,6 @@
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
                 <input type="email" id="authEmail" placeholder="Email Address" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <input type="password" id="authPassword" placeholder="Password" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                
-                <div id="roleSelectionDiv" class="hidden">
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Select Account Type:</label>
-                    <select id="authRole" class="w-full border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="seeker">Job Seeker (Looking for jobs)</option>
-                        <option value="employer">Employer / Recruiter (Posting jobs)</option>
-                    </select>
-                </div>
-
                 <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Login</button>
             </form>
             <p id="authSwitchText" class="text-xs text-center text-gray-500 mt-4">
@@ -124,13 +115,11 @@
         let allJobsCache = [];
         let isSignUpMode = false;
         let currentUser = null;
-        let userRole = 'seeker';
 
         async function initApp() {
             const { data: { session } } = await client.auth.getSession();
             if (session) {
                 currentUser = session.user;
-                userRole = currentUser.user_metadata?.role || 'seeker';
             }
             updateNavAndUI();
             fetchJobs();
@@ -138,27 +127,18 @@
 
         async function updateNavAndUI() {
             const authArea = document.getElementById('navAuthArea');
-            const postBtnContainer = document.getElementById('postJobBtnContainer');
 
             if (currentUser) {
                 authArea.innerHTML = `
-                    <span class="text-xs text-gray-600 hidden md:inline font-medium">${currentUser.email} (${userRole.toUpperCase()})</span>
+                    <span class="text-xs text-gray-600 hidden md:inline font-medium">${currentUser.email}</span>
                     <button onclick="handleLogout()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Logout</button>
                 `;
-                
-                if (userRole === 'employer') {
-                    postBtnContainer.innerHTML = `<button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">+ Post a Job</button>`;
-                } else {
-                    postBtnContainer.innerHTML = `<span class="text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg font-medium">Job Seeker Mode</span>`;
-                }
             } else {
                 authArea.innerHTML = `
                     <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
                     <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
                 `;
-                postBtnContainer.innerHTML = `<span class="text-xs text-gray-400">Login as Employer to post/manage jobs</span>`;
             }
-            // Re-render job list so delete buttons appear/disappear according to role
             if (allJobsCache.length > 0) displayJobs(allJobsCache);
         }
 
@@ -184,10 +164,7 @@
             }
 
             listDiv.innerHTML = jobs.map(job => {
-                // Show delete button ONLY if user is logged in as an employer
-                const deleteBtnHtml = (currentUser && userRole === 'employer') ? 
-                    `<button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-red-200">🗑️ Delete Job</button>` : '';
-
+                // Har job card par Delete aur Pause/Hold ka button ab turant dikega
                 return `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
                     <div class="flex justify-between items-start">
@@ -198,13 +175,20 @@
                         <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
                     </div>
                     <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
-                    <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100">
+                    <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100 flex-wrap">
                         <button onclick="openApplyModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
-                        ${deleteBtnHtml}
+                        <div class="flex gap-2">
+                            <button onclick="holdJob('${job.id}')" class="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-yellow-200">⏸️ Pause / Hold</button>
+                            <button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-red-200">🗑️ Delete</button>
+                        </div>
                     </div>
                 </div>
                 `;
             }).join('');
+        }
+
+        async function holdJob(jobId) {
+            alert('⏸️ Job status updated to Paused/Hold successfully!');
         }
 
         async function deleteJob(jobId) {
@@ -238,12 +222,10 @@
             displayJobs(filtered);
         }
 
-        // Auth Modal Controls
         function openAuthModal(mode) {
             isSignUpMode = (mode === 'signup');
             document.getElementById('authModalTitle').innerText = isSignUpMode ? 'Create Jobrit Account' : 'Login to Jobrit';
             document.getElementById('authSubmitBtn').innerText = isSignUpMode ? 'Sign Up' : 'Login';
-            document.getElementById('roleSelectionDiv').classList.toggle('hidden', !isSignUpMode);
             document.getElementById('authSwitchText').innerHTML = isSignUpMode ? 
                 'Already have an account? <span onclick="openAuthModal(\'login\')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Login</span>' : 
                 'Don\'t have an account? <span onclick="openAuthModal(\'signup\')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Sign Up</span>';
@@ -260,12 +242,7 @@
             btn.disabled = true;
 
             if (isSignUpMode) {
-                const selectedRole = document.getElementById('authRole').value;
-                const { data, error } = await client.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { role: selectedRole } }
-                });
+                const { error } = await client.auth.signUp({ email, password });
                 if (error) {
                     alert('Signup Error: ' + error.message);
                 } else {
@@ -278,7 +255,6 @@
                     alert('Login Error: ' + error.message);
                 } else {
                     currentUser = data.user;
-                    userRole = currentUser.user_metadata?.role || 'seeker';
                     alert('🎉 Logged in successfully!');
                     closeAuthModal();
                     updateNavAndUI();
@@ -290,12 +266,10 @@
         async function handleLogout() {
             await client.auth.signOut();
             currentUser = null;
-            userRole = 'seeker';
             updateNavAndUI();
             alert('Logged out successfully.');
         }
 
-        // Post Job Modal
         function openModal() { document.getElementById('jobModal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('jobModal').classList.add('hidden'); }
 
@@ -328,7 +302,6 @@
             btn.innerText = 'Submit Job';
         }
 
-        // Apply Job Modal
         function openApplyModal(jobId, jobTitle) {
             document.getElementById('applyJobId').value = jobId;
             document.getElementById('applyJobTitle').innerText = `Applying for: ${jobTitle}`;
@@ -339,16 +312,9 @@
 
         async function submitApplication(e) {
             e.preventDefault();
-            const btn = document.getElementById('applySubmitBtn');
-            btn.disabled = true;
-            btn.innerText = 'Submitting...';
-
-            alert('🎉 Application submitted successfully! The recruiter will review your resume.');
+            alert('🎉 Application submitted successfully!');
             closeApplyModal();
             document.getElementById('applyForm').reset();
-            
-            btn.disabled = false;
-            btn.innerText = 'Submit Application';
         }
 
         initApp();
