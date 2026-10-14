@@ -136,11 +136,13 @@
         </div>
     </div>
 
-    <!-- JavaScript Logic & Supabase Integration -->
+    <!-- JavaScript Logic & Supabase Initialization -->
     <script>
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Globally initialized client
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let allJobs = [];
         let selectedJobId = null;
@@ -150,7 +152,7 @@
             container.innerHTML = '<p class="text-gray-500 text-sm p-4">Loading jobs...</p>';
 
             try {
-                const { data, error } = await _supabase
+                const { data, error } = await supabaseClient
                     .from('jobs')
                     .select('*')
                     .order('created_at', { ascending: false });
@@ -246,7 +248,7 @@
             };
 
             try {
-                const { data, error } = await _supabase.from('jobs').insert([newJob]).select();
+                const { data, error } = await supabaseClient.from('jobs').insert([newJob]).select();
                 if (error) throw error;
 
                 alert('🎉 Job posted successfully to live database!');
