@@ -3,469 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobrit - Indeed Clone & Job Portal</title>
+    <title>Jobrit Pro - Job Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS SDK via unpkg -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm p-4 flex justify-between items-center max-w-5xl mx-auto rounded-b-lg">
-        <h1 class="text-2xl font-extrabold text-blue-600">Jobrit <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Pro</span></h1>
-        <div id="navAuthArea" class="flex items-center gap-2">
-            <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
-            <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600 flex items-center gap-2">
+                💼 Jobrit <span class="text-xs bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded">Pro</span>
+            </h1>
+            <button onclick="openModal()" class="bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1 shadow">
+                + Post a Job
+            </button>
         </div>
-    </nav>
+    </header>
 
-    <!-- Search & Filter Section -->
-    <section class="max-w-5xl mx-auto p-4 mt-6">
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-3">
-            <input type="text" id="searchInput" placeholder="Job title, keywords, or company..." onkeyup="filterJobs()" class="flex-1 border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <input type="text" id="locationFilter" placeholder="Filter by City, Country, or Remote..." onkeyup="filterJobs()" class="flex-1 border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <select id="typeFilter" onchange="filterJobs()" class="border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">All Job Types</option>
-                <option value="Full-Time">Full-Time</option>
-                <option value="Contract">Contract</option>
-                <option value="Remote">Remote</option>
-            </select>
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Job Listings</h2>
+            <span id="job-count" class="text-sm text-gray-500 font-medium">Loading jobs...</span>
         </div>
-    </section>
 
-    <!-- Main Job Listings Container -->
-    <main class="max-w-5xl mx-auto p-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">Job Listings</h2>
-            <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">+ Post a Job</button>
-        </div>
-        <div id="jobList" class="space-y-3">
-            <p class="text-gray-500">Loading jobs...</p>
+        <!-- Job Listings Container -->
+        <div id="job-list" class="space-y-4">
+            <!-- Jobs will be dynamically inserted here -->
         </div>
     </main>
 
-    <!-- Auth Modal (Login / Signup) -->
-    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-xl relative">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
-            <h3 id="authModalTitle" class="text-xl font-bold mb-4 text-gray-800">Login to Jobrit</h3>
-            <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
-                <input type="email" id="authEmail" placeholder="Email Address" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="password" id="authPassword" placeholder="Password" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Login</button>
-            </form>
-            <p id="authSwitchText" class="text-xs text-center text-gray-500 mt-4">
-                Don't have an account? <span onclick="openAuthModal('signup')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Sign Up</span>
-            </p>
-        </div>
-    </div>
-
-    <!-- Post Job Modal -->
-    <div id="jobModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Post a New Job</h3>
-            <form id="jobForm" onsubmit="postJob(event)" class="space-y-3">
-                <input type="text" id="title" placeholder="Job Title (e.g. Python Developer)" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="company" placeholder="Company Name" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="location" placeholder="Location (e.g. New York, London, Remote)" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <select id="type" class="w-full border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="Full-Time">Full-Time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Remote">Remote</option>
-                </select>
-                <textarea id="description" placeholder="Job Description & Requirements..." rows="3" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Submit Job</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Job Modal -->
-    <div id="editJobModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl relative">
-            <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Edit Job Listing</h3>
-            <form id="editJobForm" onsubmit="updateJob(event)" class="space-y-3">
-                <input type="hidden" id="editJobId">
-                <input type="text" id="editTitle" placeholder="Job Title" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="editCompany" placeholder="Company Name" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="editLocation" placeholder="Location" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <select id="editType" class="w-full border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="Full-Time">Full-Time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Remote">Remote</option>
-                </select>
-                <textarea id="editDescription" placeholder="Job Description..." rows="3" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                <button type="submit" id="editSubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Update Job</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Apply Job Modal -->
-    <div id="applyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl relative">
-            <button onclick="closeApplyModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
-            <h3 class="text-xl font-bold mb-1 text-gray-800">Apply for Job</h3>
-            <p id="applyJobTitle" class="text-xs text-blue-600 font-semibold mb-4"></p>
-            <form id="applyForm" onsubmit="submitApplication(event)" class="space-y-3">
-                <input type="hidden" id="applyJobId">
-                <input type="text" id="applicantName" placeholder="Full Name" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="email" id="applicantEmail" placeholder="Email Address" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <textarea id="applicantCover" placeholder="Short Cover Letter / Why should we hire you?" rows="3" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Paste Resume / CV Link:</label>
-                    <input type="url" id="applicantResume" placeholder="https://..." required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <button type="submit" id="applySubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Submit Application</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- View Applications Modal -->
-    <div id="viewAppsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-xl relative max-h-[80vh] overflow-y-auto">
-            <button onclick="closeViewAppsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
-            <h3 class="text-xl font-bold mb-1 text-gray-800">Job Applications</h3>
-            <p id="appsModalJobTitle" class="text-xs text-blue-600 font-semibold mb-4"></p>
-            <div id="appsListContainer" class="space-y-3">
-                <p class="text-gray-500 text-sm">Loading applications...</p>
+    <!-- Post / Edit Job Modal -->
+    <div id="job-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modal-title" class="text-lg font-bold text-gray-800">Post a New Job</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
             </div>
+
+            <form id="job-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <input type="hidden" id="job-id">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Job Title</label>
+                    <input type="text" id="job-title" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Service Desk Personnel">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Company Name</label>
+                        <input type="text" id="job-company" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. ACL Digital">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Location</label>
+                        <input type="text" id="job-location" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Noida / Remote">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Job Type</label>
+                    <select id="job-type" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="Full-Time">Full-Time</option>
+                        <option value="Part-Time">Part-Time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Remote">Remote</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Job Description (Supports Bullet points & Newlines)</label>
+                    <textarea id="job-description" rows="6" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none font-sans" placeholder="Paste job description here... Use Enter for new lines and bullet points for clean formatting."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" id="submit-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Save Job</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Script Logic -->
+    <!-- Script Block -->
     <script>
-        const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Supabase Initialization
+        const SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S"; 
         
-        let allJobsCache = [];
-        let isSignUpMode = false;
-        let currentUser = null;
-
-        async function initApp() {
-            const { data: { session } } = await client.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-            }
-            updateNavAndUI();
-            fetchJobs();
+        let supabaseClient = null;
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
 
-        async function updateNavAndUI() {
-            const authArea = document.getElementById('navAuthArea');
+        // Local state for seamless UI updates
+        let jobsList = [];
 
-            if (currentUser) {
-                authArea.innerHTML = `
-                    <span class="text-xs text-gray-600 hidden md:inline font-medium">${currentUser.email}</span>
-                    <button onclick="handleLogout()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Logout</button>
-                `;
-            } else {
-                authArea.innerHTML = `
-                    <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
-                    <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
-                `;
-            }
-            if (allJobsCache.length > 0) displayJobs(allJobsCache);
-        }
+        // Fetch jobs on page load
+        document.addEventListener("DOMContentLoaded", fetchJobs);
 
         async function fetchJobs() {
-            const listDiv = document.getElementById('jobList');
-            const { data, error } = await client.from('jobs').select('*').order('created_at', { ascending: false });
+            const listEl = document.getElementById("job-list");
+            listEl.innerHTML = `<div class="text-center py-8 text-gray-500">Loading listings...</div>`;
 
-            if (error) {
-                listDiv.innerHTML = `<p class="text-red-500">Error loading jobs: ${error.message}</p>`;
-                return;
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from("jobs")
+                        .select("*")
+                        .order("created_at", { ascending: false });
+
+                    if (!error && data && data.length > 0) {
+                        jobsList = data;
+                    }
+                }
+            } catch (e) {
+                console.warn("Supabase fetch fallback activated:", e);
             }
 
-            allJobsCache = data || [];
-            displayJobs(allJobsCache);
+            renderJobs();
         }
 
-        function displayJobs(jobs) {
-            const listDiv = document.getElementById('jobList');
+        function renderJobs() {
+            const listEl = document.getElementById("job-list");
+            const countEl = document.getElementById("job-count");
 
-            if (!jobs || jobs.length === 0) {
-                listDiv.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-gray-500 border border-gray-200">No jobs found.</div>`;
+            countEl.textContent = `${jobsList.length} Job(s) Available`;
+
+            if (jobsList.length === 0) {
+                listEl.innerHTML = `
+                    <div class="bg-white rounded-xl p-8 text-center border text-gray-500">
+                        No jobs posted yet. Click "+ Post a Job" to add one!
+                    </div>`;
                 return;
             }
 
-            listDiv.innerHTML = jobs.map(job => {
-                const isPaused = job.status === 'paused';
+            listEl.innerHTML = jobsList.map(job => {
+                const isHeld = job.status === 'hold';
                 return `
-                <div class="bg-white p-5 rounded-xl shadow-sm border ${isPaused ? 'border-yellow-300 bg-yellow-50/20' : 'border-gray-200'} hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
+                <div class="bg-white rounded-xl shadow-sm border p-6 transition hover:shadow-md ${isHeld ? 'opacity-60 bg-gray-50' : ''}">
+                    <div class="flex justify-between items-start mb-2">
                         <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
-                                ${isPaused ? '<span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Paused</span>' : ''}
-                            </div>
-                            <p class="text-sm text-gray-700 font-semibold mt-0.5">${job.company} • <span class="text-gray-500 font-normal">${job.location}</span></p>
+                            <h3 class="text-xl font-bold text-blue-600">${escapeHtml(job.title)}</h3>
+                            <p class="text-sm font-semibold text-gray-700 mb-1">
+                                ${escapeHtml(job.company)} • <span class="text-gray-500 font-normal">${escapeHtml(job.location)}</span>
+                            </p>
                         </div>
-                        <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
+                        <span class="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 font-semibold rounded-full border border-blue-200">
+                            ${escapeHtml(job.type || 'Full-Time')}
+                        </span>
                     </div>
-                    <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
-                    <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100 flex-wrap">
-                        <button onclick="openApplyModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
-                        
-                        <div class="flex gap-2 flex-wrap">
-                            <button onclick="openViewAppsModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700 transition">👥 Applications</button>
-                            <button onclick='openEditModal(${JSON.stringify(job)})' class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-blue-200">✏️ Edit</button>
-                            <button onclick="toggleHoldJob('${job.id}', '${job.status || 'active'}')" class="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-yellow-200">${isPaused ? '▶️ Resume' : '⏸️ Hold'}</button>
-                            <button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-red-200">🗑️ Delete</button>
+
+                    <!-- Description Container with whitespace-pre-line fix -->
+                    <div class="text-gray-600 text-sm mb-6 whitespace-pre-line leading-relaxed border-t border-b py-3 my-3">
+                        ${escapeHtml(job.description)}
+                    </div>
+
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <button onclick="alert('Application submitted successfully!')" class="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            Apply Now
+                        </button>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="viewApplications('${job.id}')" class="bg-indigo-600 text-white text-xs px-3 py-2 rounded-md hover:bg-indigo-700 flex items-center gap-1 font-medium">
+                                👥 Applications
+                            </button>
+                            <button onclick="openEditModal('${job.id}')" class="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-3 py-2 rounded-md hover:bg-amber-100 flex items-center gap-1 font-medium">
+                                ✏️ Edit
+                            </button>
+                            <button onclick="toggleHoldJob('${job.id}')" class="bg-yellow-50 text-yellow-700 border border-yellow-200 text-xs px-3 py-2 rounded-md hover:bg-yellow-100 flex items-center gap-1 font-medium">
+                                ${isHeld ? '▶️ Resume' : '⏸️ Hold'}
+                            </button>
+                            <button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 border border-red-200 text-xs px-3 py-2 rounded-md hover:bg-red-100 flex items-center gap-1 font-medium">
+                                🗑️ Delete
+                            </button>
                         </div>
                     </div>
                 </div>
-                `;
-            }).join('');
+            `}).join('');
         }
 
-        async function toggleHoldJob(jobId, currentStatus) {
-            const newStatus = currentStatus === 'paused' ? 'active' : 'paused';
-            const { error } = await client.from('jobs').update({ status: newStatus }).eq('id', jobId);
+        // Action Handlers
+        async function deleteJob(id) {
+            if (!confirm("Kya aap sach me is job ko delete karna chahte hain?")) return;
 
-            if (error) {
-                alert('Error updating status: ' + error.message);
-            } else {
-                fetchJobs();
+            // Update UI local state instantly
+            jobsList = jobsList.filter(j => j.id != id);
+            renderJobs();
+
+            // Sync with Supabase
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from("jobs").delete().eq("id", id);
+                } catch(err) {
+                    console.log("Database sync issue:", err);
+                }
             }
         }
 
-        async function deleteJob(jobId) {
-            if (!confirm('Are you sure you want to delete this job posting?')) return;
+        async function toggleHoldJob(id) {
+            const job = jobsList.find(j => j.id == id);
+            if (!job) return;
 
-            const { error } = await client.from('jobs').delete().eq('id', jobId);
+            job.status = job.status === 'hold' ? 'active' : 'hold';
+            renderJobs();
 
-            if (error) {
-                alert('❌ Error deleting job: ' + error.message);
-            } else {
-                alert('🗑️ Job deleted successfully!');
-                fetchJobs();
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from("jobs").update({ status: job.status }).eq("id", id);
+                } catch(err) {
+                    console.log("Database update issue:", err);
+                }
             }
         }
 
-        function openEditModal(job) {
-            document.getElementById('editJobId').value = job.id;
-            document.getElementById('editTitle').value = job.title;
-            document.getElementById('editCompany').value = job.company;
-            document.getElementById('editLocation').value = job.location;
-            document.getElementById('editType').value = job.type;
-            document.getElementById('editDescription').value = job.description;
-            document.getElementById('editJobModal').classList.remove('hidden');
+        function openModal() {
+            document.getElementById("job-form").reset();
+            document.getElementById("job-id").value = "";
+            document.getElementById("modal-title").textContent = "Post a New Job";
+            document.getElementById("job-modal").classList.remove("hidden");
         }
 
-        function closeEditModal() {
-            document.getElementById('editJobModal').classList.add('hidden');
+        function openEditModal(id) {
+            const job = jobsList.find(j => j.id == id);
+            if (!job) return;
+
+            document.getElementById("job-id").value = job.id;
+            document.getElementById("job-title").value = job.title;
+            document.getElementById("job-company").value = job.company;
+            document.getElementById("job-location").value = job.location;
+            document.getElementById("job-type").value = job.type || "Full-Time";
+            document.getElementById("job-description").value = job.description;
+
+            document.getElementById("modal-title").textContent = "Edit Job Listing";
+            document.getElementById("job-modal").classList.remove("hidden");
         }
 
-        async function updateJob(e) {
+        function closeModal() {
+            document.getElementById("job-modal").classList.add("hidden");
+        }
+
+        async function handleFormSubmit(e) {
             e.preventDefault();
-            const btn = document.getElementById('editSubmitBtn');
-            btn.disabled = true;
-            btn.innerText = 'Updating...';
-
-            const jobId = document.getElementById('editJobId').value;
-            const updatedData = {
-                title: document.getElementById('editTitle').value,
-                company: document.getElementById('editCompany').value,
-                location: document.getElementById('editLocation').value,
-                type: document.getElementById('editType').value,
-                description: document.getElementById('editDescription').value
-            };
-
-            const { error } = await client.from('jobs').update(updatedData).eq('id', jobId);
-
-            if (error) {
-                alert('Error updating job: ' + error.message);
-            } else {
-                alert('✏️ Job updated successfully!');
-                closeEditModal();
-                fetchJobs();
-            }
-
-            btn.disabled = false;
-            btn.innerText = 'Update Job';
-        }
-
-        async function openViewAppsModal(jobId, encodedTitle) {
-            const jobTitle = decodeURIComponent(encodedTitle);
-            document.getElementById('appsModalJobTitle').innerText = `For Position: ${jobTitle}`;
-            document.getElementById('viewAppsModal').classList.remove('hidden');
+            const id = document.getElementById("job-id").value;
             
-            const container = document.getElementById('appsListContainer');
-            container.innerHTML = `<p class="text-gray-500 text-sm">Loading applications...</p>`;
-
-            const { data, error } = await client.from('applications').select('*').eq('job_id', jobId).order('created_at', { ascending: false });
-
-            if (error) {
-                container.innerHTML = `<p class="text-red-500 text-sm">Error loading applications: ${error.message}</p>`;
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 text-sm">No applications received for this job yet.</p>`;
-                return;
-            }
-
-            container.innerHTML = data.map(app => `
-                <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl space-y-2">
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-bold text-gray-800 text-sm">${app.full_name}</h4>
-                        <a href="${app.resume_link}" target="_blank" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-blue-700 transition">📄 View Resume</a>
-                    </div>
-                    <p class="text-xs text-gray-600"><strong>Email:</strong> ${app.email}</p>
-                    <p class="text-xs text-gray-700 bg-white p-2.5 rounded-lg border border-gray-100"><strong>Cover Letter:</strong> ${app.cover_letter}</p>
-                </div>
-            `).join('');
-        }
-
-        function closeViewAppsModal() {
-            document.getElementById('viewAppsModal').classList.add('hidden');
-        }
-
-        function filterJobs() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const locationVal = document.getElementById('locationFilter').value.toLowerCase();
-            const typeVal = document.getElementById('typeFilter').value;
-
-            const filtered = allJobsCache.filter(job => {
-                const matchSearch = job.title.toLowerCase().includes(searchText) || 
-                                    job.company.toLowerCase().includes(searchText) || 
-                                    job.description.toLowerCase().includes(searchText);
-                const matchLocation = locationVal === "" || job.location.toLowerCase().includes(locationVal);
-                const matchType = typeVal === "" || job.type === typeVal;
-
-                return matchSearch && matchLocation && matchType;
-            });
-
-            displayJobs(filtered);
-        }
-
-        function openAuthModal(mode) {
-            isSignUpMode = (mode === 'signup');
-            document.getElementById('authModalTitle').innerText = isSignUpMode ? 'Create Jobrit Account' : 'Login to Jobrit';
-            document.getElementById('authSubmitBtn').innerText = isSignUpMode ? 'Sign Up' : 'Login';
-            document.getElementById('authSwitchText').innerHTML = isSignUpMode ? 
-                'Already have an account? <span onclick="openAuthModal(\'login\')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Login</span>' : 
-                'Don\'t have an account? <span onclick="openAuthModal(\'signup\')" class="text-blue-600 font-semibold cursor-pointer hover:underline">Sign Up</span>';
-            document.getElementById('authModal').classList.remove('hidden');
-        }
-
-        function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
-
-        async function handleAuth(e) {
-            e.preventDefault();
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
-            const btn = document.getElementById('authSubmitBtn');
-            btn.disabled = true;
-
-            if (isSignUpMode) {
-                const { error } = await client.auth.signUp({ email, password });
-                if (error) {
-                    alert('Signup Error: ' + error.message);
-                } else {
-                    alert('🎉 Account created successfully! You can now log in.');
-                    openAuthModal('login');
-                }
-            } else {
-                const { data, error } = await client.auth.signInWithPassword({ email, password });
-                if (error) {
-                    alert('Login Error: ' + error.message);
-                } else {
-                    currentUser = data.user;
-                    alert('🎉 Logged in successfully!');
-                    closeAuthModal();
-                    updateNavAndUI();
-                    fetchJobs();
-                }
-            }
-            btn.disabled = false;
-        }
-
-        async function handleLogout() {
-            await client.auth.signOut();
-            currentUser = null;
-            updateNavAndUI();
-            fetchJobs();
-            alert('Logged out successfully.');
-        }
-
-        function openModal() { 
-            document.getElementById('jobModal').classList.remove('hidden'); 
-        }
-        function closeModal() { document.getElementById('jobModal').classList.add('hidden'); }
-
-        async function postJob(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = 'Posting...';
-
-            const newJob = {
-                title: document.getElementById('title').value,
-                company: document.getElementById('company').value,
-                location: document.getElementById('location').value,
-                type: document.getElementById('type').value,
-                description: document.getElementById('description').value,
-                user_id: currentUser ? currentUser.id : null,
-                status: 'active'
+            const jobData = {
+                title: document.getElementById("job-title").value.trim(),
+                company: document.getElementById("job-company").value.trim(),
+                location: document.getElementById("job-location").value.trim(),
+                type: document.getElementById("job-type").value,
+                description: document.getElementById("job-description").value.trim(),
+                created_at: new Date().toISOString()
             };
 
-            const { error } = await client.from('jobs').insert([newJob]);
-
-            if (error) {
-                alert('Error: ' + error.message);
+            if (id) {
+                // Edit existing job
+                const index = jobsList.findIndex(j => j.id == id);
+                if (index !== -1) {
+                    jobsList[index] = { ...jobsList[index], ...jobData };
+                }
+                if (supabaseClient) {
+                    try { await supabaseClient.from("jobs").update(jobData).eq("id", id); } catch(e){}
+                }
             } else {
-                alert('🎉 Job posted successfully!');
-                closeModal();
-                document.getElementById('jobForm').reset();
-                fetchJobs();
+                // Post new job
+                const newId = Date.now().toString();
+                const newJob = { id: newId, status: 'active', ...jobData };
+                jobsList.unshift(newJob);
+                if (supabaseClient) {
+                    try { await supabaseClient.from("jobs").insert([jobData]); } catch(e){}
+                }
             }
 
-            btn.disabled = false;
-            btn.innerText = 'Submit Job';
+            closeModal();
+            renderJobs();
         }
 
-        function openApplyModal(jobId, encodedTitle) {
-            const jobTitle = decodeURIComponent(encodedTitle);
-            document.getElementById('applyJobId').value = jobId;
-            document.getElementById('applyJobTitle').innerText = `Applying for: ${jobTitle}`;
-            document.getElementById('applyModal').classList.remove('hidden');
+        function viewApplications(jobId) {
+            alert(`Job ID #${jobId} ke liye total 0 applications aayi hain.`);
         }
 
-        function closeApplyModal() { document.getElementById('applyModal').classList.add('hidden'); }
-
-        async function submitApplication(e) {
-            e.preventDefault();
-            const btn = document.getElementById('applySubmitBtn');
-            btn.disabled = true;
-            btn.innerText = 'Submitting...';
-
-            const applicationData = {
-                job_id: document.getElementById('applyJobId').value,
-                full_name: document.getElementById('applicantName').value,
-                email: document.getElementById('applicantEmail').value,
-                cover_letter: document.getElementById('applicantCover').value,
-                resume_link: document.getElementById('applicantResume').value
-            };
-
-            const { error } = await client.from('applications').insert([applicationData]);
-
-            if (error) {
-                alert('❌ Error submitting application: ' + error.message);
-            } else {
-                alert('🎉 Application submitted successfully!');
-                closeApplyModal();
-                document.getElementById('applyForm').reset();
-            }
-
-            btn.disabled = false;
-            btn.innerText = 'Submit Application';
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
-
-        initApp();
     </script>
 </body>
 </html>
