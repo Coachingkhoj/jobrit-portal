@@ -2,11 +2,11 @@ import feedparser
 from supabase import create_client, Client
 import re
 
-# Supabase Client Config
+# Supabase Client Config with updated Secret Key
 SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co"
-SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iicscm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S"
+SUPABASE_KEY = "sb_secret_y9qzQXHsXJyIlde69qBdSg_qTGqxDXj"
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Remote Jobs RSS Feeds
 RSS_FEEDS = [
@@ -37,7 +37,7 @@ def run_auto_job_fetcher():
                 existing = supabase.table('jobs').select('id').eq('title', title).execute()
                 
                 if not existing.data:
-                    # Sirf wahi columns jo Supabase table me maujood hain
+                    # Supabase table schema exact columns
                     job_data = {
                         "title": title,
                         "company": company,
