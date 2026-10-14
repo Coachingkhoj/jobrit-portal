@@ -3,23 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobrit - Free Job Portal</title>
+    <title>Jobrit - Indeed Clone & Job Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS SDK via unpkg (Reliable CDN) -->
+    <!-- Supabase JS SDK via unpkg -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-50 font-sans">
 
     <!-- Navbar -->
-    <nav class="bg-white shadow p-4 flex justify-between items-center max-w-4xl mx-auto rounded-b-lg">
-        <h1 class="text-xl font-bold text-blue-600">Jobrit</h1>
-        <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700">Post a Job</button>
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center max-w-5xl mx-auto rounded-b-lg">
+        <h1 class="text-2xl font-extrabold text-blue-600">Jobrit <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Pro</span></h1>
+        <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition">Post a Job</button>
     </nav>
 
-    <!-- Main Container -->
-    <main class="max-w-4xl mx-auto p-4 mt-6">
-        <h2 class="text-lg font-semibold mb-4 text-gray-700">Latest Job Listings</h2>
+    <!-- Search & Filter Section (Indeed Style) -->
+    <section class="max-w-5xl mx-auto p-4 mt-6">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-3">
+            <input type="text" id="searchInput" placeholder="Job title, keywords, or company..." onkeyup="filterJobs()" class="flex-1 border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select id="locationFilter" onchange="filterJobs()" class="border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">All Locations</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Noida">Noida</option>
+                <option value="Remote">Remote</option>
+            </select>
+            <select id="typeFilter" onchange="filterJobs()" class="border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">All Job Types</option>
+                <option value="Full-Time">Full-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Remote">Remote</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Main Job Listings Container -->
+    <main class="max-w-5xl mx-auto p-4">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800">Recommended Jobs</h2>
         <div id="jobList" class="space-y-3">
             <p class="text-gray-500">Loading jobs...</p>
         </div>
@@ -27,20 +46,20 @@
 
     <!-- Post Job Modal -->
     <div id="jobModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-lg max-w-md w-full shadow-lg relative">
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 font-bold text-xl">&times;</button>
-            <h3 class="text-lg font-bold mb-4">Post a New Job</h3>
+        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Post a New Job</h3>
             <form id="jobForm" onsubmit="postJob(event)" class="space-y-3">
-                <input type="text" id="title" placeholder="Job Title (e.g. Python Developer)" required class="w-full border p-2 rounded text-sm">
-                <input type="text" id="company" placeholder="Company Name" required class="w-full border p-2 rounded text-sm">
-                <input type="text" id="location" placeholder="Location (e.g. Remote / Delhi)" required class="w-full border p-2 rounded text-sm">
-                <select id="type" class="w-full border p-2 rounded text-sm">
+                <input type="text" id="title" placeholder="Job Title (e.g. Python Developer)" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="company" placeholder="Company Name" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="location" placeholder="Location (e.g. Delhi / Noida)" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="type" class="w-full border p-3 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="Full-Time">Full-Time</option>
                     <option value="Contract">Contract</option>
                     <option value="Remote">Remote</option>
                 </select>
-                <textarea id="description" placeholder="Job Description..." rows="3" required class="w-full border p-2 rounded text-sm"></textarea>
-                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700">Submit</button>
+                <textarea id="description" placeholder="Job Description & Requirements..." rows="3" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Submit Job</button>
             </form>
         </div>
     </div>
@@ -49,6 +68,8 @@
     <script>
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
+        
+        let allJobsCache = [];
 
         async function fetchJobs() {
             const listDiv = document.getElementById('jobList');
@@ -61,18 +82,51 @@
                 return;
             }
 
-            if (!data || data.length === 0) {
-                listDiv.innerHTML = `<p class="text-gray-500">No jobs posted yet. Be the first to post!</p>`;
+            allJobsCache = data || [];
+            displayJobs(allJobsCache);
+        }
+
+        function displayJobs(jobs) {
+            const listDiv = document.getElementById('jobList');
+
+            if (!jobs || jobs.length === 0) {
+                listDiv.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-gray-500 border border-gray-200">No matching jobs found.</div>`;
                 return;
             }
 
-            listDiv.innerHTML = data.map(job => `
-                <div class="bg-white p-4 rounded shadow border border-gray-200">
-                    <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
-                    <p class="text-sm text-gray-700 font-medium">${job.company} • ${job.location} <span class="ml-2 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded">${job.type}</span></p>
-                    <p class="text-sm text-gray-600 mt-2">${job.description}</p>
+            listDiv.innerHTML = jobs.map(job => `
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
+                            <p class="text-sm text-gray-700 font-semibold mt-0.5">${job.company} • <span class="text-gray-500 font-normal">${job.location}</span></p>
+                        </div>
+                        <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
+                    <div class="mt-4 flex gap-2">
+                        <button onclick="alert('Application feature coming soon!')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function filterJobs() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const locationVal = document.getElementById('locationFilter').value.toLowerCase();
+            const typeVal = document.getElementById('typeFilter').value;
+
+            const filtered = allJobsCache.filter(job => {
+                const matchSearch = job.title.toLowerCase().includes(searchText) || 
+                                    job.company.toLowerCase().includes(searchText) || 
+                                    job.description.toLowerCase().includes(searchText);
+                const matchLocation = locationVal === "" || job.location.toLowerCase().includes(locationVal);
+                const matchType = typeVal === "" || job.type === typeVal;
+
+                return matchSearch && matchLocation && matchType;
+            });
+
+            displayJobs(filtered);
         }
 
         function openModal() { document.getElementById('jobModal').classList.remove('hidden'); }
@@ -106,7 +160,7 @@
             }
 
             btn.disabled = false;
-            btn.innerText = 'Submit';
+            btn.innerText = 'Submit Job';
         }
 
         // Load jobs when page opens
