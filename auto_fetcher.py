@@ -1,14 +1,14 @@
+import os
 import feedparser
 from supabase import create_client, Client
 import re
 
-# Supabase Client Config with updated Secret Key
 SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co"
-SUPABASE_KEY = "sb_secret_y9qzQXHsXJyIlde69qBdSg_qTGqxDXj"
+# Pehle GitHub Secret check karega, agar na mile toh direct key use karega
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY") or "sb_secret_y9qzQXHsXJyIlde69qBdSg_qTGqxDXj"
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Remote Jobs RSS Feeds
 RSS_FEEDS = [
     "https://remotive.com/remote-jobs/feed",
     "https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss",
@@ -33,11 +33,9 @@ def run_auto_job_fetcher():
                 raw_desc = entry.get('summary', 'High-impact global remote role.')
                 clean_desc = clean_html(raw_desc)[:350] + "..."
                 
-                # Deduplication Check based on title
                 existing = supabase.table('jobs').select('id').eq('title', title).execute()
                 
                 if not existing.data:
-                    # Supabase table schema exact columns
                     job_data = {
                         "title": title,
                         "company": company,
