@@ -193,11 +193,13 @@
         async function deleteJob(jobId) {
             if (!confirm('Are you sure you want to delete this job posting?')) return;
 
-            // Yahan Number(jobId) lagane se string ID properly bigint se match ho jayegi
-            const { error } = await client.from('jobs').delete().eq('id', Number(jobId));
+            // .select() lagane se confirm hoga ki database se row delete hui ya policy ne roka
+            const { data, error } = await client.from('jobs').delete().eq('id', Number(jobId)).select();
 
             if (error) {
                 alert('Error deleting job: ' + error.message);
+            } else if (!data || data.length === 0) {
+                alert('⚠️ Delete block ho gaya! Supabase RLS policy check karein.');
             } else {
                 alert('🗑️ Job deleted successfully!');
                 fetchJobs();
