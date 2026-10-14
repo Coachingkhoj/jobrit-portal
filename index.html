@@ -78,15 +78,15 @@
             <form id="postJobForm" onsubmit="handlePostJob(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Job Title</label>
-                    <input type="text" id="jobTitle" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Senior Software Engineer">
+                    <input type="text" id="jobTitle" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. IT Support Specialist">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Company Name</label>
-                    <input type="text" id="jobCompany" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Tech Global Inc.">
+                    <input type="text" id="jobCompany" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. ACL Digital">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Location (Worldwide / Any City / Remote)</label>
-                    <input type="text" id="jobLocation" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Worldwide / Remote, USA, London, Delhi, etc.">
+                    <input type="text" id="jobLocation" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Remote, Worldwide, Delhi, etc.">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Job Type</label>
@@ -141,8 +141,8 @@
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
         
-        // Globally initialized client
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Attach directly to window global object to prevent initialization reference errors
+        window.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let allJobs = [];
         let selectedJobId = null;
@@ -152,7 +152,7 @@
             container.innerHTML = '<p class="text-gray-500 text-sm p-4">Loading jobs...</p>';
 
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = await window.db
                     .from('jobs')
                     .select('*')
                     .order('created_at', { ascending: false });
@@ -248,7 +248,7 @@
             };
 
             try {
-                const { data, error } = await supabaseClient.from('jobs').insert([newJob]).select();
+                const { data, error } = await window.db.from('jobs').insert([newJob]).select();
                 if (error) throw error;
 
                 alert('🎉 Job posted successfully to live database!');
