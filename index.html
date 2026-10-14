@@ -6,8 +6,8 @@
     <title>Jobrit - Global Job Portal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client v2 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Stable CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
@@ -141,35 +141,18 @@
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam';
         
-        let supabaseClient = null;
+        // Initialize client properly
+        const _client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         let allJobs = [];
         let selectedJobId = null;
 
-        // Initialize Supabase safely when window loads
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                } else {
-                    console.error("Supabase CDN failed to load properly.");
-                }
-            } catch (e) {
-                console.error("Initialization error:", e);
-            }
-            fetchJobs();
-        });
-
         async function fetchJobs() {
             const container = document.getElementById('jobListContainer');
-            if (!supabaseClient) {
-                container.innerHTML = '<p class="text-red-500 text-sm p-4">Database client not initialized!</p>';
-                return;
-            }
-
             container.innerHTML = '<p class="text-gray-500 text-sm p-4">Loading jobs...</p>';
 
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = await _client
                     .from('jobs')
                     .select('*')
                     .order('created_at', { ascending: false });
@@ -252,11 +235,6 @@
 
         async function handlePostJob(event) {
             event.preventDefault();
-            if (!supabaseClient) {
-                alert('Database client not initialized!');
-                return;
-            }
-
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = 'Posting...';
@@ -270,7 +248,7 @@
             };
 
             try {
-                const { data, error } = await supabaseClient.from('jobs').insert([newJob]).select();
+                const { data, error } = await _client.from('jobs').insert([newJob]).select();
                 if (error) throw error;
 
                 alert('🎉 Job posted successfully to live database!');
@@ -303,6 +281,8 @@
             alert('Application submitted successfully!');
             closeApplyModal();
         }
+
+        window.onload = fetchJobs;
     </script>
 </body>
 </html>
