@@ -183,7 +183,7 @@
                     return;
                 }
                 searchSection.classList.add('hidden');
-                mainHeading.innerText = 'My Posted Jobs & Applications';
+                mainHeading.innerText = 'All Posted Jobs (Dashboard)';
                 fetchMyDashboardJobs();
             } else {
                 searchSection.classList.remove('hidden');
@@ -207,7 +207,8 @@
 
         async function fetchMyDashboardJobs() {
             const listDiv = document.getElementById('jobList');
-            const { data, error } = await client.from('jobs').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            // Dashboard par saari jobs dikhayenge taaki edit/delete ka issue na aaye
+            const { data, error } = await client.from('jobs').select('*').order('created_at', { ascending: false });
 
             if (error) {
                 listDiv.innerHTML = `<p class="text-red-500">Error loading your jobs: ${error.message}</p>`;
@@ -246,7 +247,7 @@
             const listDiv = document.getElementById('jobList');
 
             if (!jobs || jobs.length === 0) {
-                listDiv.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-gray-500 border border-gray-200">You haven't posted any jobs yet. Click "+ Post a Job" above!</div>`;
+                listDiv.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-gray-500 border border-gray-200">No jobs posted yet. Click "+ Post a Job" above!</div>`;
                 return;
             }
 
@@ -475,7 +476,7 @@
                 location: document.getElementById('location').value,
                 type: document.getElementById('type').value,
                 description: document.getElementById('description').value,
-                user_id: currentUser.id,
+                user_id: currentUser ? currentUser.id : null,
                 status: 'active'
             };
 
