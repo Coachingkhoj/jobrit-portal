@@ -2,12 +2,13 @@ name: Jobrit Pro Automated Pipeline
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Daily midnight UTC
+  workflow_dispatch:      # Manual run trigger
 
 jobs:
   auto-fetch:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -19,7 +20,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install feedparser supabase
 
       - name: Execute Auto Job Fetcher
+        env:
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: python auto_fetcher.py
