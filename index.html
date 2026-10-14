@@ -15,7 +15,6 @@
     <nav class="bg-white shadow-sm p-4 flex justify-between items-center max-w-5xl mx-auto rounded-b-lg">
         <h1 class="text-2xl font-extrabold text-blue-600">Jobrit <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Pro</span></h1>
         <div id="navAuthArea" class="flex items-center gap-2">
-            <!-- Will be populated dynamically based on login state -->
             <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
             <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
         </div>
@@ -96,6 +95,26 @@
         </div>
     </div>
 
+    <!-- Apply Job Modal -->
+    <div id="applyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl relative">
+            <button onclick="closeApplyModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
+            <h3 class="text-xl font-bold mb-1 text-gray-800">Apply for Job</h3>
+            <p id="applyJobTitle" class="text-xs text-blue-600 font-semibold mb-4"></p>
+            <form id="applyForm" onsubmit="submitApplication(event)" class="space-y-3">
+                <input type="hidden" id="applyJobId">
+                <input type="text" id="applicantName" placeholder="Full Name" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="email" id="applicantEmail" placeholder="Email Address" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <textarea id="applicantCover" placeholder="Short Cover Letter / Why should we hire you?" rows="3" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Paste Resume / CV Link (Google Drive / LinkedIn):</label>
+                    <input type="url" id="applicantResume" placeholder="https://..." required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" id="applySubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Script Logic -->
     <script>
         const SUPABASE_URL = 'https://fksiepwvbygkcojvjyzy.supabase.co';
@@ -111,7 +130,6 @@
             const { data: { session } } = await client.auth.getSession();
             if (session) {
                 currentUser = session.user;
-                // Fetch user role from user metadata if available
                 userRole = currentUser.user_metadata?.role || 'seeker';
             }
             updateNavAndUI();
@@ -128,7 +146,6 @@
                     <button onclick="handleLogout()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Logout</button>
                 `;
                 
-                // Only show Post Job button if user is an employer
                 if (userRole === 'employer') {
                     postBtnContainer.innerHTML = `<button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Post a Job</button>`;
                 } else {
@@ -139,7 +156,7 @@
                     <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
                     <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
                 `;
-                postBtnContainer.innerHTML = `<span class="text-xs text-gray-400">Login as Employer to post jobs</span>`;
+                postBtnContainer.innerHTML = `<span class="text-xs text-gray-400">Login to post jobs</span>`;
             }
         }
 
@@ -164,7 +181,11 @@
                 return;
             }
 
-            listDiv.innerHTML = jobs.map(job => `
+            listDiv.innerHTML = jobs.map(job => {
+                const deleteBtnHtml = (userRole === 'employer') ? 
+                    `<button onclick="deleteJob('${job.id}')" class="text-red-500 hover:text-red-700 font-medium text-xs border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition">Delete Job</button>` : '';
+
+                return `
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
                     <div class="flex justify-between items-start">
                         <div>
@@ -174,11 +195,26 @@
                         <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
                     </div>
                     <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
-                    <div class="mt-4 flex gap-2">
-                        <button onclick="alert('Application submitted successfully!')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
+                    <div class="mt-4 flex gap-2 items-center justify-between">
+                        <button onclick="openApplyModal('${job.id}', '${job.title.replace(/'/g, "\\'")}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
+                        ${deleteBtnHtml}
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+        }
+
+        async function deleteJob(jobId) {
+            if (!confirm('Are you sure you want to delete this job posting?')) return;
+
+            const { error } = await client.from('jobs').delete().eq('id', jobId);
+
+            if (error) {
+                alert('Error deleting job: ' + error.message);
+            } else {
+                alert('🗑️ Job deleted successfully!');
+                fetchJobs();
+            }
         }
 
         function filterJobs() {
@@ -256,6 +292,7 @@
             alert('Logged out successfully.');
         }
 
+        // Post Job Modal
         function openModal() { document.getElementById('jobModal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('jobModal').classList.add('hidden'); }
 
@@ -288,7 +325,29 @@
             btn.innerText = 'Submit Job';
         }
 
-        // Initialize application on load
+        // Apply Job Modal
+        function openApplyModal(jobId, jobTitle) {
+            document.getElementById('applyJobId').value = jobId;
+            document.getElementById('applyJobTitle').innerText = `Applying for: ${jobTitle}`;
+            document.getElementById('applyModal').classList.remove('hidden');
+        }
+
+        function closeApplyModal() { document.getElementById('applyModal').classList.add('hidden'); }
+
+        async function submitApplication(e) {
+            e.preventDefault();
+            const btn = document.getElementById('applySubmitBtn');
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+
+            alert('🎉 Application submitted successfully! The recruiter will review your resume.');
+            closeApplyModal();
+            document.getElementById('applyForm').reset();
+            
+            btn.disabled = false;
+            btn.innerText = 'Submit Application';
+        }
+
         initApp();
     </script>
 </body>
