@@ -13,15 +13,15 @@
 
     <!-- Navbar -->
     <nav class="bg-white shadow-sm p-4 flex justify-between items-center max-w-5xl mx-auto rounded-b-lg">
-        <h1 class="text-2xl font-extrabold text-blue-600 cursor-pointer" onclick="switchView('jobs')">Jobrit <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Pro</span></h1>
+        <h1 class="text-2xl font-extrabold text-blue-600">Jobrit <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Pro</span></h1>
         <div id="navAuthArea" class="flex items-center gap-2">
             <button onclick="openAuthModal('login')" class="text-blue-600 font-medium px-3 py-1.5 text-sm hover:bg-blue-50 rounded-lg transition">Login</button>
             <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
         </div>
     </nav>
 
-    <!-- Search & Filter Section (Only for Jobs View) -->
-    <section id="searchSection" class="max-w-5xl mx-auto p-4 mt-6">
+    <!-- Search & Filter Section -->
+    <section class="max-w-5xl mx-auto p-4 mt-6">
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row gap-3">
             <input type="text" id="searchInput" placeholder="Job title, keywords, or company..." onkeyup="filterJobs()" class="flex-1 border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <input type="text" id="locationFilter" placeholder="Filter by City, Country, or Remote..." onkeyup="filterJobs()" class="flex-1 border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -37,7 +37,7 @@
     <!-- Main Job Listings Container -->
     <main class="max-w-5xl mx-auto p-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 id="mainHeading" class="text-lg font-semibold text-gray-800">Recommended Jobs</h2>
+            <h2 class="text-lg font-semibold text-gray-800">Job Listings</h2>
             <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">+ Post a Job</button>
         </div>
         <div id="jobList" class="space-y-3">
@@ -114,7 +114,7 @@
                 <input type="email" id="applicantEmail" placeholder="Email Address" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <textarea id="applicantCover" placeholder="Short Cover Letter / Why should we hire you?" rows="3" required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Paste Resume / CV Link (Google Drive / LinkedIn):</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Paste Resume / CV Link:</label>
                     <input type="url" id="applicantResume" placeholder="https://..." required class="w-full border p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <button type="submit" id="applySubmitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">Submit Application</button>
@@ -143,7 +143,6 @@
         let allJobsCache = [];
         let isSignUpMode = false;
         let currentUser = null;
-        let currentView = 'jobs'; // 'jobs' or 'dashboard'
 
         async function initApp() {
             const { data: { session } } = await client.auth.getSession();
@@ -159,7 +158,6 @@
 
             if (currentUser) {
                 authArea.innerHTML = `
-                    <button onclick="switchView('dashboard')" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-100 transition">📊 My Dashboard</button>
                     <span class="text-xs text-gray-600 hidden md:inline font-medium">${currentUser.email}</span>
                     <button onclick="handleLogout()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">Logout</button>
                 `;
@@ -169,27 +167,7 @@
                     <button onclick="openAuthModal('signup')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Sign Up</button>
                 `;
             }
-        }
-
-        function switchView(view) {
-            currentView = view;
-            const searchSection = document.getElementById('searchSection');
-            const mainHeading = document.getElementById('mainHeading');
-
-            if (view === 'dashboard') {
-                if (!currentUser) {
-                    alert('Please login first.');
-                    openAuthModal('login');
-                    return;
-                }
-                searchSection.classList.add('hidden');
-                mainHeading.innerText = 'All Posted Jobs (Dashboard)';
-                fetchMyDashboardJobs();
-            } else {
-                searchSection.classList.remove('hidden');
-                mainHeading.innerText = 'Recommended Jobs';
-                fetchJobs();
-            }
+            if (allJobsCache.length > 0) displayJobs(allJobsCache);
         }
 
         async function fetchJobs() {
@@ -202,20 +180,7 @@
             }
 
             allJobsCache = data || [];
-            displayJobs(allJobsCache.filter(j => j.status !== 'paused'));
-        }
-
-        async function fetchMyDashboardJobs() {
-            const listDiv = document.getElementById('jobList');
-            // Dashboard par saari jobs dikhayenge taaki edit/delete ka issue na aaye
-            const { data, error } = await client.from('jobs').select('*').order('created_at', { ascending: false });
-
-            if (error) {
-                listDiv.innerHTML = `<p class="text-red-500">Error loading your jobs: ${error.message}</p>`;
-                return;
-            }
-
-            displayDashboardJobs(data || []);
+            displayJobs(allJobsCache);
         }
 
         function displayJobs(jobs) {
@@ -223,31 +188,6 @@
 
             if (!jobs || jobs.length === 0) {
                 listDiv.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-gray-500 border border-gray-200">No jobs found.</div>`;
-                return;
-            }
-
-            listDiv.innerHTML = jobs.map(job => `
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-blue-600 text-lg">${job.title}</h3>
-                            <p class="text-sm text-gray-700 font-semibold mt-0.5">${job.company} • <span class="text-gray-500 font-normal">${job.location}</span></p>
-                        </div>
-                        <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">${job.type}</span>
-                    </div>
-                    <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
-                    <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100 flex-wrap">
-                        <button onclick="openApplyModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function displayDashboardJobs(jobs) {
-            const listDiv = document.getElementById('jobList');
-
-            if (!jobs || jobs.length === 0) {
-                listDiv.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-gray-500 border border-gray-200">No jobs posted yet. Click "+ Post a Job" above!</div>`;
                 return;
             }
 
@@ -267,9 +207,10 @@
                     </div>
                     <p class="text-sm text-gray-600 mt-3 leading-relaxed">${job.description}</p>
                     <div class="mt-4 flex gap-2 items-center justify-between border-t pt-3 border-gray-100 flex-wrap">
-                        <button onclick="openViewAppsModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700 transition">👥 View Applications</button>
+                        <button onclick="openApplyModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition">Apply Now</button>
                         
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="openViewAppsModal('${job.id}', '${encodeURIComponent(job.title)}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700 transition">👥 Applications</button>
                             <button onclick='openEditModal(${JSON.stringify(job)})' class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-blue-200">✏️ Edit</button>
                             <button onclick="toggleHoldJob('${job.id}', '${job.status || 'active'}')" class="bg-yellow-50 text-yellow-700 hover:bg-yellow-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-yellow-200">${isPaused ? '▶️ Resume' : '⏸️ Hold'}</button>
                             <button onclick="deleteJob('${job.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs px-3 py-1.5 rounded-lg transition border border-red-200">🗑️ Delete</button>
@@ -287,7 +228,7 @@
             if (error) {
                 alert('Error updating status: ' + error.message);
             } else {
-                fetchMyDashboardJobs();
+                fetchJobs();
             }
         }
 
@@ -300,11 +241,10 @@
                 alert('❌ Error deleting job: ' + error.message);
             } else {
                 alert('🗑️ Job deleted successfully!');
-                fetchMyDashboardJobs();
+                fetchJobs();
             }
         }
 
-        // Edit Job Handlers
         function openEditModal(job) {
             document.getElementById('editJobId').value = job.id;
             document.getElementById('editTitle').value = job.title;
@@ -341,14 +281,13 @@
             } else {
                 alert('✏️ Job updated successfully!');
                 closeEditModal();
-                fetchMyDashboardJobs();
+                fetchJobs();
             }
 
             btn.disabled = false;
             btn.innerText = 'Update Job';
         }
 
-        // View Applications Handlers
         async function openViewAppsModal(jobId, encodedTitle) {
             const jobTitle = decodeURIComponent(encodedTitle);
             document.getElementById('appsModalJobTitle').innerText = `For Position: ${jobTitle}`;
@@ -391,7 +330,6 @@
             const typeVal = document.getElementById('typeFilter').value;
 
             const filtered = allJobsCache.filter(job => {
-                if (job.status === 'paused') return false;
                 const matchSearch = job.title.toLowerCase().includes(searchText) || 
                                     job.company.toLowerCase().includes(searchText) || 
                                     job.description.toLowerCase().includes(searchText);
@@ -440,7 +378,7 @@
                     alert('🎉 Logged in successfully!');
                     closeAuthModal();
                     updateNavAndUI();
-                    switchView('jobs');
+                    fetchJobs();
                 }
             }
             btn.disabled = false;
@@ -450,16 +388,11 @@
             await client.auth.signOut();
             currentUser = null;
             updateNavAndUI();
-            switchView('jobs');
+            fetchJobs();
             alert('Logged out successfully.');
         }
 
         function openModal() { 
-            if (!currentUser) {
-                alert('Please login first to post a job.');
-                openAuthModal('login');
-                return;
-            }
             document.getElementById('jobModal').classList.remove('hidden'); 
         }
         function closeModal() { document.getElementById('jobModal').classList.add('hidden'); }
@@ -488,8 +421,7 @@
                 alert('🎉 Job posted successfully!');
                 closeModal();
                 document.getElementById('jobForm').reset();
-                if (currentView === 'dashboard') fetchMyDashboardJobs();
-                else fetchJobs();
+                fetchJobs();
             }
 
             btn.disabled = false;
