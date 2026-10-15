@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobrit Pro - Indeed & LinkedIn Style Global ATS & Job Portal</title>
+    <title>Jobrit Pro - 100% Free Global Job Board & Staffing ATS</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
@@ -26,7 +26,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-4 sm:gap-6">
                 <h1 class="text-xl sm:text-2xl font-black text-blue-600 tracking-tight cursor-pointer flex items-center gap-2" onclick="resetFilters()">
-                    <i class="fa-solid fa-briefcase text-blue-600"></i> Jobrit <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Global Pro ATS</span>
+                    <i class="fa-solid fa-briefcase text-blue-600"></i> Jobrit <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider"><i class="fa-solid fa-gift mr-1"></i>100% Free Open ATS</span>
                 </h1>
                 <nav class="hidden md:flex items-center gap-1 text-sm font-semibold">
                     <button id="nav-find-jobs" onclick="resetFilters()" class="px-3 py-2 rounded-lg text-blue-600 bg-blue-50 transition">All Markets</button>
@@ -40,25 +40,28 @@
                         <i class="fa-solid fa-user-graduate mr-1"></i> Job Seeker
                     </button>
                     <button id="role-recruiter-btn" onclick="setRole('recruiter')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-gray-600 hover:text-gray-900 transition">
-                        <i class="fa-solid fa-user-tie mr-1"></i> Employer / ATS
+                        <i class="fa-solid fa-user-tie mr-1"></i> Employer / Agency ATS
                     </button>
                 </div>
 
-                <button id="post-job-nav-btn" onclick="protectedOpenPostModal()" class="bg-blue-600 text-white font-semibold px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm text-xs sm:text-sm hidden">
-                    <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Post Job</span>
+                <button id="post-job-nav-btn" onclick="protectedOpenPostModal()" class="bg-emerald-600 text-white font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm text-xs sm:text-sm hidden">
+                    <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Post Free Job</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Advanced Indeed-Style Search & Location Section -->
+    <!-- Advanced Free Platform Hero Search Section with Hierarchy & Radius -->
     <section id="search-section" class="bg-gradient-to-r from-blue-700 to-indigo-900 py-6 sm:py-8 px-4 shadow-inner text-white">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-xl sm:text-3xl font-extrabold mb-1 tracking-tight">Find Precision Jobs by Country, Radius & Work Mode</h2>
-            <p class="text-blue-100 text-xs sm:text-sm mb-4 sm:mb-6">Advanced global matching with Indeed & LinkedIn style location distance routing</p>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight">100% Free Job Board & ATS for Agencies & Job Seekers</h2>
+                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-emerald-400/30"><i class="fa-solid fa-bolt mr-1"></i>Zero Employer Posting Fees</span>
+            </div>
+            <p class="text-blue-100 text-xs sm:text-sm mb-4 sm:mb-6">Connect qualified candidates with global agencies through precision country, state, city & radius routing</p>
 
             <div class="bg-white p-3 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-12 gap-2 text-gray-800">
-                <!-- Country Market Filter -->
+                <!-- Country Filter -->
                 <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-globe text-gray-400 mr-2 text-sm"></i>
                     <select id="search-country" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
@@ -77,10 +80,10 @@
                     <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Nurse, Engineer..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
-                <!-- City / ZIP Code Input -->
-                <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
+                <!-- City / State / ZIP Search Input -->
+                <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-location-dot text-gray-400 mr-2 text-sm"></i>
-                    <input type="text" id="search-location" oninput="filterJobs()" placeholder="City or ZIP Code..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
+                    <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, State (e.g. UP/TX) or ZIP..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none">
                 </div>
 
                 <!-- Radius Distance Filter -->
@@ -94,7 +97,7 @@
                     </select>
                 </div>
 
-                <!-- Work Mode Filter (Remote / In-person / Hybrid) -->
+                <!-- Work Mode Filter -->
                 <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-2.5 py-2 bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 transition">
                     <i class="fa-solid fa-laptop-house text-gray-400 mr-2 text-sm"></i>
                     <select id="search-work-mode" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
@@ -104,13 +107,6 @@
                         <option value="Hybrid">Hybrid</option>
                     </select>
                 </div>
-
-                <!-- Search Button -->
-                <div class="md:col-span-1 flex items-center">
-                    <button onclick="filterJobs()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-2 rounded-xl text-xs transition shadow flex items-center justify-center">
-                        <i class="fa-solid fa-search"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </section>
@@ -118,19 +114,19 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
         
-        <!-- Recruiter / Owner Analytics Dashboard -->
+        <!-- Recruiter / Agency Dashboard -->
         <div id="recruiter-header" class="hidden mb-6 space-y-4">
             <div class="bg-white p-4 rounded-xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
                 <div>
-                    <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Owner & ATS Analytics Dashboard</h3>
-                    <p class="text-xs text-gray-500">Real-time metrics, regional targeting counts, and candidate resume tracking</p>
+                    <h3 class="font-bold text-base sm:text-lg text-gray-900"><i class="fa-solid fa-chart-line text-blue-600 mr-2"></i>Free Agency ATS & Recruiter Hub</h3>
+                    <p class="text-xs text-gray-500">Post unlimited roles, monitor pool metrics, and access candidate resume URLs with zero fees</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="toggleApplicantsView()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-users"></i> <span id="view-applicants-btn-text">View Applicants List</span>
                     </button>
                     <button onclick="protectedOpenPostModal()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-plus"></i> Post Custom Job
+                        <i class="fa-solid fa-plus"></i> Post Free Job
                     </button>
                 </div>
             </div>
@@ -147,7 +143,7 @@
                 <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-4">
                     <div class="p-3 bg-purple-50 text-purple-600 rounded-xl text-lg font-bold"><i class="fa-solid fa-database"></i></div>
                     <div>
-                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Custom Posted Jobs</p>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Agency Posted Jobs</p>
                         <h4 id="stat-custom-jobs" class="text-xl font-black text-gray-900">0</h4>
                     </div>
                 </div>
@@ -189,8 +185,8 @@
 
         <div id="view-header" class="flex justify-between items-center mb-4 sm:mb-6">
             <div>
-                <h2 id="view-title" class="text-lg sm:text-xl font-bold text-gray-900">All Precision Opportunities</h2>
-                <p id="view-subtitle" class="text-xs text-gray-500">Filtered by location radius, country, and work mode</p>
+                <h2 id="view-title" class="text-lg sm:text-xl font-bold text-gray-900">All Verified Job Opportunities</h2>
+                <p id="view-subtitle" class="text-xs text-gray-500">Filtered by country, state, city radius, and work mode</p>
             </div>
             <span id="job-count" class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full border">Loading jobs...</span>
         </div>
@@ -262,11 +258,14 @@
         </div>
     </div>
 
-    <!-- Indeed-Style Structured Location Job Posting Modal -->
+    <!-- Free Job Posting Modal with Country -> State -> City -> ZIP Hierarchy -->
     <div id="job-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto custom-scrollbar border">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 class="text-lg font-bold text-gray-900">Post Position (Indeed & LinkedIn Pro Style)</h3>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Post Free Position (No Budget Needed)</h3>
+                    <p class="text-xs text-emerald-600 font-semibold">100% Free for Staffing Agencies & Employers</p>
+                </div>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">&times;</button>
             </div>
             <form id="job-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
@@ -297,26 +296,31 @@
                         <input type="text" id="job-title-input" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Engineering Recruiter / CNC Programmer">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company Name *</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company / Agency Name *</label>
                         <input type="text" id="job-company" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. ACL Digital / Boeing">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <!-- Country -> State -> City -> ZIP Hierarchy Form Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry Sector *</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
                         <select id="job-category-input" class="w-full border rounded-xl p-2.5 text-sm outline-none font-medium">
-                            <option value="Healthcare">Healthcare & Medical</option>
-                            <option value="Aerospace">Aerospace & Defense</option>
-                            <option value="Engineering">Engineering & Manufacturing</option>
-                            <option value="Software">IT & Software</option>
-                            <option value="Finance">Finance & Business</option>
-                            <option value="Administrative">Administrative & Operations</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Aerospace">Aerospace</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Software">IT / Software</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Administrative">Operations</option>
                         </select>
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">State / Region *</label>
+                        <input type="text" id="job-state" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Uttar Pradesh / Texas">
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City Name *</label>
-                        <input type="text" id="job-city" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Noida / Austin TX">
+                        <input type="text" id="job-city" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="e.g. Noida / Austin">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP / PIN Code *</label>
@@ -330,13 +334,13 @@
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold">Publish Job</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 shadow-md">Publish Free Job</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Advanced Analytics & Location Routing Engine Script -->
+    <!-- Script Engine with Full Radius & State Hierarchy Routing -->
     <script>
         const SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S";
@@ -352,12 +356,16 @@
         let externalJobsCount = 0;
         let localApplicants = [];
 
-        // Predefined Radius & Regional Cluster Mappings for Pro Search
+        // Regional Clustering Mappings for Radius Search (+25, +50, +100 miles)
         const regionClusters = {
-            "noida": ["noida", "delhi", "greater noida", "ghaziabad", "gurgaon", "delhi ncr"],
-            "delhi": ["delhi", "noida", "greater noida", "ghaziabad", "gurgaon", "delhi ncr"],
-            "austin": ["austin", "round rock", "san marcos", "pflugerville", "cedar park"],
-            "london": ["london", "watford", "croydon", "dartford", "uxbridge"]
+            "noida": ["noida", "delhi", "greater noida", "ghaziabad", "gurgaon", "delhi ncr", "uttar pradesh", "up"],
+            "delhi": ["delhi", "noida", "greater noida", "ghaziabad", "gurgaon", "delhi ncr", "uttar pradesh", "up"],
+            "uttar pradesh": ["uttar pradesh", "up", "noida", "greater noida", "ghaziabad", "lucknow", "kanpur"],
+            "up": ["uttar pradesh", "up", "noida", "greater noida", "ghaziabad", "lucknow", "kanpur"],
+            "austin": ["austin", "round rock", "san marcos", "pflugerville", "cedar park", "texas", "tx"],
+            "texas": ["texas", "tx", "austin", "houston", "dallas", "san antonio", "round rock"],
+            "tx": ["texas", "tx", "austin", "houston", "dallas", "san antonio", "round rock"],
+            "london": ["london", "watford", "croydon", "dartford", "uxbridge", "greater london"]
         };
 
         const universalSeedJobs = [
@@ -368,6 +376,7 @@
                 category: "Administrative",
                 country: "India",
                 work_mode: "Hybrid",
+                state: "Uttar Pradesh",
                 city: "Noida",
                 zip_code: "201301",
                 salary: "₹7 LPA - ₹10 LPA",
@@ -380,6 +389,7 @@
                 category: "Aerospace",
                 country: "United States",
                 work_mode: "In-person",
+                state: "Texas",
                 city: "Austin",
                 zip_code: "78701",
                 salary: "$130k - $160k / yr",
@@ -392,6 +402,7 @@
                 category: "Healthcare",
                 country: "United Kingdom",
                 work_mode: "In-person",
+                state: "Greater London",
                 city: "London",
                 zip_code: "SW1A 1AA",
                 salary: "Competitive",
@@ -441,10 +452,16 @@
 
                         let locLower = (job.location || "").toLowerCase();
                         let country = "United States";
-                        if (locLower.includes("uk") || locLower.includes("london") || locLower.includes("united kingdom")) country = "United Kingdom";
-                        else if (locLower.includes("india") || locLower.includes("noida") || locLower.includes("bengaluru") || locLower.includes("delhi")) country = "India";
-                        else if (locLower.includes("canada") || locLower.includes("toronto")) country = "Canada";
-                        else if (locLower.includes("germany") || locLower.includes("berlin")) country = "Germany";
+                        let state = "Federal Region";
+                        if (locLower.includes("uk") || locLower.includes("london") || locLower.includes("united kingdom")) {
+                            country = "United Kingdom"; state = "Greater London";
+                        } else if (locLower.includes("india") || locLower.includes("noida") || locLower.includes("bengaluru") || locLower.includes("delhi")) {
+                            country = "India"; state = "Uttar Pradesh / Delhi";
+                        } else if (locLower.includes("canada") || locLower.includes("toronto")) {
+                            country = "Canada"; state = "Ontario";
+                        } else if (locLower.includes("germany") || locLower.includes("berlin")) {
+                            country = "Germany"; state = "Berlin";
+                        }
 
                         let workMode = job.remote ? "Remote" : "In-person";
 
@@ -455,6 +472,7 @@
                             category: category,
                             country: country,
                             work_mode: workMode,
+                            state: state,
                             city: job.location || "Global",
                             zip_code: "000000",
                             salary: "Competitive",
@@ -543,35 +561,29 @@
                 const jobCountry = (job.country || "").toLowerCase();
                 const title = (job.title || "").toLowerCase();
                 const company = (job.company || "").toLowerCase();
+                const jobState = (job.state || "").toLowerCase();
                 const jobCity = (job.city || "").toLowerCase();
                 const jobZip = (job.zip_code || "").toLowerCase();
                 const jobWorkMode = (job.work_mode || "").toLowerCase();
 
-                // 1. Country Check
                 const matchesCountry = !countryQuery || jobCountry.includes(countryQuery);
-
-                // 2. Title / Keyword Check
                 const matchesTitle = !titleQuery || title.includes(titleQuery) || company.includes(titleQuery);
-
-                // 3. Work Mode Check
                 const matchesWorkMode = !workModeQuery || jobWorkMode.includes(workModeQuery);
 
-                // 4. Advanced Location & Radius Routing Check
                 let matchesLocation = true;
                 if (locationQuery) {
                     if (jobWorkMode === 'remote') {
-                        // Remote jobs match regardless of city radius if user searches within country
                         matchesLocation = true;
                     } else if (radiusQuery === 'exact') {
-                        matchesLocation = jobCity.includes(locationQuery) || jobZip.includes(locationQuery);
+                        matchesLocation = jobCity.includes(locationQuery) || jobState.includes(locationQuery) || jobZip.includes(locationQuery);
                     } else {
-                        // Radius check (+25, +50, +100 miles cluster check)
-                        let baseCityKey = Object.keys(regionClusters).find(key => locationQuery.includes(key));
-                        if (baseCityKey) {
-                            let allowedCities = regionClusters[baseCityKey];
-                            matchesLocation = allowedCities.some(c => jobCity.includes(c)) || jobZip.includes(locationQuery);
+                        // Cluster & Radius Search check
+                        let baseKey = Object.keys(regionClusters).find(key => locationQuery.includes(key));
+                        if (baseKey) {
+                            let allowedLocations = regionClusters[baseKey];
+                            matchesLocation = allowedLocations.some(c => jobCity.includes(c) || jobState.includes(c)) || jobZip.includes(locationQuery);
                         } else {
-                            matchesLocation = jobCity.includes(locationQuery) || jobZip.includes(locationQuery);
+                            matchesLocation = jobCity.includes(locationQuery) || jobState.includes(locationQuery) || jobZip.includes(locationQuery);
                         }
                     }
                 }
@@ -591,7 +603,7 @@
                 container.innerHTML = `
                     <div class="bg-white rounded-2xl border p-12 text-center text-gray-400">
                         <i class="fa-solid fa-folder-open text-4xl mb-3 text-blue-300"></i>
-                        <p class="text-sm font-bold text-gray-700">No matching jobs found in this radius or country</p>
+                        <p class="text-sm font-bold text-gray-700">No matching jobs found in this state or radius</p>
                         <p class="text-xs text-gray-400 mt-1">Try expanding your radius filter (+50 or +100 miles) or switching work mode.</p>
                     </div>
                 `;
@@ -603,7 +615,7 @@
                     <div>
                         <div class="flex items-center gap-2 flex-wrap mb-1">
                             <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full"><i class="fa-solid fa-globe mr-1"></i>${job.country || 'Global'}</span>
-                            <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full"><i class="fa-solid fa-location-dot mr-1"></i>${job.city} (${job.zip_code})</span>
+                            <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full"><i class="fa-solid fa-location-dot mr-1"></i>${job.city}${job.state ? ', ' + job.state : ''} (${job.zip_code})</span>
                             <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">${job.work_mode || 'In-person'}</span>
                             <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">${job.category || 'General'}</span>
                         </div>
@@ -683,6 +695,7 @@
                 category: document.getElementById("job-category-input").value,
                 country: document.getElementById("job-country-input").value,
                 work_mode: document.getElementById("job-work-mode-input").value,
+                state: document.getElementById("job-state").value,
                 city: document.getElementById("job-city").value,
                 zip_code: document.getElementById("job-zip").value,
                 description: document.getElementById("job-description").value,
@@ -696,7 +709,7 @@
             jobsList.unshift(newJob);
             customJobsCount++;
             closeModal();
-            showToast("Job published live with Indeed-style location radius metadata!", "success");
+            showToast("Job published live! 100% free posting saved.", "success");
             updateAnalyticsStats();
             renderUI();
         }
@@ -730,7 +743,7 @@
         function showToast(message) {
             const container = document.getElementById("toast-container");
             const toast = document.createElement("div");
-            toast.className = `bg-blue-600 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2`;
+            toast.className = `bg-emerald-600 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2`;
             toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
