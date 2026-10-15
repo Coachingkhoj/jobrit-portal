@@ -40,21 +40,6 @@
         }
         .btn-post-job:hover { background-color: #059669 !important; }
 
-        .btn-view-app {
-            background-color: #2563eb !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
-            padding: 10px 18px !important;
-            border-radius: 12px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            cursor: pointer !important;
-            border: none !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-        }
-        .btn-view-app:hover { background-color: #1d4ed8 !important; }
-
         .jd-content {
             white-space: pre-line;
             line-height: 1.6;
@@ -150,58 +135,75 @@
         <div id="employer-dashboard-section" class="hidden mb-8 space-y-4">
             <!-- Job Slots Usage Progress Bar -->
             <div class="bg-white p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="w-full sm:w-1/2">
+                <div class="w-full sm:w-2/3">
                     <div class="flex justify-between items-center mb-1 text-xs font-bold text-gray-700">
                         <span>Job Slots Usage</span>
-                        <span id="slot-counter-text">1 of 250 job slots in use</span>
+                        <span id="slot-counter-text">1 of 250 free job slots in use</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5">
                         <div id="slot-progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 1%"></div>
                     </div>
                 </div>
-                <!-- Action Buttons -->
+                <!-- Action Button -->
                 <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                     <button onclick="openPostModal()" type="button" class="btn-post-job text-xs font-bold">
-                        <i class="fa-solid fa-circle-plus text-sm"></i> Post a job
-                    </button>
-                    <button onclick="toggleEmployerApplicants()" type="button" class="btn-view-app text-xs font-bold">
-                        <i class="fa-solid fa-users text-sm"></i> View Applicants (<span id="employer-app-count">0</span>)
+                        <i class="fa-solid fa-circle-plus text-sm"></i> Post a Free Job
                     </button>
                 </div>
             </div>
 
-            <!-- Active Job Postings -->
+            <!-- Active Job Postings with Dedicated Folders -->
             <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
-                    <h4 class="font-bold text-gray-900 text-sm flex items-center"><i class="fa-solid fa-list-check text-blue-600 mr-2"></i>Your Active Job Postings & Analytics</h4>
-                    <!-- Indeed Style Applicant Sub-Tabs -->
-                    <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold gap-1">
-                        <button onclick="switchAppTab('all')" id="tab-all-apps" class="px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition">All (<span id="count-all">0</span>)</button>
-                        <button onclick="switchAppTab('new')" id="tab-new-apps" class="px-3 py-1.5 rounded-lg text-gray-600 transition">New (<span id="count-new">0</span>)</button>
-                        <button onclick="switchAppTab('matches')" id="tab-matches-apps" class="px-3 py-1.5 rounded-lg text-gray-600 transition">Matches</button>
+                    <h4 class="font-bold text-gray-900 text-sm flex items-center">
+                        <i class="fa-solid fa-folder-tree text-blue-600 mr-2"></i>Manage Postings & Folder Status
+                    </h4>
+                    
+                    <!-- Indeed/LinkedIn Style Category Folders -->
+                    <div class="flex flex-wrap bg-gray-100 p-1 rounded-xl text-xs font-bold gap-1">
+                        <button onclick="switchJobFolder('Open')" id="folder-btn-Open" class="px-3 py-1.5 rounded-lg bg-white text-emerald-700 shadow-sm transition flex items-center gap-1.5 border">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Active Open (<span id="count-folder-open">0</span>)
+                        </button>
+                        <button onclick="switchJobFolder('Paused')" id="folder-btn-Paused" class="px-3 py-1.5 rounded-lg text-gray-600 transition flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span> Paused (<span id="count-folder-paused">0</span>)
+                        </button>
+                        <button onclick="switchJobFolder('Closed')" id="folder-btn-Closed" class="px-3 py-1.5 rounded-lg text-gray-600 transition flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span> Closed / Flagged (<span id="count-folder-closed">0</span>)
+                        </button>
+                        <button onclick="switchJobFolder('All')" id="folder-btn-All" class="px-3 py-1.5 rounded-lg text-gray-600 transition flex items-center gap-1.5">
+                            📁 All Jobs (<span id="count-folder-all">0</span>)
+                        </button>
                     </div>
                 </div>
+
                 <div id="employer-jobs-list" class="space-y-3">
                     <p class="text-xs text-gray-400">Loading your postings...</p>
                 </div>
             </div>
 
-            <!-- Applicants Box -->
+            <!-- Specific Job Applicants Box -->
             <div id="employer-applicants-box" class="hidden bg-white p-5 rounded-2xl border shadow-sm space-y-4">
-                <h4 class="font-bold text-gray-900 text-sm border-b pb-3 flex items-center"><i class="fa-solid fa-id-card text-emerald-600 mr-2"></i>Candidates Applied to Your Jobs</h4>
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h4 class="font-bold text-gray-900 text-sm flex items-center">
+                        <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i>
+                        <span id="applicants-box-title">Resumes Received</span>
+                    </h4>
+                    <button onclick="toggleEmployerApplicants(false)" class="text-xs text-gray-500 hover:text-gray-800 font-bold bg-gray-100 px-2.5 py-1 rounded-lg">Close Table ✕</button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs text-gray-600">
                         <thead class="bg-gray-50 text-gray-800 uppercase font-bold border-b">
                             <tr>
                                 <th class="p-3">Candidate Name</th>
-                                <th class="p-3">Position</th>
+                                <th class="p-3">Position Title</th>
                                 <th class="p-3">Email</th>
                                 <th class="p-3">Phone</th>
-                                <th class="p-3 text-center">Resume</th>
+                                <th class="p-3">Applied On</th>
+                                <th class="p-3 text-center">Resume Document</th>
                             </tr>
                         </thead>
                         <tbody id="employer-applicants-tbody" class="divide-y">
-                            <tr><td colspan="5" class="p-4 text-center text-gray-400">No applications received yet.</td></tr>
+                            <tr><td colspan="6" class="p-4 text-center text-gray-400">No applications received yet.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -385,11 +387,11 @@
 
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Description *</label>
-                    <textarea id="job-description" rows="6" required class="w-full border rounded-xl p-3 text-sm outline-none leading-relaxed" placeholder="Detailed position requirements (Key Responsibilities, Basic Qualifications, etc.)..."></textarea>
+                    <textarea id="job-description" rows="6" required class="w-full border rounded-xl p-3 text-sm outline-none leading-relaxed" placeholder="Detailed position requirements..."></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition">Cancel</button>
-                    <button type="submit" id="job-modal-submit-btn" class="btn-post-job text-sm font-bold">Publish Job</button>
+                    <button type="submit" id="job-modal-submit-btn" class="btn-post-job text-sm font-bold">Publish Free Job</button>
                 </div>
             </form>
         </div>
@@ -413,7 +415,8 @@
         let jobsList = [];
         let applicantsList = [];
         let authMode = 'login'; 
-        let activeAppTab = 'all';
+        let activeJobFolder = 'Open'; 
+        let selectedFilterJobId = 'all';
 
         const demoSeedJobs = [
             {
@@ -433,22 +436,7 @@
                 status_flag: "Open",
                 project_tag: "General",
                 post_type: "Manual",
-                description: `Location: Joint Base Charleston, SC (100% Onsite)
-Job Type: 12 months Contract
-Pay: $59/hr on W2
-Shift: Variable (Must be open to overtime/weekends based on business needs)
-
-Position Overview:
-We are seeking an experienced Modification Project Technical Specialist to lead and manage minor project plans and final scheduled maintenance visits at Joint Base Charleston.
-
-Key Responsibilities:
-• Project & Maintenance Coordination: Serve as the primary liaison for assigned contracts across USAF and FMS organizations.
-• Execution & Quality Assurance: Direct maintenance activities, conduct root cause analyses for technical/quality issues.
-• Supply & Resource Management: Identify required resources, validate parts availability.
-
-Basic Qualifications:
-• 3+ years of hands-on experience in aircraft sustainment, repairs, and modifications.
-• 3+ years of experience developing and managing project plans.`,
+                description: `Location: Joint Base Charleston, SC (100% Onsite)\nJob Type: 12 months Contract\nPay: $59/hr on W2\nShift: Variable\n\nPosition Overview:\nWe are seeking an experienced Modification Project Technical Specialist...`,
                 created_at: new Date().toISOString(),
                 is_demo: true
             }
@@ -548,7 +536,7 @@ Basic Qualifications:
             const counterText = document.getElementById('slot-counter-text');
             const progressBar = document.getElementById('slot-progress-bar');
             
-            if (counterText) counterText.innerText = `${usedSlots} of ${totalSlots} job slots in use`;
+            if (counterText) counterText.innerText = `${usedSlots} of ${totalSlots} free job slots in use`;
             if (progressBar) progressBar.style.width = `${percentage}%`;
         }
 
@@ -673,12 +661,12 @@ Basic Qualifications:
             document.getElementById('job-form').reset();
             document.getElementById('edit-job-id').value = "";
             document.getElementById('job-modal-title').innerText = "Post Free Position";
-            document.getElementById('job-modal-submit-btn').innerText = "Publish Job";
+            document.getElementById('job-modal-submit-btn').innerText = "Publish Free Job";
             document.getElementById('job-modal').classList.remove('hidden');
         }
 
         function openEditModal(jobId) {
-            const job = jobsList.find(j => j.id === jobId);
+            const job = jobsList.find(j => String(j.id) === String(jobId));
             if (!job) return;
 
             document.getElementById('edit-job-id').value = job.id;
@@ -738,8 +726,7 @@ Basic Qualifications:
             };
 
             if (editId) {
-                // Update Existing Job
-                const index = jobsList.findIndex(j => j.id === editId);
+                const index = jobsList.findIndex(j => String(j.id) === String(editId));
                 if (index !== -1) {
                     jobsList[index] = { ...jobsList[index], ...jobData };
                 }
@@ -752,7 +739,6 @@ Basic Qualifications:
                 }
                 showToast("Job posting updated successfully!", "success");
             } else {
-                // Create New Job
                 const newJob = {
                     ...jobData,
                     post_type: "Manual",
@@ -770,7 +756,7 @@ Basic Qualifications:
                         return;
                     }
                 }
-                showToast("Job successfully posted!", "success");
+                showToast("Free Job successfully posted!", "success");
             }
 
             closeModal();
@@ -789,8 +775,9 @@ Basic Qualifications:
             document.getElementById('apply-modal').classList.add('hidden');
         }
 
+        // Fixed Status Update Engine with Realtime Dynamic Folder UI Sync
         async function updateJobStatus(jobId, newStatus) {
-            const jobIndex = jobsList.findIndex(j => j.id === jobId);
+            const jobIndex = jobsList.findIndex(j => String(j.id) === String(jobId));
             if (jobIndex !== -1) {
                 jobsList[jobIndex].status_flag = newStatus;
             }
@@ -798,10 +785,15 @@ Basic Qualifications:
             if (supabaseClient) {
                 try {
                     await supabaseClient.from('jobs').update({ status_flag: newStatus }).eq('id', jobId);
-                } catch(e){}
+                } catch(e){
+                    console.error("Status update error:", e);
+                }
             }
 
-            showToast(`Job status changed to '${newStatus}'`, 'info');
+            showToast(`Status changed to '${newStatus}' & moved to corresponding folder.`, 'info');
+            
+            // Instantly re-render both public feed and employer folder lists
+            fetchEmployerJobs();
             renderUI();
         }
 
@@ -850,36 +842,56 @@ Basic Qualifications:
                         is_new: true,
                         created_at: new Date().toISOString()
                     }]);
+
+                    const targetJob = jobsList.find(j => String(j.id) === String(jobId));
+                    if (targetJob) {
+                        targetJob.applicants_count = (targetJob.applicants_count || 0) + 1;
+                        targetJob.new_applicants_count = (targetJob.new_applicants_count || 0) + 1;
+                        await supabaseClient.from('jobs').update({
+                            applicants_count: targetJob.applicants_count,
+                            new_applicants_count: targetJob.new_applicants_count
+                        }).eq('id', jobId);
+                    }
                 }
             } catch(err) {
                 resumeUrl = URL.createObjectURL(resumeFile);
             }
 
-            showToast("Application submitted successfully with resume!", "success");
+            showToast("Application & Resume submitted successfully!", "success");
             closeApplyModal();
             submitBtn.disabled = false;
             submitBtn.innerText = "Submit Application";
             await fetchApplicants();
+            renderUI();
         }
 
-        function switchAppTab(tab) {
-            activeAppTab = tab;
-            ['all', 'new', 'matches'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}-apps`);
+        function switchJobFolder(folder) {
+            activeJobFolder = folder;
+            ['Open', 'Paused', 'Closed', 'All'].forEach(f => {
+                const btn = document.getElementById(`folder-btn-${f}`);
                 if (btn) {
-                    if (t === tab) {
-                        btn.className = "px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition";
+                    if (f === folder) {
+                        btn.className = "px-3 py-1.5 rounded-lg bg-white text-blue-700 shadow-sm transition flex items-center gap-1.5 font-bold border";
                     } else {
-                        btn.className = "px-3 py-1.5 rounded-lg text-gray-600 transition";
+                        btn.className = "px-3 py-1.5 rounded-lg text-gray-600 transition flex items-center gap-1.5";
                     }
                 }
             });
             fetchEmployerJobs();
         }
 
-        function toggleEmployerApplicants() {
+        function viewJobApplicants(jobId = 'all', onlyNew = false) {
+            selectedFilterJobId = jobId;
+            toggleEmployerApplicants(true);
+            renderApplicantsTable(onlyNew);
+        }
+
+        function toggleEmployerApplicants(show) {
             const box = document.getElementById('employer-applicants-box');
-            if (box) box.classList.toggle('hidden');
+            if (!box) return;
+            if (show === undefined) box.classList.toggle('hidden');
+            else if (show) box.classList.remove('hidden');
+            else box.classList.add('hidden');
         }
 
         function filterJobs() {
@@ -895,18 +907,21 @@ Basic Qualifications:
             renderUI();
         }
 
+        // Candidate View: ONLY show Open status jobs
         function renderUI() {
             const countryFilter = document.getElementById('search-country').value.toLowerCase();
             const titleFilter = document.getElementById('search-title').value.toLowerCase();
             const locationFilter = document.getElementById('search-location').value.toLowerCase();
             const workModeFilter = document.getElementById('search-work-mode').value;
 
+            // Strict Filter: Public feed only shows 'Open' jobs
             const filtered = jobsList.filter(job => {
+                const isOpen = (job.status_flag || 'Open') === 'Open';
                 const matchCountry = !countryFilter || (job.country && job.country.toLowerCase().includes(countryFilter));
                 const matchTitle = !titleFilter || (job.title && job.title.toLowerCase().includes(titleFilter)) || (job.company && job.company.toLowerCase().includes(titleFilter));
                 const matchLocation = !locationFilter || (job.city && job.city.toLowerCase().includes(locationFilter)) || (job.state && job.state.toLowerCase().includes(locationFilter)) || (job.zip_code && job.zip_code.includes(locationFilter));
                 const matchWorkMode = !workModeFilter || (job.work_mode === workModeFilter);
-                return matchCountry && matchTitle && matchLocation && matchWorkMode;
+                return isOpen && matchCountry && matchTitle && matchLocation && matchWorkMode;
             });
 
             const countEl = document.getElementById('job-count');
@@ -916,7 +931,7 @@ Basic Qualifications:
             if (!jobListContainer) return;
 
             if (filtered.length === 0) {
-                jobListContainer.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-gray-500 text-sm">No job openings match your current filter criteria.</div>`;
+                jobListContainer.innerHTML = `<div class="bg-white p-8 rounded-2xl border text-center text-gray-500 text-sm">No active job openings match your search.</div>`;
                 return;
             }
 
@@ -954,28 +969,46 @@ Basic Qualifications:
             }
         }
 
+        // Employer View: Folder-Based Dynamic Render Logic
         function fetchEmployerJobs() {
             const listEl = document.getElementById('employer-jobs-list');
             if (!listEl) return;
 
             const myJobs = jobsList;
             
-            const countAll = myJobs.length;
-            const countNew = myJobs.reduce((acc, j) => acc + (j.new_applicants_count || 0), 0);
+            // Precise Counter calculations
+            const countOpen = myJobs.filter(j => (j.status_flag || 'Open') === 'Open').length;
+            const countPaused = myJobs.filter(j => j.status_flag === 'Paused').length;
+            const countClosed = myJobs.filter(j => j.status_flag === 'Closed' || j.status_flag === 'Flagged').length;
 
-            document.getElementById('count-all').innerText = countAll;
-            document.getElementById('count-new').innerText = countNew;
-            document.getElementById('employer-app-count').innerText = applicantsList.length || countNew;
+            document.getElementById('count-folder-open').innerText = countOpen;
+            document.getElementById('count-folder-paused').innerText = countPaused;
+            document.getElementById('count-folder-closed').innerText = countClosed;
+            document.getElementById('count-folder-all').innerText = myJobs.length;
 
-            if (myJobs.length === 0) {
-                listEl.innerHTML = `<p class="text-xs text-gray-400">No active job posts found.</p>`;
+            // Filter jobs strictly based on selected Folder Tab
+            let folderFilteredJobs = myJobs;
+            if (activeJobFolder === 'Open') {
+                folderFilteredJobs = myJobs.filter(j => (j.status_flag || 'Open') === 'Open');
+            } else if (activeJobFolder === 'Paused') {
+                folderFilteredJobs = myJobs.filter(j => j.status_flag === 'Paused');
+            } else if (activeJobFolder === 'Closed') {
+                folderFilteredJobs = myJobs.filter(j => j.status_flag === 'Closed' || j.status_flag === 'Flagged');
+            }
+
+            if (folderFilteredJobs.length === 0) {
+                listEl.innerHTML = `<div class="p-6 text-center text-gray-400 text-xs border rounded-xl bg-gray-50">No jobs currently in <b>'${activeJobFolder}'</b> status folder.</div>`;
                 return;
             }
 
-            listEl.innerHTML = myJobs.map(job => {
-                const statusColor = job.status_flag === 'Open' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' :
-                                    job.status_flag === 'Paused' ? 'bg-amber-50 text-amber-700 border-amber-300' :
-                                    job.status_flag === 'Closed' ? 'bg-red-50 text-red-700 border-red-300' : 'bg-gray-100 text-gray-700 border-gray-300';
+            listEl.innerHTML = folderFilteredJobs.map(job => {
+                const currentStatus = job.status_flag || 'Open';
+                const statusColor = currentStatus === 'Open' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' :
+                                    currentStatus === 'Paused' ? 'bg-amber-50 text-amber-700 border-amber-300' :
+                                    currentStatus === 'Closed' ? 'bg-red-50 text-red-700 border-red-300' : 'bg-gray-100 text-gray-700 border-gray-300';
+
+                const jobApps = applicantsList.filter(a => String(a.job_id) === String(job.id));
+                const jobNewApps = jobApps.filter(a => a.is_new).length;
 
                 return `
                 <div class="flex flex-wrap items-center justify-between p-3 rounded-xl border bg-gray-50/60 gap-3">
@@ -983,18 +1016,22 @@ Basic Qualifications:
                         <div class="flex items-center gap-2">
                             <h5 class="font-bold text-xs text-gray-900">${job.title}</h5>
                         </div>
-                        <p class="text-[11px] text-gray-500 mt-0.5">${job.city}, ${job.state} • Project: ${job.project_tag || 'General'} • Expiring in 28 days</p>
+                        <p class="text-[11px] text-gray-500 mt-0.5">${job.city}, ${job.state} • Project: ${job.project_tag || 'General'} • Status: <span class="font-semibold">${currentStatus}</span></p>
                     </div>
                     <div class="flex items-center gap-3 text-xs font-bold text-gray-700">
                         <span>Views: ${job.views_count || 12}</span>
-                        <span>Applicants: ${job.applicants_count || 0} (<span class="text-emerald-600">${job.new_applicants_count || 0} new</span>)</span>
                         
-                        <!-- Status Selector Dropdown (Open / Paused / Closed / Flagged) -->
+                        <!-- Direct Applicants/Resume Button -->
+                        <button onclick="viewJobApplicants('${job.id}', false)" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition">
+                            Applicants: ${jobApps.length} (<span class="text-emerald-600 font-black">${jobNewApps} new</span>)
+                        </button>
+                        
+                        <!-- Folder Switch Status Dropdown -->
                         <select onchange="updateJobStatus('${job.id}', this.value)" class="text-xs font-bold ${statusColor} border rounded-lg px-2.5 py-1 outline-none cursor-pointer shadow-sm">
-                            <option value="Open" ${job.status_flag === 'Open' ? 'selected' : ''}>● Open</option>
-                            <option value="Paused" ${job.status_flag === 'Paused' ? 'selected' : ''}>⏸ Paused</option>
-                            <option value="Closed" ${job.status_flag === 'Closed' ? 'selected' : ''}>🔴 Closed</option>
-                            <option value="Flagged" ${job.status_flag === 'Flagged' ? 'selected' : ''}>🚩 Flagged</option>
+                            <option value="Open" ${currentStatus === 'Open' ? 'selected' : ''}>● Open</option>
+                            <option value="Paused" ${currentStatus === 'Paused' ? 'selected' : ''}>⏸ Paused</option>
+                            <option value="Closed" ${currentStatus === 'Closed' ? 'selected' : ''}>🔴 Closed</option>
+                            <option value="Flagged" ${currentStatus === 'Flagged' ? 'selected' : ''}>🚩 Flagged</option>
                         </select>
 
                         <!-- Edit Button -->
@@ -1006,28 +1043,59 @@ Basic Qualifications:
             `;}).join('');
         }
 
-        function renderApplicantsTable() {
+        function renderApplicantsTable(onlyNew = false) {
             const tbody = document.getElementById('employer-applicants-tbody');
+            const titleEl = document.getElementById('applicants-box-title');
             if (!tbody) return;
 
-            if (applicantsList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No applications received yet.</td></tr>`;
+            let filteredApps = [...applicantsList];
+
+            if (selectedFilterJobId !== 'all') {
+                const targetJob = jobsList.find(j => String(j.id) === String(selectedFilterJobId));
+                filteredApps = filteredApps.filter(a => String(a.job_id) === String(selectedFilterJobId));
+                if (titleEl) titleEl.innerText = `Resumes Received for "${targetJob ? targetJob.title : 'Position'}"`;
+            } else {
+                if (titleEl) titleEl.innerText = `All Resumes Received across Positions`;
+            }
+
+            if (onlyNew) {
+                filteredApps = filteredApps.filter(a => a.is_new);
+            }
+
+            if (filteredApps.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400 font-medium">No resumes found for this selection.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = applicantsList.map(app => `
-                <tr>
-                    <td class="p-3 font-bold text-gray-900">${app.candidate_name}</td>
-                    <td class="p-3 text-gray-700">Position ID: ${app.job_id.slice(0,6)}...</td>
+            tbody.innerHTML = filteredApps.map(app => {
+                const linkedJob = jobsList.find(j => String(j.id) === String(app.job_id));
+                return `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-3 font-bold text-gray-900">${app.candidate_name} ${app.is_new ? '<span class="bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.5 rounded ml-1">NEW</span>' : ''}</td>
+                    <td class="p-3 font-semibold text-blue-600">${linkedJob ? linkedJob.title : 'General Position'}</td>
                     <td class="p-3 text-gray-600">${app.email}</td>
                     <td class="p-3 text-gray-600">${app.phone}</td>
+                    <td class="p-3 text-gray-400 text-[11px]">${new Date(app.created_at).toLocaleDateString()}</td>
                     <td class="p-3 text-center">
-                        <a href="${app.resume_url}" target="_blank" class="text-blue-600 hover:underline font-bold bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 inline-flex items-center gap-1">
-                            <i class="fa-solid fa-file-pdf"></i> View Resume
+                        <a href="${app.resume_url}" target="_blank" onclick="markApplicantRead('${app.id}')" class="text-blue-600 hover:underline font-bold bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 inline-flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-file-pdf text-red-500"></i> View Resume
                         </a>
                     </td>
                 </tr>
-            `).join('');
+            `;}).join('');
+        }
+
+        async function markApplicantRead(applicantId) {
+            const app = applicantsList.find(a => String(a.id) === String(applicantId));
+            if (app && app.is_new) {
+                app.is_new = false;
+                if (supabaseClient) {
+                    try {
+                        await supabaseClient.from('applicants').update({ is_new: false }).eq('id', applicantId);
+                    } catch(e){}
+                }
+                fetchEmployerJobs();
+            }
         }
     </script>
 </body>
