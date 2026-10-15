@@ -226,7 +226,7 @@
         </div>
     </div>
 
-    <!-- Candidate Profile Modal (With Persistent LocalStorage) -->
+    <!-- Candidate Profile Modal -->
     <div id="profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 border">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -491,9 +491,12 @@
             jobsList = [...localJobs, ...externalJobs];
         }
 
+        // Issue #5: Strict applicant privacy check
         async function fetchApplicantsFromSupabase() {
-            if (currentRole !== 'recruiter') {
-                showToast("Access Denied: Recruiter session required to view applicants.", "error");
+            if (currentRole !== 'recruiter' || sessionStorage.getItem("jobrit_recruiter_auth") !== "true") {
+                showToast("Access Denied: Secure Recruiter session required to view applicant data.", "error");
+                localApplicants = [];
+                renderApplicantsTable();
                 return;
             }
             if (supabaseClient) {
@@ -509,6 +512,11 @@
         function renderApplicantsTable() {
             const tableBody = document.getElementById("applicants-table-body");
             if (!tableBody) return;
+
+            if (currentRole !== 'recruiter' || sessionStorage.getItem("jobrit_recruiter_auth") !== "true") {
+                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500 font-bold">Unauthorized. Please log in as a recruiter.</td></tr>`;
+                return;
+            }
 
             if (localApplicants.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 font-medium">No candidate applications recorded yet</td></tr>`;
@@ -533,6 +541,10 @@
         }
 
         function toggleApplicantsView() {
+            if (currentRole !== 'recruiter' || sessionStorage.getItem("jobrit_recruiter_auth") !== "true") {
+                showToast("Access Denied: Recruiter authentication required.", "error");
+                return;
+            }
             const sec = document.getElementById("applicants-section");
             const btnText = document.getElementById("view-applicants-btn-text");
             const isHidden = sec.classList.contains("hidden");
@@ -550,7 +562,6 @@
             document.getElementById("stat-applicants-count").textContent = localApplicants.length;
         }
 
-        // Secure Recruiter Authentication Handler
         function promptRecruiterLogin() {
             const pin = prompt("Enter Recruiter / Agency Security PIN (Default is 1234):");
             if (pin === "1234") {
@@ -618,9 +629,9 @@
             });
         }
 
-        // XSS Safety Escaping Utility
         function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, 
                 tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
             );
         }
@@ -662,15 +673,15 @@
                                 Apply on Site <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
                             </a>
                         ` : `
-                            ${currentRole === 'recruiter' && !job.is_demo ? `
-                                <button onclick="openEditJobModal('${job.id}')" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-100 transition">
+                            ${currentRole === 'recruiter' && sessionStorage.getItem("jobrit_recruiter_auth") === "true" && !job.is_demo ? `
+                                <button onclick="openEditJobModal('${escapeHTML(job.id)}')" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-100 transition">
                                     <i class="fa-solid fa-pen"></i> Edit
                                 </button>
-                                <button onclick="deleteJob('${job.id}')" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+                                <button onclick="deleteJob('${escapeHTML(job.id)}')" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition">
                                     <i class="fa-solid fa-trash"></i> Delete
                                 </button>
                             ` : `
-                                <button onclick="openApplyModal('${job.id}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow">
+                                <button onclick="openApplyModal('${escapeHTML(job.id)}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow">
                                     Apply Now
                                 </button>
                             `}
@@ -725,10 +736,10 @@
             showToast("Application submitted successfully with resume link!", "success");
         }
 
-        // Job Creation & Editing Handler with strict type & DB error checks
+        // Issue #4: Edit with strict count & type verification
         async function handleFormSubmit(event) {
             event.preventDefault();
-            if (currentRole !== 'recruiter') {
+            if (currentRole !== 'recruiter' || sessionStorage.getItem("jobrit_recruiter_auth") !== "true") {
                 showToast("Unauthorized action!", "error");
                 return;
             }
@@ -736,7 +747,15 @@
             const pubBtn = document.getElementById("publish-btn");
             pubBtn.textContent = "Saving..."; pubBtn.disabled = true;
 
-            const editId = document.getElementById("edit-job-id").value;
+            const editId = document.getElementById("edit-job-id").value.trim();
+            if (editId) {
+                if (typeof editId !== 'string' || editId === '') {
+                    showToast("Invalid Job ID format for update", "error");
+                    pubBtn.textContent = "Publish Free Job"; pubBtn.disabled = false;
+                    return;
+                }
+            }
+
             const jobData = {
                 title: document.getElementById("job-title-input").value,
                 company: document.getElementById("job-company").value,
@@ -754,12 +773,13 @@
             if (supabaseClient) {
                 try {
                     if (editId) {
-                        // Update existing job
-                        const { error } = await supabaseClient.from('jobs').update(jobData).eq('id', editId);
+                        const { count, error } = await supabaseClient.from('jobs').update(jobData, { count: 'exact' }).eq('id', editId);
                         if (error) throw error;
+                        if (count === 0) {
+                            throw new Error("Target job record not found in database for update.");
+                        }
                         showToast("Job successfully updated in database!", "success");
                     } else {
-                        // Insert new job
                         jobData.id = `job-${Date.now()}`;
                         const { error } = await supabaseClient.from('jobs').insert([jobData]);
                         if (error) throw error;
@@ -798,9 +818,14 @@
             document.getElementById("job-modal").classList.remove("hidden");
         }
 
-        // Verified strict row deletion with error checking
+        // Issue #1 & #3: Strict Delete with count verification and ID format checks
         async function deleteJob(id) {
-            if (currentRole !== 'recruiter') {
+            const cleanId = String(id || "").trim();
+            if (!cleanId) {
+                showToast("Invalid Job ID format", "error");
+                return;
+            }
+            if (currentRole !== 'recruiter' || sessionStorage.getItem("jobrit_recruiter_auth") !== "true") {
                 showToast("Unauthorized delete attempt", "error");
                 return;
             }
@@ -808,9 +833,13 @@
 
             if (supabaseClient) {
                 try {
-                    const { count, error } = await supabaseClient.from('jobs').delete({ count: 'exact' }).eq('id', id);
+                    const { count, error } = await supabaseClient.from('jobs').delete({ count: 'exact' }).eq('id', cleanId);
                     if (error) {
                         showToast("Failed to delete job: " + error.message, "error");
+                        return;
+                    }
+                    if (count === 0) {
+                        showToast("Error: Job record not found in database or already deleted.", "error");
                         return;
                     }
                 } catch(e) {
@@ -819,7 +848,7 @@
                 }
             }
             
-            jobsList = jobsList.filter(j => j.id !== id);
+            jobsList = jobsList.filter(j => j.id !== cleanId);
             customJobsCount = Math.max(0, customJobsCount - 1);
             showToast("Job successfully deleted from database!", "success");
             updateAnalyticsStats();
@@ -840,7 +869,6 @@
 
         function closeProfileModal() { document.getElementById("profile-modal").classList.add("hidden"); }
 
-        // Persistent Candidate Profile save to localStorage
         function saveCandidateProfile(e) { 
             e.preventDefault(); 
             const profileData = {
@@ -866,6 +894,10 @@
         }
 
         function protectedOpenPostModal() { 
+            if (currentRole !== 'recruiter' || sessionStorage.getItem("jobrit_recruiter_auth") !== "true") {
+                promptRecruiterLogin();
+                return;
+            }
             document.getElementById("edit-job-id").value = "";
             document.getElementById("modal-heading").textContent = "Post Free Position";
             document.getElementById("job-form").reset();
