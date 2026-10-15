@@ -35,7 +35,9 @@
 
             <!-- Dynamic Auth Nav Section -->
             <div class="flex items-center gap-2 sm:gap-3" id="nav-auth-section">
-                <!-- Populated dynamically based on login state -->
+                <button onclick="openAuthModal('login')" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm text-xs sm:text-sm">
+                    Sign In / Register
+                </button>
             </div>
         </div>
     </header>
@@ -173,7 +175,7 @@
             <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
                 
                 <!-- Account Type Selector Box -->
-                <div class="bg-blue-50/80 p-3 rounded-xl border border-blue-200">
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
                     <label class="block text-xs font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider">
                         <i class="fa-solid fa-users-gear text-blue-600 mr-1"></i> Choose Account Role *
                     </label>
@@ -324,9 +326,11 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S";
         
         let supabaseClient = null;
-        if (window.supabase) {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(err) {}
 
         let currentUser = null;
         let userRole = 'candidate'; 
@@ -362,6 +366,7 @@
         ];
 
         document.addEventListener("DOMContentLoaded", async () => {
+            renderNavAuth();
             await checkAuthSession();
             await initApp();
         });
@@ -377,9 +382,7 @@
                     currentUser = null;
                     userRole = 'candidate';
                 }
-            } catch(e) {
-                console.log("Session verification catch");
-            }
+            } catch(e) {}
             renderNavAuth();
         }
 
@@ -398,15 +401,15 @@
                         </button>
                     </div>
                 `;
-                if (userRole === 'employer') {
+                if (userRole === 'employer' && employerDash) {
                     employerDash.classList.remove('hidden');
                     fetchEmployerJobs();
                     fetchEmployerApplicants();
-                } else {
+                } else if (employerDash) {
                     employerDash.classList.add('hidden');
                 }
             } else {
-                employerDash.classList.add('hidden');
+                if (employerDash) employerDash.classList.add('hidden');
                 navAuth.innerHTML = `
                     <button onclick="openAuthModal('login')" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm text-xs sm:text-sm">
                         Sign In / Register
@@ -565,7 +568,10 @@
             const role = document.getElementById('auth-role').value;
             const fullName = document.getElementById('auth-name').value;
 
-            if (!supabaseClient) return;
+            if (!supabaseClient) {
+                showToast("Backend connection offline.", "error");
+                return;
+            }
 
             if (authMode === 'signup') {
                 const { data, error } = await supabaseClient.auth.signUp({
@@ -743,7 +749,7 @@
 
         function toggleEmployerApplicants() {
             const box = document.getElementById('employer-applicants-box');
-            box.classList.toggle('hidden');
+            if (box) box.classList.toggle('hidden');
         }
 
         function filterJobs() { renderUI(); }
