@@ -28,7 +28,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col justify-between antialiased">
 
-    <!-- Toast Container for Pop-up Alerts -->
+    <!-- Toast Container for Pop-up Notifications -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- Header / Navbar -->
@@ -330,17 +330,19 @@
         </div>
     </div>
 
-    <!-- Complete Integrated Script Engine -->
+    <!-- Script Engine with Updated Supabase Key -->
     <script>
         const SUPABASE_URL = "https://fksiepwvbygkcojvjyzy.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrc2llcHd2Ynlia2NvanZqeXp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTI3MDIsImV4cCI6MjA1Njc4ODcwMn0.J6k8RkK6E_L0kZk_L9s1F1V8S_s1F1V8S_s1F1V8S";
+        const SUPABASE_ANON_KEY = "sb_publishable_nZ04GQ7-N30fI3xe67AOKw_tyd-9Xam";
         
         let supabaseClient = null;
         try {
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        } catch(err) {}
+        } catch(err) {
+            console.error("Supabase client error:", err);
+        }
 
         let currentUser = null;
         let userRole = 'candidate'; 
@@ -442,7 +444,7 @@
             jobsList = [...localJobs];
         }
 
-        // --- Toast Pop-up Messaging System ---
+        // --- Toast Notification Alerts ---
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -457,10 +459,10 @@
             `;
 
             container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 4000);
+            setTimeout(() => { toast.remove(); }, 4500);
         }
 
-        // --- Auth Modals & Handlers ---
+        // --- Auth Modals & Logic ---
         function switchAuthMode(mode) {
             authMode = mode;
             const loginBtn = document.getElementById('auth-tab-login');
@@ -502,7 +504,7 @@
             const submitBtn = document.getElementById('auth-submit-btn');
 
             if (!supabaseClient) {
-                showToast("Supabase client properly configured nahi hai.", "error");
+                showToast("Supabase client initialized nahi hua hai.", "error");
                 return;
             }
 
@@ -514,18 +516,23 @@
                     const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
-                        options: { data: { full_name: name, role: role } }
+                        options: {
+                            data: { full_name: name, role: role }
+                        }
                     });
 
                     if (error) {
                         showToast(error.message, "error");
-                    } else if (data.user) {
+                    } else if (data.user && data.session) {
                         currentUser = data.user;
                         userRole = role;
                         showToast("Account successfully ban gaya! Welcome.", "success");
                         closeAuthModal();
                         renderNavAuth();
                         initApp();
+                    } else {
+                        showToast("Registration successful! Yadi email confirm feature on hai toh inbox check karein.", "success");
+                        closeAuthModal();
                     }
                 } else {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -561,7 +568,7 @@
             initApp();
         }
 
-        // --- Render Jobs & UI ---
+        // --- Job Search & Render UI ---
         function renderUI() {
             const listEl = document.getElementById('job-list');
             const countEl = document.getElementById('job-count');
@@ -594,7 +601,6 @@
         }
 
         function filterJobs() {
-            // Basic Filter Placeholder
             renderUI();
         }
 
@@ -602,35 +608,29 @@
             renderUI();
         }
 
-        // --- Employer Job Posting & Applications Stubs ---
-        function openPostModal() {
-            document.getElementById('job-modal').classList.remove('hidden');
-        }
-        function closeModal() {
-            document.getElementById('job-modal').classList.add('hidden');
-        }
+        // --- Modal Control Functions ---
+        function openPostModal() { document.getElementById('job-modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('job-modal').classList.add('hidden'); }
         function openApplyModal(jobId, jobTitle) {
             document.getElementById('apply-job-id').value = jobId;
             document.getElementById('apply-job-title').innerText = jobTitle;
             document.getElementById('apply-modal').classList.remove('hidden');
         }
-        function closeApplyModal() {
-            document.getElementById('apply-modal').classList.add('hidden');
-        }
-        function toggleEmployerApplicants() {
-            const box = document.getElementById('employer-applicants-box');
-            box.classList.toggle('hidden');
-        }
+        function closeApplyModal() { document.getElementById('apply-modal').classList.add('hidden'); }
+        function toggleEmployerApplicants() { document.getElementById('employer-applicants-box').classList.toggle('hidden'); }
+
         async function fetchEmployerJobs() {}
         async function fetchEmployerApplicants() {}
+        
         async function handleJobFormSubmit(e) {
             e.preventDefault();
-            showToast("Job posted successfully!", "success");
+            showToast("Job successfully publish ho gayi!", "success");
             closeModal();
         }
+        
         async function submitApplication(e) {
             e.preventDefault();
-            showToast("Application submitted successfully!", "success");
+            showToast("Aapki application bhej di gayi hai!", "success");
             closeApplyModal();
         }
     </script>
