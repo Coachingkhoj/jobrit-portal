@@ -98,7 +98,7 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
         
-        <!-- Employer / Recruiter Dashboard (Visible only when logged in as employer) -->
+        <!-- Employer / Recruiter Dashboard -->
         <div id="employer-dashboard-section" class="hidden mb-8 space-y-4">
             <div class="bg-white p-5 rounded-2xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
                 <div>
@@ -166,19 +166,19 @@
             </div>
             
             <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold">
-                <button id="auth-tab-login" onclick="switchAuthMode('login')" class="w-1/2 py-2 rounded-lg bg-white text-blue-700 shadow-sm transition">Sign In</button>
-                <button id="auth-tab-signup" onclick="switchAuthMode('signup')" class="w-1/2 py-2 rounded-lg text-gray-600 transition">Create Account</button>
+                <button id="auth-tab-login" type="button" onclick="switchAuthMode('login')" class="w-1/2 py-2 rounded-lg bg-white text-blue-700 shadow-sm transition">Sign In</button>
+                <button id="auth-tab-signup" type="button" onclick="switchAuthMode('signup')" class="w-1/2 py-2 rounded-lg text-gray-600 transition">Create Account</button>
             </div>
 
             <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
                 
                 <!-- Account Type Selector Box -->
-                <div class="bg-blue-50/70 p-3 rounded-xl border border-blue-100">
-                    <label class="block text-xs font-bold text-blue-900 mb-1.5 uppercase tracking-wider">
-                        <i class="fa-solid fa-users-gear text-blue-600 mr-1"></i> I am registering / signing in as: *
+                <div class="bg-blue-50/80 p-3 rounded-xl border border-blue-200">
+                    <label class="block text-xs font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider">
+                        <i class="fa-solid fa-users-gear text-blue-600 mr-1"></i> Choose Account Role *
                     </label>
-                    <select id="auth-role" class="w-full border border-blue-200 rounded-xl p-2.5 text-sm font-bold text-blue-900 bg-white focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer">
-                        <option value="candidate" selected>👤 Job Seeker (Looking for a job)</option>
+                    <select id="auth-role" class="w-full border border-blue-300 rounded-xl p-2.5 text-xs font-bold text-blue-900 bg-white focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer">
+                        <option value="candidate">👤 Job Seeker (Looking for a job)</option>
                         <option value="employer">🏢 Employer / Recruiter (Posting & hiring talent)</option>
                     </select>
                 </div>
@@ -329,9 +329,9 @@
         }
 
         let currentUser = null;
-        let userRole = null; // 'employer' or 'candidate'
+        let userRole = 'candidate'; 
         let jobsList = [];
-        let authMode = 'login'; // 'login' or 'signup'
+        let authMode = 'login'; 
 
         const regionClusters = {
             "noida": ["noida", "delhi", "greater noida", "ghaziabad", "gurgaon", "delhi ncr", "uttar pradesh", "up"],
@@ -368,10 +368,17 @@
 
         async function checkAuthSession() {
             if (!supabaseClient) return;
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session && session.user) {
-                currentUser = session.user;
-                userRole = session.user.user_metadata?.role || 'candidate';
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    currentUser = session.user;
+                    userRole = session.user.user_metadata?.role || 'candidate';
+                } else {
+                    currentUser = null;
+                    userRole = 'candidate';
+                }
+            } catch(e) {
+                console.log("Session verification catch");
             }
             renderNavAuth();
         }
@@ -382,9 +389,9 @@
 
             if (currentUser) {
                 navAuth.innerHTML = `
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 sm:gap-3">
                         <span class="text-xs font-bold text-gray-700 bg-gray-100 px-3 py-1.5 rounded-xl border">
-                            <i class="fa-solid fa-user-circle text-blue-600 mr-1"></i> ${currentUser.email} (${(userRole || 'USER').toUpperCase()})
+                            <i class="fa-solid fa-user-circle text-blue-600 mr-1"></i> ${currentUser.email} (${(userRole || 'candidate').toUpperCase()})
                         </span>
                         <button onclick="handleLogout()" class="bg-red-50 text-red-600 font-bold px-3 py-1.5 rounded-lg hover:bg-red-100 transition text-xs">
                             Sign Out
@@ -506,10 +513,10 @@
                     }
                     tbody.innerHTML = data.map(app => `
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="p-3 font-semibold text-gray-900">${app.candidate_name}</td>
-                            <td class="p-3 text-blue-600 font-medium">${app.job_title}</td>
-                            <td class="p-3 text-gray-600">${app.candidate_email}</td>
-                            <td class="p-3 text-gray-600">${app.candidate_phone}</td>
+                            <td class="p-3 font-semibold text-gray-900">${app.candidate_name || 'N/A'}</td>
+                            <td class="p-3 text-blue-600 font-medium">${app.job_title || 'Position'}</td>
+                            <td class="p-3 text-gray-600">${app.candidate_email || 'N/A'}</td>
+                            <td class="p-3 text-gray-600">${app.candidate_phone || 'N/A'}</td>
                             <td class="p-3 text-center">
                                 <a href="${app.resume_url}" target="_blank" class="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-bold hover:bg-blue-100 transition"><i class="fa-solid fa-file-pdf mr-1"></i> View CV</a>
                             </td>
@@ -564,13 +571,13 @@
                 const { data, error } = await supabaseClient.auth.signUp({
                     email,
                     password,
-                    options: { data: { role, full_name: fullName } }
+                    options: { data: { role: role, full_name: fullName } }
                 });
                 if (error) {
                     showToast(error.message, "error");
                     return;
                 }
-                showToast("Account created successfully! You are now signed in.", "success");
+                showToast("Account created successfully! Logged in.", "success");
             } else {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) {
@@ -589,7 +596,7 @@
             if (!supabaseClient) return;
             await supabaseClient.auth.signOut();
             currentUser = null;
-            userRole = null;
+            userRole = 'candidate';
             renderNavAuth();
             showToast("Signed out successfully.", "info");
             await initApp();
@@ -717,7 +724,7 @@
                 candidate_email,
                 candidate_phone,
                 resume_url,
-                candidate_id: currentUser.id,
+                candidate_id: currentUser ? currentUser.id : null,
                 employer_id: employer_id
             };
 
