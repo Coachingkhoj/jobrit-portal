@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jobrit Pro - Professional Secure ATS & Job Board</title>
-    <!-- Tailwind CSS Production CDN (Fixed for Netlify / Production) -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Google Analytics (GA4) Tracking Setup -->
@@ -444,7 +444,7 @@
             jobsList = [...localJobs];
         }
 
-        // --- Toast Notification Alerts ---
+        // --- Toast Notification Alerts (English) ---
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -504,7 +504,7 @@
             const submitBtn = document.getElementById('auth-submit-btn');
 
             if (!supabaseClient) {
-                showToast("Supabase client initialized nahi hua hai.", "error");
+                showToast("Supabase client is not initialized.", "error");
                 return;
             }
 
@@ -523,16 +523,25 @@
 
                     if (error) {
                         showToast(error.message, "error");
-                    } else if (data.user && data.session) {
-                        currentUser = data.user;
-                        userRole = role;
-                        showToast("Account successfully ban gaya! Welcome.", "success");
+                    } else {
+                        // Automatically sign in the user right after signup (since email confirmation is disabled)
+                        const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+
+                        if (!loginError && loginData.user) {
+                            currentUser = loginData.user;
+                            userRole = role;
+                        } else if (data.user) {
+                            currentUser = data.user;
+                            userRole = role;
+                        }
+
+                        showToast("Account successfully created! Welcome.", "success");
                         closeAuthModal();
                         renderNavAuth();
                         initApp();
-                    } else {
-                        showToast("Registration successful! Yadi email confirm feature on hai toh inbox check karein.", "success");
-                        closeAuthModal();
                     }
                 } else {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -563,7 +572,7 @@
             if (supabaseClient) await supabaseClient.auth.signOut();
             currentUser = null;
             userRole = 'candidate';
-            showToast("Aap Sign Out ho chuke hain.", "info");
+            showToast("You have successfully signed out.", "info");
             renderNavAuth();
             initApp();
         }
@@ -624,13 +633,13 @@
         
         async function handleJobFormSubmit(e) {
             e.preventDefault();
-            showToast("Job successfully publish ho gayi!", "success");
+            showToast("Job successfully published!", "success");
             closeModal();
         }
         
         async function submitApplication(e) {
             e.preventDefault();
-            showToast("Aapki application bhej di gayi hai!", "success");
+            showToast("Your application has been submitted successfully!", "success");
             closeApplyModal();
         }
     </script>
