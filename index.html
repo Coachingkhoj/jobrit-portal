@@ -24,6 +24,41 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Direct Solid Buttons Fix (Guaranteed Visibility) */
+        .btn-post-job {
+            background-color: #10b981 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            padding: 10px 18px !important;
+            border-radius: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            cursor: pointer !important;
+            border: none !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+        .btn-post-job:hover {
+            background-color: #059669 !important;
+        }
+
+        .btn-view-app {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            padding: 10px 18px !important;
+            border-radius: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            cursor: pointer !important;
+            border: none !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+        .btn-view-app:hover {
+            background-color: #1d4ed8 !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col justify-between antialiased">
@@ -110,34 +145,36 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-grow w-full">
         
-        <!-- Employer / Recruiter Dashboard -->
+        <!-- Employer Dashboard (Fixed Inline Buttons) -->
         <div id="employer-dashboard-section" class="hidden mb-8 space-y-4">
-            <div class="bg-white p-5 rounded-2xl border shadow-sm flex flex-wrap justify-between items-center gap-4">
+            <div class="bg-white p-5 rounded-2xl border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h3 class="font-black text-lg text-gray-900"><i class="fa-solid fa-user-tie text-blue-600 mr-2"></i>Employer Dashboard & Analytics</h3>
-                    <p class="text-xs text-gray-500" id="employer-welcome-text">Manage your posted roles, view total job views, and track applicant submissions securely.</p>
+                    <h3 class="font-black text-lg text-gray-900 flex items-center"><i class="fa-solid fa-user-tie text-blue-600 mr-2"></i>Employer Dashboard & Analytics</h3>
+                    <p class="text-xs text-gray-500">Manage your posted roles, view total job views, and track applicant submissions securely.</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="openPostModal()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm flex items-center gap-1.5">
-                        <i class="fa-solid fa-plus"></i> Post New Job
+                
+                <!-- Explicit Custom CSS Styled Action Buttons -->
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <button onclick="openPostModal()" type="button" class="btn-post-job text-xs font-bold">
+                        <i class="fa-solid fa-circle-plus text-sm"></i> Post New Job
                     </button>
-                    <button onclick="toggleEmployerApplicants()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm flex items-center gap-1.5">
-                        <i class="fa-solid fa-users"></i> View Applicants (<span id="employer-app-count">0</span>)
+                    <button onclick="toggleEmployerApplicants()" type="button" class="btn-view-app text-xs font-bold">
+                        <i class="fa-solid fa-users text-sm"></i> View Applicants (<span id="employer-app-count">0</span>)
                     </button>
                 </div>
             </div>
 
-            <!-- Employer's Own Posted Jobs Container -->
+            <!-- Active Job Postings -->
             <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
-                <h4 class="font-bold text-gray-900 text-sm border-b pb-3"><i class="fa-solid fa-list-check text-blue-600 mr-2"></i>Your Active Job Postings & Traffic Stats</h4>
+                <h4 class="font-bold text-gray-900 text-sm border-b pb-3 flex items-center"><i class="fa-solid fa-list-check text-blue-600 mr-2"></i>Your Active Job Postings & Traffic Stats</h4>
                 <div id="employer-jobs-list" class="space-y-3">
                     <p class="text-xs text-gray-400">Loading your postings...</p>
                 </div>
             </div>
 
-            <!-- Employer Applicants Table -->
+            <!-- Applicants Box -->
             <div id="employer-applicants-box" class="hidden bg-white p-5 rounded-2xl border shadow-sm space-y-4">
-                <h4 class="font-bold text-gray-900 text-sm border-b pb-3"><i class="fa-solid fa-id-card text-emerald-600 mr-2"></i>Candidates Applied to Your Jobs</h4>
+                <h4 class="font-bold text-gray-900 text-sm border-b pb-3 flex items-center"><i class="fa-solid fa-id-card text-emerald-600 mr-2"></i>Candidates Applied to Your Jobs</h4>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs text-gray-600">
                         <thead class="bg-gray-50 text-gray-800 uppercase font-bold border-b">
@@ -169,7 +206,7 @@
         <div id="job-list" class="space-y-4"></div>
     </main>
 
-    <!-- Auth Modal (Login / Signup for Candidate & Employer) -->
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border">
             <div class="flex justify-between items-center border-b pb-3">
@@ -183,15 +220,13 @@
             </div>
 
             <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
-                
-                <!-- Account Type Selector Box -->
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
                     <label class="block text-xs font-extrabold text-blue-900 mb-1.5 uppercase tracking-wider">
                         <i class="fa-solid fa-users-gear text-blue-600 mr-1"></i> Choose Account Role *
                     </label>
                     <select id="auth-role" class="w-full border border-blue-300 rounded-xl p-2.5 text-xs font-bold text-blue-900 bg-white focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer">
-                        <option value="candidate">👤 Job Seeker (Looking for a job)</option>
                         <option value="employer">🏢 Employer / Recruiter (Posting & hiring talent)</option>
+                        <option value="candidate">👤 Job Seeker (Looking for a job)</option>
                     </select>
                 </div>
 
@@ -241,8 +276,8 @@
                     <input type="url" id="applicant-resume" required class="w-full border rounded-xl p-2.5 text-sm outline-none" placeholder="https://drive.google.com/file/d/...">
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeApplyModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md">Submit Application</button>
+                    <button type="button" onclick="closeApplyModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md transition">Submit Application</button>
                 </div>
             </form>
         </div>
@@ -323,8 +358,8 @@
                     <textarea id="job-description" rows="4" required class="w-full border rounded-xl p-3 text-sm outline-none" placeholder="Detailed position requirements..."></textarea>
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 shadow-md">Publish Job</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition">Cancel</button>
+                    <button type="submit" class="btn-post-job text-sm font-bold">Publish Job</button>
                 </div>
             </form>
         </div>
@@ -345,7 +380,6 @@
         }
 
         let currentUser = null;
-        let userRole = 'candidate'; 
         let jobsList = [];
         let authMode = 'login'; 
 
@@ -368,7 +402,6 @@
         ];
 
         document.addEventListener("DOMContentLoaded", async () => {
-            renderNavAuth();
             await checkAuthSession();
             await initApp();
         });
@@ -379,10 +412,8 @@
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     currentUser = session.user;
-                    userRole = session.user.user_metadata?.role || 'candidate';
                 } else {
                     currentUser = null;
-                    userRole = 'candidate';
                 }
             } catch(e) {}
             renderNavAuth();
@@ -396,19 +427,16 @@
                 navAuth.innerHTML = `
                     <div class="flex items-center gap-2 sm:gap-3">
                         <span class="text-xs font-bold text-gray-700 bg-gray-100 px-3 py-1.5 rounded-xl border">
-                            <i class="fa-solid fa-user-circle text-blue-600 mr-1"></i> ${currentUser.email} (${(userRole || 'candidate').toUpperCase()})
+                            <i class="fa-solid fa-user-circle text-blue-600 mr-1"></i> ${currentUser.email} (EMPLOYER)
                         </span>
                         <button onclick="handleLogout()" class="bg-red-50 text-red-600 font-bold px-3 py-1.5 rounded-lg hover:bg-red-100 transition text-xs">
                             Sign Out
                         </button>
                     </div>
                 `;
-                if (userRole === 'employer' && employerDash) {
+                if (employerDash) {
                     employerDash.classList.remove('hidden');
                     fetchEmployerJobs();
-                    fetchEmployerApplicants();
-                } else if (employerDash) {
-                    employerDash.classList.add('hidden');
                 }
             } else {
                 if (employerDash) employerDash.classList.add('hidden');
@@ -444,7 +472,6 @@
             jobsList = [...localJobs];
         }
 
-        // --- Toast Notification Alerts (English) ---
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
@@ -462,7 +489,6 @@
             setTimeout(() => { toast.remove(); }, 4500);
         }
 
-        // --- Auth Modals & Logic ---
         function switchAuthMode(mode) {
             authMode = mode;
             const loginBtn = document.getElementById('auth-tab-login');
@@ -516,27 +542,15 @@
                     const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password,
-                        options: {
-                            data: { full_name: name, role: role }
-                        }
+                        options: { data: { full_name: name, role: role } }
                     });
 
                     if (error) {
                         showToast(error.message, "error");
                     } else {
-                        // Automatically sign in the user right after signup (since email confirmation is disabled)
-                        const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
-                            email: email,
-                            password: password
-                        });
-
-                        if (!loginError && loginData.user) {
-                            currentUser = loginData.user;
-                            userRole = role;
-                        } else if (data.user) {
-                            currentUser = data.user;
-                            userRole = role;
-                        }
+                        const { data: loginData } = await supabaseClient.auth.signInWithPassword({ email, password });
+                        if (loginData?.user) currentUser = loginData.user;
+                        else if (data.user) currentUser = data.user;
 
                         showToast("Account successfully created! Welcome.", "success");
                         closeAuthModal();
@@ -544,16 +558,11 @@
                         initApp();
                     }
                 } else {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) {
                         showToast(error.message, "error");
                     } else {
                         currentUser = data.user;
-                        userRole = data.user.user_metadata?.role || 'candidate';
                         showToast("Sign in successful!", "success");
                         closeAuthModal();
                         renderNavAuth();
@@ -571,13 +580,11 @@
         async function handleLogout() {
             if (supabaseClient) await supabaseClient.auth.signOut();
             currentUser = null;
-            userRole = 'candidate';
             showToast("You have successfully signed out.", "info");
             renderNavAuth();
             initApp();
         }
 
-        // --- Job Search & Render UI ---
         function renderUI() {
             const listEl = document.getElementById('job-list');
             const countEl = document.getElementById('job-count');
@@ -609,15 +616,9 @@
             `).join('');
         }
 
-        function filterJobs() {
-            renderUI();
-        }
+        function filterJobs() { renderUI(); }
+        function resetFilters() { renderUI(); }
 
-        function resetFilters() {
-            renderUI();
-        }
-
-        // --- Modal Control Functions ---
         function openPostModal() { document.getElementById('job-modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('job-modal').classList.add('hidden'); }
         function openApplyModal(jobId, jobTitle) {
@@ -628,13 +629,50 @@
         function closeApplyModal() { document.getElementById('apply-modal').classList.add('hidden'); }
         function toggleEmployerApplicants() { document.getElementById('employer-applicants-box').classList.toggle('hidden'); }
 
-        async function fetchEmployerJobs() {}
-        async function fetchEmployerApplicants() {}
+        async function fetchEmployerJobs() {
+            const listContainer = document.getElementById('employer-jobs-list');
+            if (jobsList.length > 0 && listContainer) {
+                listContainer.innerHTML = jobsList.map(j => `
+                    <div class="p-3 bg-gray-50 rounded-xl border flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-gray-800">${j.title}</span>
+                            <p class="text-gray-500">${j.city}, ${j.state}</p>
+                        </div>
+                        <span class="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-full">${j.views_count || 0} Views</span>
+                    </div>
+                `).join('');
+            }
+        }
         
         async function handleJobFormSubmit(e) {
             e.preventDefault();
+            const title = document.getElementById('job-title-input').value;
+            const company = document.getElementById('job-company').value;
+            const country = document.getElementById('job-country-input').value;
+            const work_mode = document.getElementById('job-work-mode-input').value;
+            const category = document.getElementById('job-category-input').value;
+            const state = document.getElementById('job-state').value;
+            const city = document.getElementById('job-city').value;
+            const zip_code = document.getElementById('job-zip').value;
+            const description = document.getElementById('job-description').value;
+
+            if (supabaseClient) {
+                try {
+                    const { error } = await supabaseClient.from('jobs').insert([{
+                        title, company, country, work_mode, category, state, city, zip_code, description, recruiter_id: currentUser ? currentUser.id : null
+                    }]);
+                    if (error) {
+                        showToast(error.message, "error");
+                        return;
+                    }
+                } catch(err) {}
+            }
+
             showToast("Job successfully published!", "success");
             closeModal();
+            await fetchAllJobs();
+            renderUI();
+            fetchEmployerJobs();
         }
         
         async function submitApplication(e) {
