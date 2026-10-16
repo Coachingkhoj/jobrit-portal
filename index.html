@@ -159,7 +159,7 @@
                         <i class="fa-solid fa-folder-tree text-blue-600 mr-2"></i>Manage Postings & Folder Status
                     </h4>
                     
-                    <!-- Indeed/LinkedIn Style Category Folders -->
+                    <!-- Category Folders -->
                     <div class="flex flex-wrap bg-gray-100 p-1 rounded-xl text-xs font-bold gap-1">
                         <button onclick="switchJobFolder('Open')" id="folder-btn-Open" class="px-3 py-1.5 rounded-lg bg-white text-emerald-700 shadow-sm transition flex items-center gap-1.5 border">
                             <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Active Open (<span id="count-folder-open">0</span>)
@@ -731,7 +731,8 @@
                     jobsList[index] = { ...jobsList[index], ...jobData };
                 }
                 if (supabaseClient) {
-                    const { error } = await supabaseClient.from('jobs').update(jobData).eq('id', editId);
+                    const parsedEditId = !isNaN(editId) && !String(editId).includes('seed') ? Number(editId) : editId;
+                    const { error } = await supabaseClient.from('jobs').update(jobData).eq('id', parsedEditId);
                     if (error) {
                         showToast("Error updating job: " + error.message, "error");
                         return;
@@ -775,7 +776,7 @@
             document.getElementById('apply-modal').classList.add('hidden');
         }
 
-        // Fixed Status Update Engine with Realtime Dynamic Folder UI Sync
+        // Robust Persistent Supabase Update Function with ID Parsing Fix
         async function updateJobStatus(jobId, newStatus) {
             const jobIndex = jobsList.findIndex(j => String(j.id) === String(jobId));
             if (jobIndex !== -1) {
@@ -784,15 +785,23 @@
 
             if (supabaseClient) {
                 try {
-                    await supabaseClient.from('jobs').update({ status_flag: newStatus }).eq('id', jobId);
+                    const parsedId = !isNaN(jobId) && !String(jobId).includes('seed') ? Number(jobId) : jobId;
+                    const { error } = await supabaseClient
+                        .from('jobs')
+                        .update({ status_flag: newStatus })
+                        .eq('id', parsedId);
+
+                    if (error) {
+                        console.error("Supabase Database Update Failed:", error);
+                        showToast("DB Error: " + error.message, "error");
+                    } else {
+                        showToast(`Status updated to '${newStatus}' in Database.`, "success");
+                    }
                 } catch(e){
-                    console.error("Status update error:", e);
+                    console.error("Connection Error:", e);
                 }
             }
 
-            showToast(`Status changed to '${newStatus}' & moved to corresponding folder.`, 'info');
-            
-            // Instantly re-render both public feed and employer folder lists
             fetchEmployerJobs();
             renderUI();
         }
@@ -847,10 +856,11 @@
                     if (targetJob) {
                         targetJob.applicants_count = (targetJob.applicants_count || 0) + 1;
                         targetJob.new_applicants_count = (targetJob.new_applicants_count || 0) + 1;
+                        const parsedJobId = !isNaN(jobId) && !String(jobId).includes('seed') ? Number(jobId) : jobId;
                         await supabaseClient.from('jobs').update({
                             applicants_count: targetJob.applicants_count,
                             new_applicants_count: targetJob.new_applicants_count
-                        }).eq('id', jobId);
+                        }).eq('id', parsedJobId);
                     }
                 }
             } catch(err) {
@@ -907,14 +917,12 @@
             renderUI();
         }
 
-        // Candidate View: ONLY show Open status jobs
         function renderUI() {
             const countryFilter = document.getElementById('search-country').value.toLowerCase();
             const titleFilter = document.getElementById('search-title').value.toLowerCase();
             const locationFilter = document.getElementById('search-location').value.toLowerCase();
             const workModeFilter = document.getElementById('search-work-mode').value;
 
-            // Strict Filter: Public feed only shows 'Open' jobs
             const filtered = jobsList.filter(job => {
                 const isOpen = (job.status_flag || 'Open') === 'Open';
                 const matchCountry = !countryFilter || (job.country && job.country.toLowerCase().includes(countryFilter));
@@ -969,14 +977,12 @@
             }
         }
 
-        // Employer View: Folder-Based Dynamic Render Logic
         function fetchEmployerJobs() {
             const listEl = document.getElementById('employer-jobs-list');
             if (!listEl) return;
 
             const myJobs = jobsList;
             
-            // Precise Counter calculations
             const countOpen = myJobs.filter(j => (j.status_flag || 'Open') === 'Open').length;
             const countPaused = myJobs.filter(j => j.status_flag === 'Paused').length;
             const countClosed = myJobs.filter(j => j.status_flag === 'Closed' || j.status_flag === 'Flagged').length;
@@ -986,7 +992,6 @@
             document.getElementById('count-folder-closed').innerText = countClosed;
             document.getElementById('count-folder-all').innerText = myJobs.length;
 
-            // Filter jobs strictly based on selected Folder Tab
             let folderFilteredJobs = myJobs;
             if (activeJobFolder === 'Open') {
                 folderFilteredJobs = myJobs.filter(j => (j.status_flag || 'Open') === 'Open');
@@ -1021,12 +1026,10 @@
                     <div class="flex items-center gap-3 text-xs font-bold text-gray-700">
                         <span>Views: ${job.views_count || 12}</span>
                         
-                        <!-- Direct Applicants/Resume Button -->
                         <button onclick="viewJobApplicants('${job.id}', false)" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition">
                             Applicants: ${jobApps.length} (<span class="text-emerald-600 font-black">${jobNewApps} new</span>)
                         </button>
                         
-                        <!-- Folder Switch Status Dropdown -->
                         <select onchange="updateJobStatus('${job.id}', this.value)" class="text-xs font-bold ${statusColor} border rounded-lg px-2.5 py-1 outline-none cursor-pointer shadow-sm">
                             <option value="Open" ${currentStatus === 'Open' ? 'selected' : ''}>● Open</option>
                             <option value="Paused" ${currentStatus === 'Paused' ? 'selected' : ''}>⏸ Paused</option>
@@ -1034,7 +1037,6 @@
                             <option value="Flagged" ${currentStatus === 'Flagged' ? 'selected' : ''}>🚩 Flagged</option>
                         </select>
 
-                        <!-- Edit Button -->
                         <button onclick="openEditModal('${job.id}')" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1 rounded-lg border border-gray-300 transition flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square text-xs"></i> Edit
                         </button>
@@ -1091,7 +1093,8 @@
                 app.is_new = false;
                 if (supabaseClient) {
                     try {
-                        await supabaseClient.from('applicants').update({ is_new: false }).eq('id', applicantId);
+                        const parsedAppId = !isNaN(applicantId) ? Number(applicantId) : applicantId;
+                        await supabaseClient.from('applicants').update({ is_new: false }).eq('id', parsedAppId);
                     } catch(e){}
                 }
                 fetchEmployerJobs();
