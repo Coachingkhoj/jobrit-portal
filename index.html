@@ -20,7 +20,7 @@
     </script>
 
     <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -29,19 +29,19 @@
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
             color: #ffffff !important;
             font-weight: 700 !important;
-            padding: 12px 24px !important;
-            border-radius: 12px !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
             display: inline-flex !important;
             align-items: center !important;
             gap: 8px !important;
             cursor: pointer !important;
             border: none !important;
-            box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.3) !important;
+            box-shadow: 0 6px 15px -3px rgba(37, 99, 235, 0.3) !important;
             transition: all 0.2s ease !important;
         }
         .btn-primary-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 25px -4px rgba(37, 99, 235, 0.4) !important;
+            box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.4) !important;
         }
 
         .btn-post-job {
@@ -101,12 +101,10 @@
                     <i class="fa-solid fa-house text-blue-600"></i> Home
                 </button>
 
-                <div id="current-role-badge" class="text-xs font-bold px-3.5 py-1.5 rounded-xl border bg-blue-50 text-blue-700 hidden items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-globe"></i> Portal: <span id="role-name-display" class="uppercase tracking-wider">Universal Hub</span>
+                <!-- Recruiter Auth Info or Switcher -->
+                <div id="auth-nav-container" class="flex items-center gap-2">
+                    <!-- Dynamic Auth Buttons injected here -->
                 </div>
-                <button onclick="openRoleSelectorModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer">
-                    <i class="fa-solid fa-right-left"></i> Switch Portal
-                </button>
             </div>
         </div>
     </header>
@@ -128,13 +126,13 @@
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto pt-6 text-left">
-                <div onclick="setAppRole('employer')" class="landing-card p-8 rounded-3xl cursor-pointer space-y-4 shadow-sm group">
+                <div onclick="handleEmployerPortalClick()" class="landing-card p-8 rounded-3xl cursor-pointer space-y-4 shadow-sm group">
                     <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-2xl group-hover:bg-emerald-600 group-hover:text-white transition shadow-sm">
                         <i class="fa-solid fa-building-user"></i>
                     </div>
                     <div class="space-y-1">
                         <h3 class="font-black text-gray-900 text-lg">For Employers & Agencies</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">Launch free job posts instantly, organize candidate folders, and streamline your recruitment workflow.</p>
+                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">Secure multi-tenant workspace, launch free job posts, and manage your private candidate resumes.</p>
                     </div>
                     <div class="text-xs sm:text-sm font-bold text-emerald-600 flex items-center gap-2 pt-2 group-hover:translate-x-1 transition">
                         Enter Recruiter HQ <i class="fa-solid fa-arrow-right"></i>
@@ -172,7 +170,7 @@
                         <h2 id="hero-title" class="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 leading-tight">Universal Job Portal & ATS</h2>
                         <p id="hero-subtitle" class="text-xs sm:text-sm text-gray-600 font-medium">Manage candidate pipelines and explore verified cross-industry opportunities.</p>
                     </div>
-                    <button id="employer-post-btn" onclick="openPostModal()" type="button" class="btn-post-job text-xs sm:text-sm font-bold cursor-pointer">
+                    <button id="employer-post-btn" onclick="openPostModal()" type="button" class="btn-post-job text-xs sm:text-sm font-bold cursor-pointer hidden">
                         <i class="fa-solid fa-circle-plus text-base"></i> Post a Free Job
                     </button>
                 </div>
@@ -247,37 +245,73 @@
         </main>
     </div>
 
-    <!-- Role Selector Modal -->
-    <div id="role-selector-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full p-8 text-center space-y-6 border border-gray-100">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl mx-auto flex items-center justify-center text-2xl font-black shadow-inner border border-blue-100">
-                <i class="fa-solid fa-briefcase"></i>
-            </div>
-            <div>
-                <h3 class="text-2xl font-black text-gray-900 tracking-tight">Switch Portal Mode</h3>
-                <p class="text-xs text-gray-500 mt-1">Select your portal experience instantly</p>
-            </div>
+    <!-- Recruiter Auth Compact Slide-Over Drawer (Right Side) -->
+    <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs hidden z-50 flex justify-end">
+        <div class="bg-white shadow-2xl w-full max-w-xs h-full p-5 border-l flex flex-col justify-between overflow-y-auto custom-scrollbar relative">
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <button onclick="setAppRole('employer')" class="p-6 border-2 rounded-2xl hover:border-blue-600 hover:bg-blue-50/40 transition text-left space-y-3 group shadow-sm cursor-pointer">
-                    <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold group-hover:bg-blue-600 group-hover:text-white transition shadow-sm">
-                        <i class="fa-solid fa-building-user text-lg"></i>
+            <div class="space-y-4">
+                <div class="flex justify-between items-start">
+                    <div id="auth-modal-header">
+                        <h3 id="auth-modal-title" class="text-base font-black text-gray-900 tracking-tight">Recruiter HQ Sign In</h3>
+                        <p id="auth-modal-subtitle" class="text-[11px] text-gray-500 mt-0.5">Secure private recruitment workspace</p>
                     </div>
-                    <div>
-                        <h4 class="font-black text-gray-900 text-sm">Employer / Agency</h4>
-                        <p class="text-xs text-gray-500 mt-1">Post free jobs & manage candidate pipelines.</p>
-                    </div>
-                </button>
+                    <button onclick="closeRecruiterAuthModal()" class="text-gray-400 hover:text-gray-700 font-bold text-base w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer flex-shrink-0">&times;</button>
+                </div>
 
-                <button onclick="setAppRole('seeker')" class="p-6 border-2 rounded-2xl hover:border-emerald-600 hover:bg-emerald-50/40 transition text-left space-y-3 group shadow-sm cursor-pointer">
-                    <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold group-hover:bg-emerald-600 group-hover:text-white transition shadow-sm">
-                        <i class="fa-solid fa-user-graduate text-lg"></i>
+                <!-- Toggle tabs for Sign In / Sign Up -->
+                <div class="flex bg-gray-100 p-1 rounded-xl text-[11px] font-bold">
+                    <button type="button" id="tab-signin-btn" onclick="switchAuthTab('signin')" class="flex-1 py-2 rounded-lg bg-white text-blue-700 shadow-sm transition cursor-pointer">Sign In</button>
+                    <button type="button" id="tab-signup-btn" onclick="switchAuthTab('signup')" class="flex-1 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition cursor-pointer">Register</button>
+                </div>
+
+                <!-- Sign In Form -->
+                <form id="signin-form" onsubmit="handleRecruiterSignIn(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Email *</label>
+                        <input type="email" id="signin-email" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="recruiter@company.com">
                     </div>
                     <div>
-                        <h4 class="font-black text-gray-900 text-sm">Job Seeker</h4>
-                        <p class="text-xs text-gray-500 mt-1">Browse openings & apply in 1-click.</p>
+                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Password *</label>
+                        <input type="password" id="signin-password" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="••••••••">
                     </div>
-                </button>
+                    <div class="pt-1">
+                        <button type="submit" class="w-full btn-primary-action justify-center text-xs font-bold cursor-pointer !py-2.5">Sign In to HQ</button>
+                    </div>
+                </form>
+
+                <!-- Sign Up Form (Hidden by default) -->
+                <form id="signup-form" onsubmit="handleRecruiterSignUp(event)" class="space-y-3 hidden">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
+                        <input type="text" id="signup-name" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="Rahul Sharma">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Email *</label>
+                        <input type="email" id="signup-email" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="rahul@agency.com">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Password *</label>
+                        <input type="password" id="signup-password" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Hiring Identity *</label>
+                        <select id="signup-hiring-type" onchange="toggleAgencyField()" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white font-semibold">
+                            <option value="Self">Self Company</option>
+                            <option value="Agency" selected>Staffing Agency</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label id="company-label-text" class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Agency / Co. Name *</label>
+                        <input type="text" id="signup-company" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="ACL Digital">
+                    </div>
+                    <div class="pt-1">
+                        <button type="submit" class="w-full btn-primary-action justify-center text-xs font-bold cursor-pointer !py-2.5">Create Account</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="pt-4 border-t text-center text-[10px] text-gray-400 font-medium">
+                <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> Secure Multi-Tenant ATS
             </div>
         </div>
     </div>
@@ -293,9 +327,7 @@
                 <button onclick="closeApplicantsModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center transition flex-shrink-0 cursor-pointer shadow-lg" title="Close Modal">&times;</button>
             </div>
             
-            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow bg-gray-50 space-y-3" id="applicants-list-container">
-                <!-- Dynamically loaded applicant cards -->
-            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow bg-gray-50 space-y-3" id="applicants-list-container"></div>
 
             <div class="p-4 border-t bg-white flex justify-end flex-shrink-0 z-20">
                 <button onclick="closeApplicantsModal()" class="px-5 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 bg-white shadow-sm transition cursor-pointer">
@@ -496,13 +528,179 @@
         let currentFolder = 'Open';
         let allJobsData = [];
         let allApplicationsData = [];
+        let currentRecruiter = null;
 
         window.addEventListener('DOMContentLoaded', () => {
+            const savedRecruiter = localStorage.getItem('jobrit_current_recruiter');
+            if (savedRecruiter) {
+                try {
+                    currentRecruiter = JSON.parse(savedRecruiter);
+                } catch(e) { currentRecruiter = null; }
+            }
+
             const savedRole = localStorage.getItem('jobrit_current_role');
             if (savedRole === 'employer' || savedRole === 'seeker') {
                 setAppRole(savedRole, false);
+            } else {
+                updateAuthNavUI();
             }
         });
+
+        function updateAuthNavUI() {
+            const navContainer = document.getElementById('auth-nav-container');
+            if (!navContainer) return;
+
+            if (currentRecruiter) {
+                navContainer.innerHTML = `
+                    <div class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-emerald-50 text-emerald-800 flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-user-shield text-emerald-600"></i> HQ: <span class="uppercase tracking-wider">${currentRecruiter.company_name}</span> (${currentRecruiter.name})
+                    </div>
+                    <button onclick="handleRecruiterLogout()" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-xl text-xs transition flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                `;
+            } else {
+                navContainer.innerHTML = `
+                    <button onclick="openRecruiterAuthModal('signin')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-right-to-bracket"></i> Recruiter Sign In
+                    </button>
+                `;
+            }
+        }
+
+        function handleEmployerPortalClick() {
+            if (!currentRecruiter) {
+                openRecruiterAuthModal('signin');
+            } else {
+                setAppRole('employer');
+            }
+        }
+
+        function openRecruiterAuthModal(mode = 'signin') {
+            document.getElementById('recruiter-auth-modal').classList.remove('hidden');
+            switchAuthTab(mode);
+        }
+
+        function closeRecruiterAuthModal() {
+            document.getElementById('recruiter-auth-modal').classList.add('hidden');
+        }
+
+        function switchAuthTab(tab) {
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+            const signinBtn = document.getElementById('tab-signin-btn');
+            const signupBtn = document.getElementById('tab-signup-btn');
+            const titleEl = document.getElementById('auth-modal-title');
+            const subtitleEl = document.getElementById('auth-modal-subtitle');
+
+            if (tab === 'signin') {
+                signinForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                signinBtn.className = "flex-1 py-2 rounded-lg bg-white text-blue-700 shadow-sm transition cursor-pointer";
+                signupBtn.className = "flex-1 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition cursor-pointer";
+                titleEl.innerText = "Recruiter HQ Sign In";
+                subtitleEl.innerText = "Secure private recruitment workspace";
+            } else {
+                signinForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                signinBtn.className = "flex-1 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition cursor-pointer";
+                signupBtn.className = "flex-1 py-2 rounded-lg bg-white text-blue-700 shadow-sm transition cursor-pointer";
+                titleEl.innerText = "Create Recruiter Account";
+                subtitleEl.innerText = "Instant frictionless onboarding";
+            }
+        }
+
+        function toggleAgencyField() {
+            const type = document.getElementById('signup-hiring-type').value;
+            const label = document.getElementById('company-label-text');
+            const input = document.getElementById('signup-company');
+            if (type === 'Self') {
+                label.innerText = "Company Name *";
+                input.placeholder = "My Enterprise Inc.";
+            } else {
+                label.innerText = "Agency Name *";
+                input.placeholder = "ACL Digital / Randstad";
+            }
+        }
+
+        async function handleRecruiterSignUp(event) {
+            event.preventDefault();
+            const name = document.getElementById('signup-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim().toLowerCase();
+            const password = document.getElementById('signup-password').value;
+            const hiring_type = document.getElementById('signup-hiring-type').value;
+            const company_name = document.getElementById('signup-company').value.trim();
+
+            try {
+                showToast('Creating your secure workspace...', 'success');
+
+                const { data, error } = await supabaseClient
+                    .from('recruiters')
+                    .insert([{ name, email, password, hiring_type, company_name }])
+                    .select()
+                    .single();
+
+                if (error) {
+                    if (error.message.includes('unique') || error.code === '23505') {
+                        throw new Error('This email is already registered. Please sign in!');
+                    }
+                    throw error;
+                }
+
+                currentRecruiter = data;
+                localStorage.setItem('jobrit_current_recruiter', JSON.stringify(data));
+                
+                showToast('Welcome to Recruiter HQ, ' + name + '!', 'success');
+                closeRecruiterAuthModal();
+                updateAuthNavUI();
+                setAppRole('employer');
+
+            } catch (err) {
+                console.error('Sign Up Error:', err.message);
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function handleRecruiterSignIn(event) {
+            event.preventDefault();
+            const email = document.getElementById('signin-email').value.trim().toLowerCase();
+            const password = document.getElementById('signin-password').value;
+
+            try {
+                showToast('Authenticating credentials...', 'success');
+
+                const { data, error } = await supabaseClient
+                    .from('recruiters')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password)
+                    .single();
+
+                if (error || !data) {
+                    throw new Error('Invalid email or password. Please check your credentials.');
+                }
+
+                currentRecruiter = data;
+                localStorage.setItem('jobrit_current_recruiter', JSON.stringify(data));
+
+                showToast('Logged in successfully!', 'success');
+                closeRecruiterAuthModal();
+                updateAuthNavUI();
+                setAppRole('employer');
+
+            } catch (err) {
+                console.error('Sign In Error:', err.message);
+                showToast(err.message, 'error');
+            }
+        }
+
+        function handleRecruiterLogout() {
+            localStorage.removeItem('jobrit_current_recruiter');
+            currentRecruiter = null;
+            updateAuthNavUI();
+            showToast('Logged out of Recruiter HQ', 'success');
+            goHomeLanding();
+        }
 
         function getTimeAgo(dateString) {
             if (!dateString) return 'Posted Recently';
@@ -523,26 +721,31 @@
         }
 
         function setAppRole(role, persist = true) {
+            if (role === 'employer' && !currentRecruiter) {
+                openRecruiterAuthModal('signin');
+                return;
+            }
+
             currentRole = role;
             if (persist) {
                 localStorage.setItem('jobrit_current_role', role);
             }
 
             document.getElementById('landing-hero-section').classList.add('hidden');
-            document.getElementById('role-selector-modal').classList.add('hidden');
+            document.getElementById('recruiter-auth-modal').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
 
-            const badge = document.getElementById('current-role-badge');
-            const roleNameDisplay = document.getElementById('role-name-display');
             const postBtn = document.getElementById('employer-post-btn');
-
-            if (badge) badge.classList.remove('hidden');
+            const heroTitle = document.getElementById('hero-title');
+            const heroSubtitle = document.getElementById('hero-subtitle');
 
             if (role === 'employer') {
-                if (roleNameDisplay) roleNameDisplay.innerText = 'Recruiter HQ';
+                if (heroTitle) heroTitle.innerText = `${currentRecruiter.company_name} • Recruiter HQ`;
+                if (heroSubtitle) heroSubtitle.innerText = `Manage your private candidate pipelines and post verified open positions.`;
                 if (postBtn) postBtn.classList.remove('hidden');
             } else {
-                if (roleNameDisplay) roleNameDisplay.innerText = 'Candidate Portal';
+                if (heroTitle) heroTitle.innerText = 'Universal Job Portal & ATS';
+                if (heroSubtitle) heroSubtitle.innerText = 'Explore verified cross-industry opportunities and apply in 1-click.';
                 if (postBtn) postBtn.classList.add('hidden');
             }
             fetchJobsFeed();
@@ -553,14 +756,8 @@
             localStorage.removeItem('jobrit_current_role');
             currentRole = '';
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
-            document.getElementById('role-selector-modal').classList.add('hidden');
+            document.getElementById('recruiter-auth-modal').classList.add('hidden');
             document.getElementById('landing-hero-section').classList.remove('hidden');
-            const badge = document.getElementById('current-role-badge');
-            if (badge) badge.classList.add('hidden');
-        }
-
-        function openRoleSelectorModal() {
-            document.getElementById('role-selector-modal').classList.remove('hidden');
         }
 
         function showToast(message, type = 'success') {
@@ -583,10 +780,13 @@
                 return;
             }
             try {
-                const { data, error } = await supabaseClient
-                    .from('jobs')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                let query = supabaseClient.from('jobs').select('*');
+                
+                if (currentRole === 'employer' && currentRecruiter) {
+                    query = query.eq('recruiter_id', currentRecruiter.id);
+                }
+
+                const { data, error } = await query.order('created_at', { ascending: false });
 
                 if (error) throw error;
                 allJobsData = data || [];
@@ -873,7 +1073,7 @@
             document.getElementById('edit-job-id').value = job.id;
             document.getElementById('job-modal-title').innerText = 'Edit Job Position';
             document.getElementById('job-title-input').value = job.title || '';
-            document.getElementById('job-company').value = job.company || '';
+            document.getElementById('job-company').value = job.company || (currentRecruiter ? currentRecruiter.company_name : '');
             document.getElementById('job-category-input').value = job.category || 'Healthcare';
             document.getElementById('job-country-input').value = job.country || 'India';
             document.getElementById('job-work-mode-input').value = job.work_mode || 'In-person';
@@ -953,10 +1153,11 @@
 
         async function handleJobFormSubmit(event) {
             event.preventDefault();
-            if (!supabaseClient) {
-                showToast('Supabase is not initialized.', 'error');
+            if (!supabaseClient || !currentRecruiter) {
+                showToast('Please log in as a recruiter to post jobs.', 'error');
                 return;
             }
+
             const editId = document.getElementById('edit-job-id').value;
             const title = document.getElementById('job-title-input').value.trim();
             const company = document.getElementById('job-company').value.trim();
@@ -968,6 +1169,7 @@
             const zip = document.getElementById('job-zip').value.trim();
             const status = document.getElementById('job-status-flag').value;
             const description = document.getElementById('job-description').value.trim();
+            const recruiter_id = currentRecruiter.id;
 
             try {
                 let query;
@@ -975,11 +1177,12 @@
                     query = supabaseClient
                         .from('jobs')
                         .update({ title, company, category, country, work_mode, state, city, zip, status, description })
-                        .eq('id', editId);
+                        .eq('id', editId)
+                        .eq('recruiter_id', recruiter_id);
                 } else {
                     query = supabaseClient
                         .from('jobs')
-                        .insert([{ title, company, category, country, work_mode, state, city, zip, status, description, created_at: new Date() }]);
+                        .insert([{ title, company, category, country, work_mode, state, city, zip, status, description, recruiter_id, created_at: new Date() }]);
                 }
 
                 const { error } = await query;
@@ -1014,8 +1217,13 @@
         }
 
         function openPostModal() {
+            if (!currentRecruiter) {
+                openRecruiterAuthModal('signin');
+                return;
+            }
             document.getElementById('job-form').reset();
             document.getElementById('edit-job-id').value = '';
+            document.getElementById('job-company').value = currentRecruiter.company_name;
             document.getElementById('job-modal-title').innerText = 'Post Free Position';
             document.getElementById('job-modal').classList.remove('hidden');
         }
