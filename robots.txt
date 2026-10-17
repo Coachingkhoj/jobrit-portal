@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://jobrit-portal.vercel.app/sitemap.xml
