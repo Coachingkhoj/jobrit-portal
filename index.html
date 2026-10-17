@@ -731,6 +731,9 @@
                 localStorage.setItem('jobrit_current_role', role);
             }
 
+            // Keep navbar updated always
+            updateAuthNavUI();
+
             document.getElementById('landing-hero-section').classList.add('hidden');
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
@@ -765,6 +768,7 @@
         function goHomeLanding() {
             localStorage.removeItem('jobrit_current_role');
             currentRole = '';
+            updateAuthNavUI();
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
             document.getElementById('landing-hero-section').classList.remove('hidden');
@@ -894,6 +898,10 @@
                 const unreadApplicants = jobApps.filter(app => !viewedApplicants.includes(String(app.id))).length;
                 const totalViews = job.views_count || (12 + totalApplicants * 5);
 
+                // Build Location String: City, State, Country
+                let locationParts = [job.city, job.state, job.country].filter(Boolean);
+                let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Remote';
+
                 let actionButtonHtml = '';
                 if (currentRole === 'employer') {
                     const pauseBtnText = currentStatus === 'Paused' ? '<i class="fa-solid fa-play mr-1"></i> Resume' : '<i class="fa-solid fa-pause mr-1"></i> Pause';
@@ -941,7 +949,7 @@
                             </div>
                             <h4 class="font-black text-gray-900 text-base cursor-pointer hover:text-blue-600 transition" onclick="openJobDetail('${job.id}')">${job.title}</h4>
                             <p class="text-xs text-gray-500 flex flex-wrap items-center gap-2">
-                                <span><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>${job.city || ''}, ${job.country || 'Remote'}</span>
+                                <span><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>${displayLocation}</span>
                                 <span>•</span>
                                 <span><i class="fa-solid fa-laptop-house text-blue-500 mr-1"></i>${job.work_mode || 'In-person'}</span>
                                 <span>•</span>
@@ -980,9 +988,12 @@
             const job = allJobsData.find(j => j.id == jobId);
             if (!job) return;
 
+            let locationParts = [job.city, job.state, job.country].filter(Boolean);
+            let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Remote';
+
             document.getElementById('detail-category').innerText = job.category || 'General';
             document.getElementById('detail-title').innerText = job.title;
-            document.getElementById('detail-company-location').innerText = `${job.company || 'Company'} • ${job.city || ''}, ${job.country || ''}`;
+            document.getElementById('detail-company-location').innerText = `${job.company || 'Company'} • ${displayLocation}`;
             document.getElementById('detail-industry-text').innerText = job.category || 'General';
             document.getElementById('detail-workmode').innerText = job.work_mode || 'In-person';
             document.getElementById('detail-posted-time').innerText = getTimeAgo(job.created_at);
