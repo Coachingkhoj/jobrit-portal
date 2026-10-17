@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jobrit Pro | 100% Free Universal Job Board & ATS Platform</title>
+    
+    <!-- Dynamic SEO & Social Share Meta Tags -->
+    <meta id="meta-title" name="title" content="Jobrit Pro | 100% Free Universal Job Board & ATS Platform">
+    <meta id="meta-description" name="description" content="Post unlimited jobs across Healthcare, Pharma, Aerospace, IT, Manufacturing, and Finance, manage candidate pipelines in real-time, and hire top talent instantly.">
+    <meta id="og-title" property="og:title" content="Jobrit Pro | Universal Job Board & ATS">
+    <meta id="og-description" property="og:description" content="Explore verified cross-industry opportunities and manage candidate pipelines.">
+    <meta id="og-type" property="og:type" content="website">
+
     <!-- Tailwind CSS CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <!-- Supabase JS Client -->
@@ -351,10 +359,15 @@
             </div>
             
             <div class="p-4 sm:p-6 space-y-5 overflow-y-auto custom-scrollbar flex-grow bg-white">
-                <div class="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-2xl border text-xs font-bold text-gray-700">
-                    <span><i class="fa-solid fa-industry text-blue-600 mr-1"></i> Industry: <span id="detail-industry-text" class="font-normal text-gray-600">General</span></span>
-                    <span><i class="fa-solid fa-laptop-house text-blue-600 mr-1"></i> Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">In-person</span></span>
-                    <span><i class="fa-solid fa-clock text-blue-600 mr-1"></i> Posted: <span id="detail-posted-time" class="font-normal text-gray-600">Just Now</span></span>
+                <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border text-xs font-bold text-gray-700">
+                    <div class="flex flex-wrap gap-4">
+                        <span><i class="fa-solid fa-industry text-blue-600 mr-1"></i> Industry: <span id="detail-industry-text" class="font-normal text-gray-600">General</span></span>
+                        <span><i class="fa-solid fa-laptop-house text-blue-600 mr-1"></i> Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">In-person</span></span>
+                        <span><i class="fa-solid fa-clock text-blue-600 mr-1"></i> Posted: <span id="detail-posted-time" class="font-normal text-gray-600">Just Now</span></span>
+                    </div>
+                    <button onclick="copyJobDirectLink()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl border border-blue-200 transition text-xs font-bold flex items-center gap-1.5 cursor-pointer" title="Copy Direct Job Link">
+                        <i class="fa-solid fa-share-nodes"></i> Share / Copy Link
+                    </button>
                 </div>
 
                 <div>
@@ -529,8 +542,74 @@
         let allJobsData = [];
         let allApplicationsData = [];
         let currentRecruiter = null;
+        let activeJobIdForSlug = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // --- Helper: Generate SEO-friendly URL Slug ---
+        function createJobSlug(title, id) {
+            const cleanTitle = (title || 'job')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            return `${cleanTitle}-${id}`;
+        }
+
+        // --- Helper: Extract Job ID from URL Slug ---
+        function extractJobIdFromSlug(slug) {
+            if (!slug) return null;
+            const parts = slug.split('-');
+            return parts[parts.length - 1];
+        }
+
+        // --- Helper: Update Dynamic SEO Head Meta Tags ---
+        function updateSEOMetaTags(title, company, location, category, description) {
+            const fullTitle = `${title} at ${company} (${location}) | Jobrit Pro`;
+            const shortDesc = (description || '').substring(0, 160) + '...';
+
+            document.title = fullTitle;
+            
+            const metaTitle = document.getElementById('meta-title');
+            const metaDesc = document.getElementById('meta-description');
+            const ogTitle = document.getElementById('og-title');
+            const ogDesc = document.getElementById('og-description');
+
+            if (metaTitle) metaTitle.setAttribute('content', fullTitle);
+            if (metaDesc) metaDesc.setAttribute('content', shortDesc);
+            if (ogTitle) ogTitle.setAttribute('content', fullTitle);
+            if (ogDesc) ogDesc.setAttribute('content', shortDesc);
+        }
+
+        function resetSEOMetaTags() {
+            document.title = "Jobrit Pro | 100% Free Universal Job Board & ATS Platform";
+            const metaTitle = document.getElementById('meta-title');
+            const metaDesc = document.getElementById('meta-description');
+            if (metaTitle) metaTitle.setAttribute('content', "Jobrit Pro | 100% Free Universal Job Board & ATS Platform");
+            if (metaDesc) metaDesc.setAttribute('content', "Post unlimited jobs across Healthcare, Pharma, Aerospace, IT, Manufacturing, and Finance, manage candidate pipelines in real-time, and hire top talent instantly.");
+        }
+
+        // --- URL Hash Router Listener ---
+        window.addEventListener('hashchange', handleURLRouting);
+
+        async function handleURLRouting() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#/job/')) {
+                const slug = hash.replace('#/job/', '');
+                const jobId = extractJobIdFromSlug(slug);
+
+                if (jobId) {
+                    if (allJobsData.length === 0) {
+                        await fetchJobsFeed();
+                    }
+                    if (currentRole === '') {
+                        setAppRole('seeker', false);
+                    }
+                    openJobDetail(jobId, false);
+                }
+            } else if (hash === '' || hash === '#/') {
+                closeJobDetailModal(false);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
             const savedRecruiter = localStorage.getItem('jobrit_current_recruiter');
             if (savedRecruiter) {
                 try {
@@ -543,6 +622,11 @@
                 setAppRole(savedRole, false);
             } else {
                 updateAuthNavUI();
+            }
+
+            // Initial Route Check
+            if (window.location.hash.startsWith('#/job/')) {
+                await handleURLRouting();
             }
         });
 
@@ -731,7 +815,6 @@
                 localStorage.setItem('jobrit_current_role', role);
             }
 
-            // Keep navbar updated always
             updateAuthNavUI();
 
             document.getElementById('landing-hero-section').classList.add('hidden');
@@ -768,6 +851,8 @@
         function goHomeLanding() {
             localStorage.removeItem('jobrit_current_role');
             currentRole = '';
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+            resetSEOMetaTags();
             updateAuthNavUI();
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
@@ -805,6 +890,13 @@
                 if (error) throw error;
                 allJobsData = data || [];
                 renderJobsUI();
+
+                // Check route after jobs are fetched
+                if (window.location.hash.startsWith('#/job/')) {
+                    const slug = window.location.hash.replace('#/job/', '');
+                    const jobId = extractJobIdFromSlug(slug);
+                    if (jobId) openJobDetail(jobId, false);
+                }
             } catch (err) {
                 console.warn('Jobs fetch error:', err.message);
                 renderJobsUI();
@@ -898,7 +990,6 @@
                 const unreadApplicants = jobApps.filter(app => !viewedApplicants.includes(String(app.id))).length;
                 const totalViews = job.views_count || (12 + totalApplicants * 5);
 
-                // Build Location String: City, State, Country
                 let locationParts = [job.city, job.state, job.country].filter(Boolean);
                 let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Remote';
 
@@ -984,13 +1075,15 @@
             renderJobsUI();
         }
 
-        async function openJobDetail(jobId) {
+        async function openJobDetail(jobId, updateHash = true) {
             const job = allJobsData.find(j => j.id == jobId);
             if (!job) return;
 
+            activeJobIdForSlug = job.id;
             let locationParts = [job.city, job.state, job.country].filter(Boolean);
             let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Remote';
 
+            // 1. Update UI Elements
             document.getElementById('detail-category').innerText = job.category || 'General';
             document.getElementById('detail-title').innerText = job.title;
             document.getElementById('detail-company-location').innerText = `${job.company || 'Company'} • ${displayLocation}`;
@@ -999,6 +1092,7 @@
             document.getElementById('detail-posted-time').innerText = getTimeAgo(job.created_at);
             document.getElementById('detail-description').innerText = job.description || 'No description provided.';
             
+            // 2. Set Action Button
             const actionBtn = document.getElementById('detail-modal-action-btn');
             if (currentRole === 'employer') {
                 actionBtn.innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Edit Position`;
@@ -1008,7 +1102,39 @@
                 actionBtn.setAttribute('onclick', `closeJobDetailModal(); openApplyModal('${job.id}', '${(job.title || '').replace(/'/g, "\\'")}')`);
             }
 
+            // 3. Update SEO Meta Tags & URL Hash
+            const slug = createJobSlug(job.title, job.id);
+            updateSEOMetaTags(job.title, job.company || 'Company', displayLocation, job.category, job.description);
+
+            if (updateHash) {
+                window.location.hash = `/job/${slug}`;
+            }
+
             document.getElementById('job-detail-modal').classList.remove('hidden');
+        }
+
+        function copyJobDirectLink() {
+            if (!activeJobIdForSlug) return;
+            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
+            if (!job) return;
+
+            const slug = createJobSlug(job.title, job.id);
+            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
+
+            navigator.clipboard.writeText(directUrl).then(() => {
+                showToast('Direct job link copied to clipboard!', 'success');
+            }).catch(() => {
+                showToast('Failed to copy link', 'error');
+            });
+        }
+
+        function closeJobDetailModal(updateHash = true) {
+            document.getElementById('job-detail-modal').classList.add('hidden');
+            resetSEOMetaTags();
+            activeJobIdForSlug = null;
+            if (updateHash) {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
         }
 
         function openApplicantsModal(jobId, jobTitle) {
@@ -1242,10 +1368,6 @@
 
         function closeApplyModal() {
             document.getElementById('apply-modal').classList.add('hidden');
-        }
-
-        function closeJobDetailModal() {
-            document.getElementById('job-detail-modal').classList.add('hidden');
         }
 
         function closeModal() {
