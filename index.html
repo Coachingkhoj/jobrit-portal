@@ -28,8 +28,8 @@
     </script>
 
     <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
@@ -389,6 +389,14 @@
                 <button onclick="closeApplicantsModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center transition flex-shrink-0 cursor-pointer shadow-lg" title="Close Modal">&times;</button>
             </div>
             
+            <!-- Applicant Search Filter Bar -->
+            <div class="px-4 sm:px-6 pt-4 bg-gray-50 border-b pb-3">
+                <div class="flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-white shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass text-blue-600 mr-2 text-sm"></i>
+                    <input type="text" id="applicant-search-input" oninput="filterApplicantsList()" placeholder="Search applicant by name or email..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
+                </div>
+            </div>
+
             <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow bg-gray-50 space-y-3" id="applicants-list-container"></div>
 
             <div class="p-4 border-t bg-white flex justify-end flex-shrink-0 z-20">
@@ -477,145 +485,210 @@
         </div>
     </div>
 
-    <!-- Edit / Post Job Modal -->
+    <!-- Multi-Step Post / Edit Job Modal (Fixed Wizard with Next/Prev Buttons) -->
     <div id="job-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto custom-scrollbar border">
-            <div class="flex justify-between items-center border-b pb-4 mb-5">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border relative">
+            <!-- Modal Header -->
+            <div class="p-5 sm:p-6 border-b flex justify-between items-center bg-white flex-shrink-0 z-10 shadow-sm">
                 <div>
                     <h3 id="job-modal-title" class="text-lg font-black text-gray-900">Post Free Global Position</h3>
-                    <p class="text-xs text-emerald-600 font-bold">Universal Enterprise ATS Listing</p>
+                    <p id="wizard-step-indicator" class="text-xs text-blue-600 font-bold">Step 1 of 2: Basic Info & Salary</p>
                 </div>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer">&times;</button>
             </div>
             
-            <form id="job-form" onsubmit="handleJobFormSubmit(event)" class="space-y-4">
-                <input type="hidden" id="edit-job-id">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country / Region *</label>
-                        <select id="job-country-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <option value="Worldwide Remote">✈️ Worldwide Remote</option>
-                            <optgroup label="North America">
-                                <option value="United States">United States</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Mexico">Mexico</option>
-                            </optgroup>
-                            <optgroup label="Europe & UK">
-                                <option value="United Kingdom">United Kingdom</option>
-                                <option value="Germany">Germany</option>
-                                <option value="France">France</option>
-                                <option value="Netherlands">Netherlands</option>
-                                <option value="Ireland">Ireland</option>
-                            </optgroup>
-                            <optgroup label="Asia-Pacific (APAC)">
-                                <option value="India" selected>India</option>
-                                <option value="Singapore">Singapore</option>
-                                <option value="Australia">Australia</option>
-                                <option value="Japan">Japan</option>
-                                <option value="Philippines">Philippines</option>
-                            </optgroup>
-                            <optgroup label="Middle East (GCC)">
-                                <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
-                                <option value="Saudi Arabia">Saudi Arabia</option>
-                            </optgroup>
-                            <option value="Other">🌍 Other / International</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Mode *</label>
-                        <select id="job-work-mode-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <option value="Remote">Fully Remote</option>
-                            <option value="Hybrid">Hybrid</option>
-                            <option value="In-person">In-person (Onsite)</option>
-                        </select>
-                    </div>
-                </div>
+            <!-- Modal Body (Form Container) -->
+            <div class="p-5 sm:p-6 bg-white max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <form id="job-form" onsubmit="handleJobFormSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="edit-job-id">
+                    
+                    <!-- STEP 1: Basic Info & Salary -->
+                    <div id="wizard-step-1" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country / Region *</label>
+                                <select id="job-country-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
+                                    <option value="Worldwide Remote">✈️ Worldwide Remote</option>
+                                    <optgroup label="North America">
+                                        <option value="United States">United States</option>
+                                        <option value="Canada">Canada</option>
+                                        <option value="Mexico">Mexico</option>
+                                    </optgroup>
+                                    <optgroup label="Europe & UK">
+                                        <option value="United Kingdom">United Kingdom</option>
+                                        <option value="Germany">Germany</option>
+                                        <option value="France">France</option>
+                                        <option value="Netherlands">Netherlands</option>
+                                        <option value="Ireland">Ireland</option>
+                                    </optgroup>
+                                    <optgroup label="Asia-Pacific (APAC)">
+                                        <option value="India" selected>India</option>
+                                        <option value="Singapore">Singapore</option>
+                                        <option value="Australia">Australia</option>
+                                        <option value="Japan">Japan</option>
+                                        <option value="Philippines">Philippines</option>
+                                    </optgroup>
+                                    <optgroup label="Middle East (GCC)">
+                                        <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
+                                        <option value="Saudi Arabia">Saudi Arabia</option>
+                                    </optgroup>
+                                    <option value="Other">🌍 Other / International</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Mode *</label>
+                                <select id="job-work-mode-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
+                                    <option value="Remote">Fully Remote</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                    <option value="In-person">In-person (Onsite)</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
-                        <input type="text" id="job-title-input" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. Senior Logistics Manager">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company / Agency Name *</label>
-                        <input type="text" id="job-company" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. ACL Digital">
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
+                                <input type="text" id="job-title-input" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. Senior Logistics Manager">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company / Agency Name *</label>
+                                <input type="text" id="job-company" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. ACL Digital">
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
-                        <select id="job-category-input" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <optgroup label="Information Technology (IT) & Engineering">
-                                <option value="IT & Software Services">IT & Software Services</option>
-                                <option value="Aerospace & Defense">Aerospace & Defense</option>
-                                <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
-                            </optgroup>
-                            <optgroup label="Healthcare & Sciences">
-                                <option value="Healthcare & Medical">Healthcare & Medical</option>
-                                <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
-                            </optgroup>
-                            <optgroup label="Business, Sales & Support">
-                                <option value="Sales & Business Development">Sales & Business Development</option>
-                                <option value="Customer Support & Operations">Customer Support & Operations</option>
-                                <option value="Human Resources & Staffing">Human Resources & Staffing</option>
-                            </optgroup>
-                            <optgroup label="Supply Chain & Services">
-                                <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
-                                <option value="Finance & Banking">Finance & Banking</option>
-                                <option value="Construction & Real Estate">Construction & Real Estate</option>
-                                <option value="Education & EdTech">Education & EdTech</option>
-                            </optgroup>
-                            <option value="Other / General">🌍 Other / General</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">State / Region</label>
-                        <input type="text" id="job-state" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Delhi NCR">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City Name</label>
-                        <input type="text" id="job-city" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Noida">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP / PIN</label>
-                        <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="201301">
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
+                                <select id="job-category-input" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
+                                    <optgroup label="Information Technology (IT) & Engineering">
+                                        <option value="IT & Software Services">IT & Software Services</option>
+                                        <option value="Aerospace & Defense">Aerospace & Defense</option>
+                                        <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                                    </optgroup>
+                                    <optgroup label="Healthcare & Sciences">
+                                        <option value="Healthcare & Medical">Healthcare & Medical</option>
+                                        <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
+                                    </optgroup>
+                                    <optgroup label="Business, Sales & Support">
+                                        <option value="Sales & Business Development">Sales & Business Development</option>
+                                        <option value="Customer Support & Operations">Customer Support & Operations</option>
+                                        <option value="Human Resources & Staffing">Human Resources & Staffing</option>
+                                    </optgroup>
+                                    <optgroup label="Supply Chain & Services">
+                                        <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                                        <option value="Finance & Banking">Finance & Banking</option>
+                                        <option value="Construction & Real Estate">Construction & Real Estate</option>
+                                        <option value="Education & EdTech">Education & EdTech</option>
+                                    </optgroup>
+                                    <option value="Other / General">🌍 Other / General</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">State / Region</label>
+                                <input type="text" id="job-state" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Delhi NCR">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City Name</label>
+                                <input type="text" id="job-city" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Noida">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP / PIN</label>
+                                <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="201301">
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Project / Client Tag</label>
-                        <input type="text" id="job-project" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Client Alpha">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Status Flag *</label>
-                        <select id="job-status-flag" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <option value="Open">● Active Open</option>
-                            <option value="Paused">⏸ Paused</option>
-                            <option value="Closed">🔴 Closed</option>
-                        </select>
-                    </div>
-                </div>
+                        <!-- Salary & Compensation Structure Section -->
+                        <div class="bg-gray-50 p-4 rounded-2xl border space-y-3">
+                            <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-wallet text-emerald-600"></i> Compensation & Salary Range</h4>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Pay Structure *</label>
+                                    <select id="job-pay-type" class="w-full border rounded-xl p-2.5 text-xs outline-none font-semibold bg-white">
+                                        <option value="Annual">Annual CTC</option>
+                                        <option value="Monthly">Monthly Salary</option>
+                                        <option value="Hourly">Hourly Pay Rate</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Currency *</label>
+                                    <select id="job-currency" class="w-full border rounded-xl p-2.5 text-xs outline-none font-semibold bg-white">
+                                        <option value="INR" selected>INR (₹)</option>
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                        <option value="AED">AED (د.إ)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center pt-5">
+                                    <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
+                                        <input type="checkbox" id="job-show-salary" checked class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                        <span>Display Salary Publicly</span>
+                                    </label>
+                                </div>
+                            </div>
 
-                <div>
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Job Description *</label>
-                        <div class="flex gap-1.5 bg-gray-100 p-1 rounded-xl text-xs font-bold">
-                            <button type="button" onclick="insertFormatting('bold')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bold"><b>B</b></button>
-                            <button type="button" onclick="insertFormatting('italic')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Italic"><i>I</i></button>
-                            <button type="button" onclick="insertFormatting('bullet')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bullet List">• List</button>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Minimum Amount</label>
+                                    <input type="number" id="job-salary-min" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white" placeholder="e.g. 500000 or 25">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Maximum Amount</label>
+                                    <input type="number" id="job-salary-max" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white" placeholder="e.g. 800000 or 50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Project / Client Tag</label>
+                                <input type="text" id="job-project" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Client Alpha">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Status Flag *</label>
+                                <select id="job-status-flag" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
+                                    <option value="Open">● Active Open</option>
+                                    <option value="Paused">⏸ Paused</option>
+                                    <option value="Closed">🔴 Closed</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <textarea id="job-description" rows="8" required class="w-full border rounded-2xl p-4 text-sm outline-none leading-relaxed bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="Paste full position responsibilities and requirements here..."></textarea>
-                </div>
 
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition cursor-pointer">Cancel</button>
-                    <button type="submit" class="btn-primary-action text-sm font-bold cursor-pointer">Save Position</button>
+                    <!-- STEP 2: Job Description -->
+                    <div id="wizard-step-2" class="space-y-4 hidden">
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Job Description & Requirements *</label>
+                                <div class="flex gap-1.5 bg-gray-100 p-1 rounded-xl text-xs font-bold">
+                                    <button type="button" onclick="insertFormatting('bold')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bold"><b>B</b></button>
+                                    <button type="button" onclick="insertFormatting('italic')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Italic"><i>I</i></button>
+                                    <button type="button" onclick="insertFormatting('bullet')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bullet List">• List</button>
+                                </div>
+                            </div>
+                            <textarea id="job-description" rows="10" required class="w-full border rounded-2xl p-4 text-sm outline-none leading-relaxed bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="Paste full position responsibilities and requirements here..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer with Wizard Navigation Buttons -->
+            <div class="p-4 sm:p-5 border-t bg-gray-50 flex justify-between items-center gap-3 flex-shrink-0 z-10 shadow-inner">
+                <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-semibold text-gray-600 hover:bg-gray-100 bg-white transition cursor-pointer">Cancel</button>
+                
+                <div class="flex gap-2">
+                    <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" class="hidden px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                    </button>
+                    <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
+                        Next: Description <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                    <button type="submit" form="job-form" id="wizard-submit-btn" class="hidden btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
+                        Save Position <i class="fa-solid fa-check ml-1"></i>
+                    </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -632,8 +705,43 @@
         let allApplicationsData = [];
         let currentRecruiter = null;
         let activeJobIdForSlug = null;
+        let currentWizardStep = 1;
+        let currentJobApplicants = [];
 
-        // --- Helper: Generate SEO-friendly URL Slug ---
+        // --- Wizard Step Controller ---
+        function switchWizardStep(step) {
+            const step1 = document.getElementById('wizard-step-1');
+            const step2 = document.getElementById('wizard-step-2');
+            const indicator = document.getElementById('wizard-step-indicator');
+            const prevBtn = document.getElementById('wizard-prev-btn');
+            const nextBtn = document.getElementById('wizard-next-btn');
+            const submitBtn = document.getElementById('wizard-submit-btn');
+
+            if (step === 2) {
+                const title = document.getElementById('job-title-input').value.trim();
+                const company = document.getElementById('job-company').value.trim();
+                if (!title || !company) {
+                    showToast('Please fill out Job Title and Company Name first!', 'error');
+                    return;
+                }
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+                indicator.innerText = 'Step 2 of 2: Job Description';
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+                currentWizardStep = 2;
+            } else {
+                step2.classList.add('hidden');
+                step1.classList.remove('hidden');
+                indicator.innerText = 'Step 1 of 2: Basic Info & Salary';
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+                currentWizardStep = 1;
+            }
+        }
+
         function createJobSlug(title, id) {
             const cleanTitle = (title || 'job')
                 .toLowerCase()
@@ -642,14 +750,12 @@
             return `${cleanTitle}-${id}`;
         }
 
-        // --- Helper: Extract Job ID from URL Slug ---
         function extractJobIdFromSlug(slug) {
             if (!slug) return null;
             const parts = slug.split('-');
             return parts[parts.length - 1];
         }
 
-        // --- Helper: Update Dynamic SEO Head Meta Tags ---
         function updateSEOMetaTags(title, company, location, category, description) {
             const fullTitle = `${title} at ${company} (${location}) | Jobrit Pro`;
             const shortDesc = (description || '').substring(0, 160) + '...';
@@ -675,7 +781,6 @@
             if (metaDesc) metaDesc.setAttribute('content', "Post unlimited jobs across Information Technology (IT), Healthcare, Logistics, Sales, Engineering, and Finance worldwide, manage candidate pipelines in real-time, and hire top talent instantly.");
         }
 
-        // --- URL Hash Router Listener ---
         window.addEventListener('hashchange', handleURLRouting);
 
         async function handleURLRouting() {
@@ -1033,7 +1138,6 @@
                     return false;
                 }
 
-                // Country filtering logic
                 if (searchCountry) {
                     const jobCountry = (job.country || '').toLowerCase();
                     const isRemoteJob = jobCountry.includes('remote') || (job.work_mode || '').toLowerCase() === 'remote';
@@ -1100,6 +1204,17 @@
                 let locationParts = [job.city, job.state, job.country].filter(Boolean);
                 let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Worldwide Remote';
 
+                let salaryBadgeHtml = '';
+                if (job.show_salary !== false && (job.salary_min || job.salary_max)) {
+                    let currSymbol = job.currency === 'USD' ? '$' : job.currency === 'EUR' ? '€' : job.currency === 'GBP' ? '£' : job.currency === 'AED' ? 'AED ' : '₹';
+                    let minStr = job.salary_min ? `${currSymbol}${job.salary_min.toLocaleString()}` : '';
+                    let maxStr = job.salary_max ? `${currSymbol}${job.salary_max.toLocaleString()}` : '';
+                    let rangeText = minStr && maxStr ? `${minStr} - ${maxStr}` : minStr || maxStr;
+                    let paySuffix = job.pay_type === 'Hourly' ? '/hr' : job.pay_type === 'Monthly' ? '/mo' : '/yr';
+                    
+                    salaryBadgeHtml = `<span class="bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded font-bold text-xs border border-emerald-100 flex items-center gap-1"><i class="fa-solid fa-wallet"></i> ${rangeText} ${paySuffix}</span>`;
+                }
+
                 let actionButtonHtml = '';
                 if (currentRole === 'employer') {
                     const pauseBtnText = currentStatus === 'Paused' ? '<i class="fa-solid fa-play mr-1"></i> Resume' : '<i class="fa-solid fa-pause mr-1"></i> Pause';
@@ -1138,12 +1253,13 @@
 
                 return `
                     <div class="p-5 rounded-2xl border bg-white hover:border-blue-500 transition shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div class="space-y-1 w-full sm:w-auto">
-                            <div class="flex items-center gap-2">
+                        <div class="space-y-1.5 w-full sm:w-auto">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-blue-50 text-blue-700">${job.category || 'General'}</span>
                                 <span class="text-xs text-gray-400">•</span>
                                 <span class="text-xs font-bold text-gray-600">${job.company || 'Company'}</span>
                                 <span class="text-xs font-bold px-2 py-0.5 rounded ${currentStatus === 'Closed' ? 'bg-red-100 text-red-700' : currentStatus === 'Paused' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${currentStatus}</span>
+                                ${salaryBadgeHtml}
                             </div>
                             <h4 class="font-black text-gray-900 text-base cursor-pointer hover:text-blue-600 transition" onclick="openJobDetail('${job.id}')">${job.title}</h4>
                             <p class="text-xs text-gray-500 flex flex-wrap items-center gap-2">
@@ -1245,15 +1361,17 @@
             const modal = document.getElementById('applicants-modal');
             const titleEl = document.getElementById('applicants-modal-title');
             const subtitleEl = document.getElementById('applicants-modal-subtitle');
-            const container = document.getElementById('applicants-list-container');
+            
+            const searchInput = document.getElementById('applicant-search-input');
+            if (searchInput) searchInput.value = '';
 
             titleEl.innerText = `Applicants for: ${jobTitle}`;
             
-            const jobApps = allApplicationsData.filter(app => app.job_id == jobId);
-            subtitleEl.innerText = `Total Submissions: ${jobApps.length} candidate(s)`;
+            currentJobApplicants = allApplicationsData.filter(app => app.job_id == jobId);
+            subtitleEl.innerText = `Total Submissions: ${currentJobApplicants.length} candidate(s)`;
 
             let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
-            jobApps.forEach(app => {
+            currentJobApplicants.forEach(app => {
                 if (!viewedApplicants.includes(String(app.id))) {
                     viewedApplicants.push(String(app.id));
                 }
@@ -1261,42 +1379,99 @@
             localStorage.setItem('jobrit_viewed_applicants', JSON.stringify(viewedApplicants));
 
             renderJobsUI();
+            renderApplicantsTable(currentJobApplicants);
 
-            if (jobApps.length === 0) {
+            modal.classList.remove('hidden');
+        }
+
+        function renderApplicantsTable(applicants) {
+            const container = document.getElementById('applicants-list-container');
+            if (!container) return;
+
+            if (applicants.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
                         <i class="fa-solid fa-folder-open text-3xl text-gray-300 mb-2"></i>
-                        <p class="text-sm font-bold text-gray-600">No candidate applications received yet for this position.</p>
-                        <p class="text-xs text-gray-400 mt-1">Candidates applying from the seeker portal will appear here instantly.</p>
+                        <p class="text-sm font-bold text-gray-600">No matching candidate applications found.</p>
+                        <p class="text-xs text-gray-400 mt-1">Try adjusting your search criteria.</p>
                     </div>
                 `;
-            } else {
-                container.innerHTML = jobApps.map((app, index) => {
-                    const appliedDate = new Date(app.applied_at || Date.now()).toLocaleDateString();
-                    return `
-                        <div class="bg-white p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700">#${index + 1} Candidate</span>
-                                    <span class="text-xs text-gray-400">•</span>
-                                    <span class="text-xs text-gray-500"><i class="fa-solid fa-clock mr-1"></i> Applied: ${appliedDate}</span>
-                                </div>
-                                <h4 class="font-black text-gray-900 text-base">${app.name}</h4>
-                                <p class="text-xs text-gray-600 flex flex-wrap gap-3 font-medium">
-                                    <span><i class="fa-solid fa-envelope text-blue-600 mr-1"></i> ${app.email}</span>
-                                    <span><i class="fa-solid fa-phone text-emerald-600 mr-1"></i> ${app.phone}</span>
-                                </p>
-                            </div>
-                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                                <a href="${app.resume_link}" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 border rounded-xl text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition flex items-center gap-1.5 cursor-pointer"><i class="fa-solid fa-eye"></i> View Resume</a>
-                                <a href="${app.resume_link}" target="_blank" rel="noopener noreferrer" download class="px-3.5 py-2 border rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1.5 cursor-pointer"><i class="fa-solid fa-download"></i> Download</a>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                return;
             }
 
-            modal.classList.remove('hidden');
+            container.innerHTML = applicants.map((app, index) => {
+                const appliedDate = new Date(app.applied_at || Date.now()).toLocaleDateString();
+                const currentStatus = app.status || 'Pending';
+
+                let statusBadgeColor = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                if (currentStatus === 'Shortlisted') statusBadgeColor = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                if (currentStatus === 'Interview') statusBadgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
+                if (currentStatus === 'Rejected') statusBadgeColor = 'bg-red-100 text-red-800 border-red-200';
+
+                return `
+                    <div class="bg-white p-4 rounded-2xl border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700">#${index + 1}</span>
+                                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full border ${statusBadgeColor}">${currentStatus}</span>
+                                <span class="text-xs text-gray-400">•</span>
+                                <span class="text-xs text-gray-500"><i class="fa-solid fa-clock mr-1"></i> ${appliedDate}</span>
+                            </div>
+                            <h4 class="font-black text-gray-900 text-base">${app.name}</h4>
+                            <p class="text-xs text-gray-600 flex flex-wrap gap-3 font-medium">
+                                <span><i class="fa-solid fa-envelope text-blue-600 mr-1"></i> ${app.email}</span>
+                                <span><i class="fa-solid fa-phone text-emerald-600 mr-1"></i> ${app.phone}</span>
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap w-full md:w-auto justify-end">
+                            <!-- Status Update Dropdown -->
+                            <select onchange="updateApplicantStatus('${app.id}', this.value)" class="text-xs border rounded-xl px-3 py-2 bg-gray-50 font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="Shortlisted" ${currentStatus === 'Shortlisted' ? 'selected' : ''}>⭐ Shortlisted</option>
+                                <option value="Interview" ${currentStatus === 'Interview' ? 'selected' : ''}>🎯 Interview</option>
+                                <option value="Rejected" ${currentStatus === 'Rejected' ? 'selected' : ''}>❌ Rejected</option>
+                            </select>
+
+                            <a href="${app.resume_link}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 border rounded-xl text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-eye"></i> View</a>
+                            <a href="${app.resume_link}" target="_blank" rel="noopener noreferrer" download class="px-3 py-2 border rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-download"></i></a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateApplicantStatus(applicationId, newStatus) {
+            try {
+                showToast('Updating application status...', 'success');
+                const { error } = await supabaseClient
+                    .from('applications')
+                    .update({ status: newStatus })
+                    .eq('id', applicationId);
+
+                if (error) throw error;
+
+                showToast(`Status updated to ${newStatus}!`, 'success');
+                
+                const appObj = currentJobApplicants.find(a => a.id == applicationId);
+                if (appObj) appObj.status = newStatus;
+                
+                const globalApp = allApplicationsData.find(a => a.id == applicationId);
+                if (globalApp) globalApp.status = newStatus;
+
+                renderApplicantsTable(currentJobApplicants);
+            } catch (err) {
+                console.error('Status update error:', err.message);
+                showToast('Failed to update status: ' + err.message, 'error');
+            }
+        }
+
+        function filterApplicantsList() {
+            const query = document.getElementById('applicant-search-input').value.toLowerCase();
+            const filtered = currentJobApplicants.filter(app => 
+                app.name.toLowerCase().includes(query) || 
+                app.email.toLowerCase().includes(query)
+            );
+            renderApplicantsTable(filtered);
         }
 
         function closeApplicantsModal() {
@@ -1325,6 +1500,7 @@
             const job = allJobsData.find(j => j.id == jobId);
             if (!job) return;
 
+            switchWizardStep(1);
             document.getElementById('edit-job-id').value = job.id;
             document.getElementById('job-modal-title').innerText = 'Edit Global Position';
             document.getElementById('job-title-input').value = job.title || '';
@@ -1338,6 +1514,12 @@
             document.getElementById('job-project').value = job.project || '';
             document.getElementById('job-status-flag').value = job.status || 'Open';
             document.getElementById('job-description').value = job.description || '';
+
+            document.getElementById('job-pay-type').value = job.pay_type || 'Annual';
+            document.getElementById('job-currency').value = job.currency || 'INR';
+            document.getElementById('job-show-salary').checked = job.show_salary !== false;
+            document.getElementById('job-salary-min').value = job.salary_min || '';
+            document.getElementById('job-salary-max').value = job.salary_max || '';
 
             document.getElementById('job-modal').classList.remove('hidden');
         }
@@ -1435,6 +1617,13 @@
             const zip = document.getElementById('job-zip').value.trim();
             const status = document.getElementById('job-status-flag').value;
             const description = document.getElementById('job-description').value.trim();
+            
+            const pay_type = document.getElementById('job-pay-type').value;
+            const currency = document.getElementById('job-currency').value;
+            const show_salary = document.getElementById('job-show-salary').checked;
+            const salary_min = document.getElementById('job-salary-min').value ? Number(document.getElementById('job-salary-min').value) : null;
+            const salary_max = document.getElementById('job-salary-max').value ? Number(document.getElementById('job-salary-max').value) : null;
+
             const recruiter_id = currentRecruiter.id;
 
             try {
@@ -1442,13 +1631,20 @@
                 if (editId) {
                     query = supabaseClient
                         .from('jobs')
-                        .update({ title, company, category, country, work_mode, state, city, zip, status, description })
+                        .update({ 
+                            title, company, category, country, work_mode, state, city, zip, status, description,
+                            pay_type, currency, show_salary, salary_min, salary_max 
+                        })
                         .eq('id', editId)
                         .eq('recruiter_id', recruiter_id);
                 } else {
                     query = supabaseClient
                         .from('jobs')
-                        .insert([{ title, company, category, country, work_mode, state, city, zip, status, description, recruiter_id, created_at: new Date() }]);
+                        .insert([{ 
+                            title, company, category, country, work_mode, state, city, zip, status, description, 
+                            pay_type, currency, show_salary, salary_min, salary_max,
+                            recruiter_id, created_at: new Date() 
+                        }]);
                 }
 
                 const { error } = await query;
@@ -1484,6 +1680,7 @@
                 return;
             }
             document.getElementById('job-form').reset();
+            switchWizardStep(1);
             document.getElementById('edit-job-id').value = '';
             document.getElementById('job-company').value = currentRecruiter.company_name;
             document.getElementById('job-modal-title').innerText = 'Post Free Global Position';
