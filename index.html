@@ -7,7 +7,7 @@
     
     <!-- Dynamic SEO & Social Share Meta Tags -->
     <meta id="meta-title" name="title" content="Jobrit Pro | 100% Free Universal Job Board & ATS Platform">
-    <meta id="meta-description" name="description" content="Post unlimited jobs across Tech, Healthcare, Logistics, Sales, Engineering, and Finance, manage candidate pipelines in real-time, and hire top talent globally.">
+    <meta id="meta-description" name="description" content="Post unlimited jobs across Information Technology (IT), Healthcare, Logistics, Sales, Engineering, and Finance worldwide, manage candidate pipelines in real-time, and hire top talent instantly.">
     <meta id="og-title" property="og:title" content="Jobrit Pro | Universal Job Board & ATS">
     <meta id="og-description" property="og:description" content="Explore verified cross-industry global opportunities and manage candidate pipelines.">
     <meta id="og-type" property="og:type" content="website">
@@ -132,7 +132,7 @@
             </h2>
             
             <p class="text-sm sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
-                Post unlimited jobs across <strong class="text-gray-900">Tech, Healthcare, Logistics, Sales, Engineering, and Finance</strong> worldwide, manage candidate pipelines in real-time, and hire top talent instantly.
+                Post unlimited jobs across <strong class="text-gray-900">Information Technology (IT), Healthcare, Logistics, Sales, Engineering, and Finance</strong> worldwide, manage candidate pipelines in real-time, and hire top talent instantly.
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto pt-6 text-left">
@@ -242,9 +242,9 @@
                     <div class="md:col-span-4 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-filter text-indigo-600 mr-2 text-sm"></i>
                         <select id="search-industry" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-semibold">
-                            <option value="">All Industries (Tech, Healthcare, Sales...)</option>
+                            <option value="">All Industries (IT, Healthcare, Sales...)</option>
                             
-                            <optgroup label="Tech & Engineering">
+                            <optgroup label="Information Technology (IT) & Engineering">
                                 <option value="IT & Software Services">IT & Software Services</option>
                                 <option value="Aerospace & Defense">Aerospace & Defense</option>
                                 <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
@@ -405,7 +405,7 @@
             
             <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-start gap-4 flex-shrink-0 z-20 shadow-sm">
                 <div>
-                    <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Tech</span>
+                    <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Information Technology (IT)</span>
                     <h3 id="detail-title" class="text-lg sm:text-2xl font-black text-gray-900 mt-2 leading-snug">Job Title</h3>
                     <p id="detail-company-location" class="text-xs sm:text-sm font-bold text-gray-600 mt-1">Company • Location</p>
                 </div>
@@ -547,7 +547,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
                         <select id="job-category-input" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <optgroup label="Tech & Engineering">
+                            <optgroup label="Information Technology (IT) & Engineering">
                                 <option value="IT & Software Services">IT & Software Services</option>
                                 <option value="Aerospace & Defense">Aerospace & Defense</option>
                                 <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
@@ -672,7 +672,7 @@
             const metaTitle = document.getElementById('meta-title');
             const metaDesc = document.getElementById('meta-description');
             if (metaTitle) metaTitle.setAttribute('content', "Jobrit Pro | 100% Free Universal Job Board & ATS Platform");
-            if (metaDesc) metaDesc.setAttribute('content', "Post unlimited jobs across Tech, Healthcare, Logistics, Sales, Engineering, and Finance, manage candidate pipelines in real-time, and hire top talent globally.");
+            if (metaDesc) metaDesc.setAttribute('content', "Post unlimited jobs across Information Technology (IT), Healthcare, Logistics, Sales, Engineering, and Finance worldwide, manage candidate pipelines in real-time, and hire top talent instantly.");
         }
 
         // --- URL Hash Router Listener ---
@@ -1033,7 +1033,7 @@
                     return false;
                 }
 
-                // Country filtering logic (supports Worldwide Remote matching)
+                // Country filtering logic
                 if (searchCountry) {
                     const jobCountry = (job.country || '').toLowerCase();
                     const isRemoteJob = jobCountry.includes('remote') || (job.work_mode || '').toLowerCase() === 'remote';
