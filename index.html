@@ -7,9 +7,9 @@
     
     <!-- Dynamic SEO & Social Share Meta Tags -->
     <meta id="meta-title" name="title" content="Jobrit Pro | 100% Free Universal Job Board & ATS Platform">
-    <meta id="meta-description" name="description" content="Post unlimited jobs across Healthcare, Pharma, Aerospace, IT, Manufacturing, and Finance, manage candidate pipelines in real-time, and hire top talent instantly.">
+    <meta id="meta-description" name="description" content="Post unlimited jobs across Tech, Healthcare, Logistics, Sales, Engineering, and Finance, manage candidate pipelines in real-time, and hire top talent globally.">
     <meta id="og-title" property="og:title" content="Jobrit Pro | Universal Job Board & ATS">
-    <meta id="og-description" property="og:description" content="Explore verified cross-industry opportunities and manage candidate pipelines.">
+    <meta id="og-description" property="og:description" content="Explore verified cross-industry global opportunities and manage candidate pipelines.">
     <meta id="og-type" property="og:type" content="website">
 
     <!-- Tailwind CSS CDN -->
@@ -103,15 +103,17 @@
                 </h1>
             </div>
 
-            <!-- Navigation Controls & Role Switcher -->
+            <!-- Navigation Controls & Badge / Session Info -->
             <div class="flex items-center gap-2.5">
                 <button onclick="goHomeLanding()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-house text-blue-600"></i> Home
                 </button>
 
-                <!-- Recruiter Auth Info or Switcher -->
+                <!-- Dynamic Auth Info or Stylish Free Platform Badge -->
                 <div id="auth-nav-container" class="flex items-center gap-2">
-                    <!-- Dynamic Auth Buttons injected here -->
+                    <div class="text-xs font-bold px-3.5 py-1.5 rounded-xl border bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 shadow-sm">
+                        <span>⚡</span> 100% Free Platform
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,7 +123,7 @@
     <section id="landing-hero-section" class="bg-white py-16 sm:py-24 px-4 text-gray-900 border-b">
         <div class="max-w-5xl mx-auto text-center space-y-8">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs sm:text-sm font-bold shadow-sm">
-                <i class="fa-solid fa-circle-check text-emerald-600"></i> 100% Free Unlimited Job Postings & ATS • Zero Subscription Walls
+                <i class="fa-solid fa-circle-check text-emerald-600"></i> 100% Free Unlimited Global Job Postings & ATS • Zero Subscription Walls
             </div>
             
             <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-gray-900 leading-tight">
@@ -130,7 +132,7 @@
             </h2>
             
             <p class="text-sm sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
-                Post unlimited jobs across <strong class="text-gray-900">Healthcare, Pharma, Aerospace, IT, Manufacturing, and Finance</strong>, manage candidate pipelines in real-time, and hire top talent instantly.
+                Post unlimited jobs across <strong class="text-gray-900">Tech, Healthcare, Logistics, Sales, Engineering, and Finance</strong> worldwide, manage candidate pipelines in real-time, and hire top talent instantly.
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto pt-6 text-left">
@@ -140,7 +142,7 @@
                     </div>
                     <div class="space-y-1">
                         <h3 class="font-black text-gray-900 text-lg">For Employers & Agencies</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">Secure multi-tenant workspace, launch free job posts, and manage your private candidate resumes.</p>
+                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">Secure multi-tenant workspace, launch free job posts across global hubs, and manage candidate resumes.</p>
                     </div>
                     <div class="text-xs sm:text-sm font-bold text-emerald-600 flex items-center gap-2 pt-2 group-hover:translate-x-1 transition">
                         Enter Recruiter HQ <i class="fa-solid fa-arrow-right"></i>
@@ -153,7 +155,7 @@
                     </div>
                     <div class="space-y-1">
                         <h3 class="font-black text-gray-900 text-lg">For Job Seekers</h3>
-                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">Browse verified cross-industry opportunities, inspect rich specifications, and apply in 1-click.</p>
+                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">Browse verified worldwide remote and local opportunities, inspect specifications, and apply in 1-click.</p>
                     </div>
                     <div class="text-xs sm:text-sm font-bold text-blue-600 flex items-center gap-2 pt-2 group-hover:translate-x-1 transition">
                         Browse Job Feed <i class="fa-solid fa-arrow-right"></i>
@@ -164,7 +166,7 @@
             <div class="pt-8 flex flex-wrap items-center justify-center gap-8 text-xs sm:text-sm text-gray-500 font-bold border-t max-w-2xl mx-auto">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-emerald-600"></i> Secure Cloud ATS</span>
                 <span class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Lightning Fast Sync</span>
-                <span class="flex items-center gap-2"><i class="fa-solid fa-globe text-blue-600"></i> Global Reach</span>
+                <span class="flex items-center gap-2"><i class="fa-solid fa-globe text-blue-600"></i> Worldwide Reach</span>
             </div>
         </div>
     </section>
@@ -178,46 +180,98 @@
                         <h2 id="hero-title" class="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 leading-tight">Universal Job Portal & ATS</h2>
                         <p id="hero-subtitle" class="text-xs sm:text-sm text-gray-600 font-medium">Manage candidate pipelines and explore verified cross-industry opportunities.</p>
                     </div>
-                    <button id="employer-post-btn" onclick="openPostModal()" type="button" class="btn-post-job text-xs sm:text-sm font-bold cursor-pointer hidden">
-                        <i class="fa-solid fa-circle-plus text-base"></i> Post a Free Job
-                    </button>
+                    
+                    <!-- Dynamic Action Container -->
+                    <div id="employer-action-container"></div>
                 </div>
 
+                <!-- Universal Search & Filters Bar -->
                 <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-md grid grid-cols-1 md:grid-cols-12 gap-3 text-gray-900 border border-gray-200">
-                    <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    
+                    <!-- Global Country Dropdown with Optgroups -->
+                    <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-globe text-blue-600 mr-2 text-sm"></i>
                         <select id="search-country" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-semibold">
-                            <option value="">All Countries</option>
-                            <option value="United States">United States</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="India">India</option>
-                            <option value="Canada">Canada</option>
-                            <option value="Germany">Germany</option>
+                            <option value="">All Countries / Worldwide</option>
+                            <option value="Worldwide Remote">✈️ Worldwide Remote</option>
+                            
+                            <optgroup label="North America">
+                                <option value="United States">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                            </optgroup>
+                            
+                            <optgroup label="Europe & UK">
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Germany">Germany</option>
+                                <option value="France">France</option>
+                                <option value="Netherlands">Netherlands</option>
+                                <option value="Ireland">Ireland</option>
+                            </optgroup>
+                            
+                            <optgroup label="Asia-Pacific (APAC)">
+                                <option value="India">India</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Japan">Japan</option>
+                                <option value="Philippines">Philippines</option>
+                            </optgroup>
+                            
+                            <optgroup label="Middle East (GCC)">
+                                <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
+                                <option value="Saudi Arabia">Saudi Arabia</option>
+                            </optgroup>
+                            
+                            <option value="Other">🌍 Other / International</option>
                         </select>
                     </div>
 
+                    <!-- Title / Keyword Search -->
                     <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-magnifying-glass text-blue-600 mr-2 text-sm"></i>
-                        <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Company, or Industry..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
+                        <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Company, Keyword..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
                     </div>
 
-                    <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
+                    <!-- Location / City Search -->
+                    <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-location-dot text-red-500 mr-2 text-sm"></i>
-                        <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, State or ZIP Code..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
+                        <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, State..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
                     </div>
 
+                    <!-- Universal Industry Dropdown with Categories -->
                     <div class="md:col-span-4 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-filter text-indigo-600 mr-2 text-sm"></i>
                         <select id="search-industry" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-semibold">
-                            <option value="">All Industries (Healthcare, Pharma, IT...)</option>
-                            <option value="Healthcare">Healthcare & Medical</option>
-                            <option value="Pharma">Pharmaceuticals & Biotech</option>
-                            <option value="Aerospace">Aerospace & Defense</option>
-                            <option value="Software">IT & Software</option>
-                            <option value="Manufacturing">Manufacturing & Supply Chain</option>
-                            <option value="Finance">Finance & Banking</option>
+                            <option value="">All Industries (Tech, Healthcare, Sales...)</option>
+                            
+                            <optgroup label="Tech & Engineering">
+                                <option value="IT & Software Services">IT & Software Services</option>
+                                <option value="Aerospace & Defense">Aerospace & Defense</option>
+                                <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                            </optgroup>
+
+                            <optgroup label="Healthcare & Sciences">
+                                <option value="Healthcare & Medical">Healthcare & Medical</option>
+                                <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
+                            </optgroup>
+
+                            <optgroup label="Business, Sales & Support">
+                                <option value="Sales & Business Development">Sales & Business Development</option>
+                                <option value="Customer Support & Operations">Customer Support & Operations</option>
+                                <option value="Human Resources & Staffing">Human Resources & Staffing</option>
+                            </optgroup>
+
+                            <optgroup label="Supply Chain & Services">
+                                <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                                <option value="Finance & Banking">Finance & Banking</option>
+                                <option value="Construction & Real Estate">Construction & Real Estate</option>
+                                <option value="Education & EdTech">Education & EdTech</option>
+                            </optgroup>
+
+                            <option value="Other / General">🌍 Other / General</option>
                         </select>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -287,7 +341,7 @@
                     </div>
                 </form>
 
-                <!-- Sign Up Form (Hidden by default) -->
+                <!-- Sign Up Form -->
                 <form id="signup-form" onsubmit="handleRecruiterSignUp(event)" class="space-y-3 hidden">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
@@ -351,7 +405,7 @@
             
             <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-start gap-4 flex-shrink-0 z-20 shadow-sm">
                 <div>
-                    <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Healthcare</span>
+                    <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Tech</span>
                     <h3 id="detail-title" class="text-lg sm:text-2xl font-black text-gray-900 mt-2 leading-snug">Job Title</h3>
                     <p id="detail-company-location" class="text-xs sm:text-sm font-bold text-gray-600 mt-1">Company • Location</p>
                 </div>
@@ -362,7 +416,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border text-xs font-bold text-gray-700">
                     <div class="flex flex-wrap gap-4">
                         <span><i class="fa-solid fa-industry text-blue-600 mr-1"></i> Industry: <span id="detail-industry-text" class="font-normal text-gray-600">General</span></span>
-                        <span><i class="fa-solid fa-laptop-house text-blue-600 mr-1"></i> Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">In-person</span></span>
+                        <span><i class="fa-solid fa-laptop-house text-blue-600 mr-1"></i> Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">Remote</span></span>
                         <span><i class="fa-solid fa-clock text-blue-600 mr-1"></i> Posted: <span id="detail-posted-time" class="font-normal text-gray-600">Just Now</span></span>
                     </div>
                     <button onclick="copyJobDirectLink()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl border border-blue-200 transition text-xs font-bold flex items-center gap-1.5 cursor-pointer" title="Copy Direct Job Link">
@@ -387,7 +441,7 @@
         </div>
     </div>
 
-    <!-- Application Modal (Frictionless Guest Apply) -->
+    <!-- Application Modal (Frictionless Apply) -->
     <div id="apply-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border">
             <div class="flex justify-between items-center border-b pb-4 mb-5">
@@ -428,7 +482,7 @@
         <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto custom-scrollbar border">
             <div class="flex justify-between items-center border-b pb-4 mb-5">
                 <div>
-                    <h3 id="job-modal-title" class="text-lg font-black text-gray-900">Post Free Position</h3>
+                    <h3 id="job-modal-title" class="text-lg font-black text-gray-900">Post Free Global Position</h3>
                     <p class="text-xs text-emerald-600 font-bold">Universal Enterprise ATS Listing</p>
                 </div>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer">&times;</button>
@@ -439,21 +493,41 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country *</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country / Region *</label>
                         <select id="job-country-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <option value="United States">United States</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="India" selected>India</option>
-                            <option value="Canada">Canada</option>
-                            <option value="Germany">Germany</option>
+                            <option value="Worldwide Remote">✈️ Worldwide Remote</option>
+                            <optgroup label="North America">
+                                <option value="United States">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Mexico">Mexico</option>
+                            </optgroup>
+                            <optgroup label="Europe & UK">
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Germany">Germany</option>
+                                <option value="France">France</option>
+                                <option value="Netherlands">Netherlands</option>
+                                <option value="Ireland">Ireland</option>
+                            </optgroup>
+                            <optgroup label="Asia-Pacific (APAC)">
+                                <option value="India" selected>India</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Japan">Japan</option>
+                                <option value="Philippines">Philippines</option>
+                            </optgroup>
+                            <optgroup label="Middle East (GCC)">
+                                <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
+                                <option value="Saudi Arabia">Saudi Arabia</option>
+                            </optgroup>
+                            <option value="Other">🌍 Other / International</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Mode *</label>
                         <select id="job-work-mode-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <option value="In-person">In-person (Onsite)</option>
-                            <option value="Hybrid">Hybrid</option>
                             <option value="Remote">Fully Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="In-person">In-person (Onsite)</option>
                         </select>
                     </div>
                 </div>
@@ -461,11 +535,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
-                        <input type="text" id="job-title-input" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. Senior Clinical Research Associate">
+                        <input type="text" id="job-title-input" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. Senior Logistics Manager">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company / Agency Name *</label>
-                        <input type="text" id="job-company" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. Apex Life Sciences">
+                        <input type="text" id="job-company" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="e.g. ACL Digital">
                     </div>
                 </div>
 
@@ -473,12 +547,27 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
                         <select id="job-category-input" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Pharma">Pharma</option>
-                            <option value="Aerospace">Aerospace</option>
-                            <option value="Software">IT / Software</option>
-                            <option value="Manufacturing">Manufacturing</option>
-                            <option value="Finance">Finance</option>
+                            <optgroup label="Tech & Engineering">
+                                <option value="IT & Software Services">IT & Software Services</option>
+                                <option value="Aerospace & Defense">Aerospace & Defense</option>
+                                <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                            </optgroup>
+                            <optgroup label="Healthcare & Sciences">
+                                <option value="Healthcare & Medical">Healthcare & Medical</option>
+                                <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
+                            </optgroup>
+                            <optgroup label="Business, Sales & Support">
+                                <option value="Sales & Business Development">Sales & Business Development</option>
+                                <option value="Customer Support & Operations">Customer Support & Operations</option>
+                                <option value="Human Resources & Staffing">Human Resources & Staffing</option>
+                            </optgroup>
+                            <optgroup label="Supply Chain & Services">
+                                <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                                <option value="Finance & Banking">Finance & Banking</option>
+                                <option value="Construction & Real Estate">Construction & Real Estate</option>
+                                <option value="Education & EdTech">Education & EdTech</option>
+                            </optgroup>
+                            <option value="Other / General">🌍 Other / General</option>
                         </select>
                     </div>
                     <div>
@@ -583,7 +672,7 @@
             const metaTitle = document.getElementById('meta-title');
             const metaDesc = document.getElementById('meta-description');
             if (metaTitle) metaTitle.setAttribute('content', "Jobrit Pro | 100% Free Universal Job Board & ATS Platform");
-            if (metaDesc) metaDesc.setAttribute('content', "Post unlimited jobs across Healthcare, Pharma, Aerospace, IT, Manufacturing, and Finance, manage candidate pipelines in real-time, and hire top talent instantly.");
+            if (metaDesc) metaDesc.setAttribute('content', "Post unlimited jobs across Tech, Healthcare, Logistics, Sales, Engineering, and Finance, manage candidate pipelines in real-time, and hire top talent globally.");
         }
 
         // --- URL Hash Router Listener ---
@@ -624,7 +713,6 @@
                 updateAuthNavUI();
             }
 
-            // Initial Route Check
             if (window.location.hash.startsWith('#/job/')) {
                 await handleURLRouting();
             }
@@ -645,9 +733,9 @@
                 `;
             } else {
                 navContainer.innerHTML = `
-                    <button onclick="openRecruiterAuthModal('signin')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-right-to-bracket"></i> Recruiter Sign In
-                    </button>
+                    <div class="text-xs font-bold px-3.5 py-1.5 rounded-xl border bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 shadow-sm">
+                        <span>⚡</span> 100% Free Platform
+                    </div>
                 `;
             }
         }
@@ -821,7 +909,7 @@
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
 
-            const postBtn = document.getElementById('employer-post-btn');
+            const actionContainer = document.getElementById('employer-action-container');
             const heroTitle = document.getElementById('hero-title');
             const heroSubtitle = document.getElementById('hero-subtitle');
             const folderTabBar = document.getElementById('folder-tab-bar');
@@ -831,14 +919,22 @@
             if (role === 'employer') {
                 if (heroTitle) heroTitle.innerText = `${currentRecruiter.company_name} • Recruiter HQ`;
                 if (heroSubtitle) heroSubtitle.innerText = `Manage your private candidate pipelines and post verified open positions.`;
-                if (postBtn) postBtn.classList.remove('hidden');
+                if (actionContainer) {
+                    actionContainer.innerHTML = `
+                        <button onclick="openPostModal()" type="button" class="btn-post-job text-xs sm:text-sm font-bold cursor-pointer">
+                            <i class="fa-solid fa-circle-plus text-base"></i> Post a Free Job
+                        </button>
+                    `;
+                }
                 if (folderTabBar) folderTabBar.classList.remove('hidden');
                 if (boardHeading) boardHeading.innerHTML = `<i class="fa-solid fa-folder-tree text-blue-600"></i> Recruiter Pipeline Workspace`;
                 if (boardSubheading) boardSubheading.innerText = `Manage your posted jobs and inspect candidate resumes in real-time.`;
             } else {
                 if (heroTitle) heroTitle.innerText = 'Universal Public Job Feed';
-                if (heroSubtitle) heroSubtitle.innerText = 'Explore verified cross-industry opportunities from all recruiters and apply in 1-click.';
-                if (postBtn) postBtn.classList.add('hidden');
+                if (heroSubtitle) heroSubtitle.innerText = 'Explore verified cross-industry global opportunities and apply in 1-click.';
+                if (actionContainer) {
+                    actionContainer.innerHTML = ''; 
+                }
                 if (folderTabBar) folderTabBar.classList.add('hidden');
                 if (boardHeading) boardHeading.innerHTML = `<i class="fa-solid fa-briefcase text-blue-600"></i> Verified Open Positions`;
                 if (boardSubheading) boardSubheading.innerText = `Select any opportunity to view full specification and apply instantly.`;
@@ -891,7 +987,6 @@
                 allJobsData = data || [];
                 renderJobsUI();
 
-                // Check route after jobs are fetched
                 if (window.location.hash.startsWith('#/job/')) {
                     const slug = window.location.hash.replace('#/job/', '');
                     const jobId = extractJobIdFromSlug(slug);
@@ -938,7 +1033,19 @@
                     return false;
                 }
 
-                if (searchCountry && (job.country || '').toLowerCase() !== searchCountry) return false;
+                // Country filtering logic (supports Worldwide Remote matching)
+                if (searchCountry) {
+                    const jobCountry = (job.country || '').toLowerCase();
+                    const isRemoteJob = jobCountry.includes('remote') || (job.work_mode || '').toLowerCase() === 'remote';
+                    
+                    if (searchCountry === 'worldwide remote') {
+                        if (!isRemoteJob) return false;
+                    } else {
+                        const matchesCountry = jobCountry.includes(searchCountry);
+                        if (!matchesCountry && !isRemoteJob) return false;
+                    }
+                }
+
                 if (searchIndustry && (job.category || '').toLowerCase() !== searchIndustry) return false;
                 
                 if (searchTitle) {
@@ -991,7 +1098,7 @@
                 const totalViews = job.views_count || (12 + totalApplicants * 5);
 
                 let locationParts = [job.city, job.state, job.country].filter(Boolean);
-                let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Remote';
+                let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Worldwide Remote';
 
                 let actionButtonHtml = '';
                 if (currentRole === 'employer') {
@@ -1042,7 +1149,7 @@
                             <p class="text-xs text-gray-500 flex flex-wrap items-center gap-2">
                                 <span><i class="fa-solid fa-location-dot text-red-500 mr-1"></i>${displayLocation}</span>
                                 <span>•</span>
-                                <span><i class="fa-solid fa-laptop-house text-blue-500 mr-1"></i>${job.work_mode || 'In-person'}</span>
+                                <span><i class="fa-solid fa-laptop-house text-blue-500 mr-1"></i>${job.work_mode || 'Remote'}</span>
                                 <span>•</span>
                                 <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded"><i class="fa-solid fa-clock mr-1"></i>${timeAgoText}</span>
                             </p>
@@ -1081,18 +1188,16 @@
 
             activeJobIdForSlug = job.id;
             let locationParts = [job.city, job.state, job.country].filter(Boolean);
-            let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Remote';
+            let displayLocation = locationParts.length > 0 ? locationParts.join(', ') : 'Worldwide Remote';
 
-            // 1. Update UI Elements
             document.getElementById('detail-category').innerText = job.category || 'General';
             document.getElementById('detail-title').innerText = job.title;
             document.getElementById('detail-company-location').innerText = `${job.company || 'Company'} • ${displayLocation}`;
             document.getElementById('detail-industry-text').innerText = job.category || 'General';
-            document.getElementById('detail-workmode').innerText = job.work_mode || 'In-person';
+            document.getElementById('detail-workmode').innerText = job.work_mode || 'Remote';
             document.getElementById('detail-posted-time').innerText = getTimeAgo(job.created_at);
             document.getElementById('detail-description').innerText = job.description || 'No description provided.';
             
-            // 2. Set Action Button
             const actionBtn = document.getElementById('detail-modal-action-btn');
             if (currentRole === 'employer') {
                 actionBtn.innerHTML = `<i class="fa-solid fa-pen-to-square mr-1"></i> Edit Position`;
@@ -1102,7 +1207,6 @@
                 actionBtn.setAttribute('onclick', `closeJobDetailModal(); openApplyModal('${job.id}', '${(job.title || '').replace(/'/g, "\\'")}')`);
             }
 
-            // 3. Update SEO Meta Tags & URL Hash
             const slug = createJobSlug(job.title, job.id);
             updateSEOMetaTags(job.title, job.company || 'Company', displayLocation, job.category, job.description);
 
@@ -1222,12 +1326,12 @@
             if (!job) return;
 
             document.getElementById('edit-job-id').value = job.id;
-            document.getElementById('job-modal-title').innerText = 'Edit Job Position';
+            document.getElementById('job-modal-title').innerText = 'Edit Global Position';
             document.getElementById('job-title-input').value = job.title || '';
             document.getElementById('job-company').value = job.company || (currentRecruiter ? currentRecruiter.company_name : '');
-            document.getElementById('job-category-input').value = job.category || 'Healthcare';
-            document.getElementById('job-country-input').value = job.country || 'India';
-            document.getElementById('job-work-mode-input').value = job.work_mode || 'In-person';
+            document.getElementById('job-category-input').value = job.category || 'IT & Software Services';
+            document.getElementById('job-country-input').value = job.country || 'Worldwide Remote';
+            document.getElementById('job-work-mode-input').value = job.work_mode || 'Remote';
             document.getElementById('job-state').value = job.state || '';
             document.getElementById('job-city').value = job.city || '';
             document.getElementById('job-zip').value = job.zip || '';
@@ -1382,7 +1486,7 @@
             document.getElementById('job-form').reset();
             document.getElementById('edit-job-id').value = '';
             document.getElementById('job-company').value = currentRecruiter.company_name;
-            document.getElementById('job-modal-title').innerText = 'Post Free Position';
+            document.getElementById('job-modal-title').innerText = 'Post Free Global Position';
             document.getElementById('job-modal').classList.remove('hidden');
         }
 
