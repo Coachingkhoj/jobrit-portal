@@ -693,7 +693,7 @@
 
             <!-- Modal Footer with Clean Dynamic Button Control -->
             <div class="p-4 sm:p-5 border-t bg-gray-50 flex justify-between items-center gap-3 flex-shrink-0 z-10 shadow-inner">
-                <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-semibold text-gray-600 hover:bg-gray-100 bg-white transition cursor-pointer">Cancel</button>
+                <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-semibold text-gray-600 hover:bg-gray-100 bg-white transition cursor-pointer">Close</button>
                 
                 <div class="flex gap-2 items-center">
                     <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" style="display: none;" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer">
@@ -749,7 +749,7 @@
                 }
                 step1.style.display = 'none';
                 step2.style.display = 'block';
-                indicator.innerText = 'Step 2 of 2: Job Description';
+                if (indicator) indicator.innerText = 'Step 2 of 2: Job Description';
                 
                 if (prevBtn) prevBtn.style.display = 'inline-flex';
                 if (nextBtn) nextBtn.style.display = 'none';
@@ -759,7 +759,7 @@
             } else {
                 step2.style.display = 'none';
                 step1.style.display = 'block';
-                indicator.innerText = 'Step 1 of 2: Basic Info & Salary';
+                if (indicator) indicator.innerText = 'Step 1 of 2: Basic Info & Salary';
                 
                 if (prevBtn) prevBtn.style.display = 'none';
                 if (nextBtn) nextBtn.style.display = 'inline-flex';
@@ -1712,7 +1712,7 @@
         }
 
         async function handleJobFormSubmit(event) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             if (!supabaseClient || !currentRecruiter) {
                 showToast('Please log in as a recruiter to post jobs.', 'error');
                 return;
@@ -1738,39 +1738,50 @@
             const salary_max = document.getElementById('job-salary-max').value ? Number(document.getElementById('job-salary-max').value) : null;
 
             const recruiter_id = currentRecruiter.id;
+            const submitBtn = document.getElementById('wizard-submit-btn');
 
             try {
-                let query;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saving changes...';
+                }
+
+                let response;
                 if (editId) {
-                    query = supabaseClient
+                    response = await supabaseClient
                         .from('jobs')
                         .update({ 
                             title, company, category, country, work_mode, state, city, zip, status, description,
                             pay_type, currency, show_salary, salary_min, salary_max 
                         })
                         .eq('id', editId)
-                        .eq('recruiter_id', recruiter_id);
+                        .select();
                 } else {
-                    query = supabaseClient
+                    response = await supabaseClient
                         .from('jobs')
                         .insert([{ 
                             title, company, category, country, work_mode, state, city, zip, status, description, 
                             pay_type, currency, show_salary, salary_min, salary_max,
                             recruiter_id, created_at: new Date() 
-                        }]);
+                        }])
+                        .select();
                 }
 
-                const { error } = await query;
-                if (error) throw error;
+                if (response.error) throw response.error;
 
-                showToast(editId ? 'Job updated successfully!' : 'Job posted successfully!', 'success');
+                showToast(editId ? 'Job updated successfully! ✔️' : 'Job Posted Successfully! 🚀', 'success');
+                
                 closeModal();
-                document.getElementById('job-form').reset();
-                document.getElementById('rich-editor').innerHTML = '';
-                fetchJobsFeed();
+                await fetchJobsFeed();
+
             } catch (err) {
                 console.error('Job Save Error:', err.message);
                 showToast('Failed to save job: ' + err.message, 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Save Position <i class="fa-solid fa-check ml-1"></i>';
+                }
             }
         }
 
