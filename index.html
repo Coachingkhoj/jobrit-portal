@@ -5,20 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jobrit Pro | 100% Free Universal Job Board & ATS Platform</title>
     
-    <!-- Dynamic SEO & Social Share Meta Tags -->
     <meta id="meta-title" name="title" content="Jobrit Pro | 100% Free Universal Job Board & ATS Platform">
     <meta id="meta-description" name="description" content="Post unlimited jobs across Information Technology (IT), Healthcare, Logistics, Sales, Engineering, and Finance worldwide, manage candidate pipelines in real-time, and hire top talent instantly.">
     <meta id="og-title" property="og:title" content="Jobrit Pro | Universal Job Board & ATS">
     <meta id="og-description" property="og:description" content="Explore verified cross-industry global opportunities and manage candidate pipelines.">
     <meta id="og-type" property="og:type" content="website">
 
-    <!-- Tailwind CSS CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-    <!-- Supabase JS Client -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Google Analytics (GA4) Tracking Setup -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JSCG9PL78L"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -78,23 +75,47 @@
             box-shadow: 0 20px 35px -10px rgba(37, 99, 235, 0.15);
         }
 
-        .jd-content {
-            white-space: pre-wrap;
-            line-height: 1.7;
-            color: #374151;
+        .jd-content, #rich-editor {
+            white-space: pre-wrap !important;
+            line-height: 1.7 !important;
+            color: #374151 !important;
+            word-break: break-word !important;
         }
-        .jd-content strong, .jd-content b {
-            color: #111827;
-            font-weight: 700;
+        .jd-content strong, .jd-content b, #rich-editor strong, #rich-editor b {
+            color: #111827 !important;
+            font-weight: 700 !important;
+        }
+        .jd-content ul, #rich-editor ul {
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        .jd-content ol, #rich-editor ol {
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        .jd-content li, #rich-editor li {
+            margin-bottom: 0.25rem !important;
+            display: list-item !important;
+        }
+
+        #rich-editor {
+            min-height: 220px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        #rich-editor:focus {
+            outline: none;
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col justify-between antialiased">
 
-    <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Header / Navbar -->
     <header class="bg-white shadow-sm border-b sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-4">
@@ -103,13 +124,11 @@
                 </h1>
             </div>
 
-            <!-- Navigation Controls & Badge / Session Info -->
             <div class="flex items-center gap-2.5">
                 <button onclick="goHomeLanding()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-house text-blue-600"></i> Home
                 </button>
 
-                <!-- Dynamic Auth Info or Stylish Free Platform Badge -->
                 <div id="auth-nav-container" class="flex items-center gap-2">
                     <div class="text-xs font-bold px-3.5 py-1.5 rounded-xl border bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 shadow-sm">
                         <span>⚡</span> 100% Free Platform
@@ -119,7 +138,6 @@
         </div>
     </header>
 
-    <!-- Clean Landing Hero -->
     <section id="landing-hero-section" class="bg-white py-16 sm:py-24 px-4 text-gray-900 border-b">
         <div class="max-w-5xl mx-auto text-center space-y-8">
             <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs sm:text-sm font-bold shadow-sm">
@@ -171,7 +189,6 @@
         </div>
     </section>
 
-    <!-- Active App Dashboard Section -->
     <div id="active-dashboard-wrapper" class="hidden flex-grow flex flex-col">
         <section class="bg-gray-100 border-b py-8 sm:py-10 px-4 shadow-inner">
             <div class="max-w-7xl mx-auto space-y-6">
@@ -181,14 +198,10 @@
                         <p id="hero-subtitle" class="text-xs sm:text-sm text-gray-600 font-medium">Manage candidate pipelines and explore verified cross-industry opportunities.</p>
                     </div>
                     
-                    <!-- Dynamic Action Container -->
                     <div id="employer-action-container"></div>
                 </div>
 
-                <!-- Universal Search & Filters Bar -->
                 <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-md grid grid-cols-1 md:grid-cols-12 gap-3 text-gray-900 border border-gray-200">
-                    
-                    <!-- Global Country Dropdown with Optgroups -->
                     <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-globe text-blue-600 mr-2 text-sm"></i>
                         <select id="search-country" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-semibold">
@@ -226,19 +239,16 @@
                         </select>
                     </div>
 
-                    <!-- Title / Keyword Search -->
                     <div class="md:col-span-3 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-magnifying-glass text-blue-600 mr-2 text-sm"></i>
                         <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Company, Keyword..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
                     </div>
 
-                    <!-- Location / City Search -->
                     <div class="md:col-span-2 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-location-dot text-red-500 mr-2 text-sm"></i>
                         <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, State..." class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-medium">
                     </div>
 
-                    <!-- Universal Industry Dropdown with Categories -->
                     <div class="md:col-span-4 flex items-center border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50">
                         <i class="fa-solid fa-filter text-indigo-600 mr-2 text-sm"></i>
                         <select id="search-industry" onchange="filterJobs()" class="w-full bg-transparent text-xs sm:text-sm focus:outline-none font-semibold">
@@ -307,10 +317,8 @@
         </main>
     </div>
 
-    <!-- Recruiter Auth Compact Slide-Over Drawer (Right Side) -->
     <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs hidden z-50 flex justify-end">
         <div class="bg-white shadow-2xl w-full max-w-xs h-full p-5 border-l flex flex-col justify-between overflow-y-auto custom-scrollbar relative">
-            
             <div class="space-y-4">
                 <div class="flex justify-between items-start">
                     <div id="auth-modal-header">
@@ -320,13 +328,11 @@
                     <button onclick="closeRecruiterAuthModal()" class="text-gray-400 hover:text-gray-700 font-bold text-base w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer flex-shrink-0">&times;</button>
                 </div>
 
-                <!-- Toggle tabs for Sign In / Sign Up -->
                 <div class="flex bg-gray-100 p-1 rounded-xl text-[11px] font-bold">
                     <button type="button" id="tab-signin-btn" onclick="switchAuthTab('signin')" class="flex-1 py-2 rounded-lg bg-white text-blue-700 shadow-sm transition cursor-pointer">Sign In</button>
                     <button type="button" id="tab-signup-btn" onclick="switchAuthTab('signup')" class="flex-1 py-2 rounded-lg text-gray-600 hover:text-gray-900 transition cursor-pointer">Register</button>
                 </div>
 
-                <!-- Sign In Form -->
                 <form id="signin-form" onsubmit="handleRecruiterSignIn(event)" class="space-y-3">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Email *</label>
@@ -341,7 +347,6 @@
                     </div>
                 </form>
 
-                <!-- Sign Up Form -->
                 <form id="signup-form" onsubmit="handleRecruiterSignUp(event)" class="space-y-3 hidden">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
@@ -378,7 +383,6 @@
         </div>
     </div>
 
-    <!-- Applicants Management Modal -->
     <div id="applicants-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
         <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
             <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-center gap-4 flex-shrink-0 z-20 shadow-sm">
@@ -389,7 +393,6 @@
                 <button onclick="closeApplicantsModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center transition flex-shrink-0 cursor-pointer shadow-lg" title="Close Modal">&times;</button>
             </div>
             
-            <!-- Applicant Search Filter Bar -->
             <div class="px-4 sm:px-6 pt-4 bg-gray-50 border-b pb-3">
                 <div class="flex items-center border border-gray-200 rounded-xl px-3 py-2 bg-white shadow-sm">
                     <i class="fa-solid fa-magnifying-glass text-blue-600 mr-2 text-sm"></i>
@@ -407,10 +410,8 @@
         </div>
     </div>
 
-    <!-- Job Detail Modal -->
     <div id="job-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
         <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
-            
             <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-start gap-4 flex-shrink-0 z-20 shadow-sm">
                 <div>
                     <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Information Technology (IT)</span>
@@ -449,7 +450,6 @@
         </div>
     </div>
 
-    <!-- Application Modal (Frictionless Apply) -->
     <div id="apply-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border">
             <div class="flex justify-between items-center border-b pb-4 mb-5">
@@ -459,36 +459,53 @@
                 </div>
                 <button onclick="closeApplyModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer">&times;</button>
             </div>
+
             <form id="apply-form" onsubmit="submitApplication(event)" class="space-y-4">
                 <input type="hidden" id="apply-job-id">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
-                    <input type="text" id="applicant-name" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="e.g. Rahul Verma">
+                
+                <div id="apply-step-upload" class="space-y-4 py-2">
+                    <div class="text-center p-6 border-2 border-dashed border-blue-300 rounded-2xl bg-blue-50/50 hover:bg-blue-50 transition relative">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-600 mb-2"></i>
+                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Upload Resume (PDF / DOCX)</h4>
+                        <p class="text-[11px] text-gray-500 mt-1">We will automatically fill your details in 1-second!</p>
+                        <input type="file" id="applicant-resume-file" accept=".pdf,.doc,.docx" onchange="handleResumeUpload(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" required>
+                    </div>
+                    <div id="parsing-loader" class="hidden text-center py-3 text-xs font-bold text-blue-600 animate-pulse">
+                        <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Reading resume & auto-extracting details...
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Email Address *</label>
-                    <input type="email" id="applicant-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="rahul@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number *</label>
-                    <input type="tel" id="applicant-phone" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="+91 9876543210">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Upload Resume (PDF / DOCX) *</label>
-                    <input type="file" id="applicant-resume-file" accept=".pdf,.doc,.docx" required class="w-full border rounded-xl p-2.5 text-xs bg-gray-50 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeApplyModal()" class="px-4 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition cursor-pointer">Cancel</button>
-                    <button type="submit" id="submit-app-btn" class="btn-primary-action text-sm font-bold cursor-pointer">Submit Application</button>
+
+                <div id="apply-step-form" class="space-y-3 hidden">
+                    <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex items-center gap-2 text-xs font-bold text-emerald-800">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                        <span>Resume uploaded successfully! Review details below:</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
+                        <input type="text" id="applicant-name" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition font-semibold" placeholder="e.g. Rahul Verma">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Email Address *</label>
+                        <input type="email" id="applicant-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition font-semibold" placeholder="rahul@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number *</label>
+                        <input type="tel" id="applicant-phone" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition font-semibold" placeholder="+91 9876543210">
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-3 border-t">
+                        <button type="button" onclick="closeApplyModal()" class="px-4 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 transition cursor-pointer">Cancel</button>
+                        <button type="submit" id="submit-app-btn" class="btn-primary-action text-sm font-bold cursor-pointer">Submit Application</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Multi-Step Post / Edit Job Modal (Fixed Wizard with Next/Prev Buttons) -->
+    <!-- Multi-Step Post / Edit Job Modal -->
     <div id="job-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden border relative">
-            <!-- Modal Header -->
             <div class="p-5 sm:p-6 border-b flex justify-between items-center bg-white flex-shrink-0 z-10 shadow-sm">
                 <div>
                     <h3 id="job-modal-title" class="text-lg font-black text-gray-900">Post Free Global Position</h3>
@@ -497,7 +514,6 @@
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer">&times;</button>
             </div>
             
-            <!-- Modal Body (Form Container) -->
             <div class="p-5 sm:p-6 bg-white max-h-[70vh] overflow-y-auto custom-scrollbar">
                 <form id="job-form" onsubmit="handleJobFormSubmit(event)" class="space-y-4">
                     <input type="hidden" id="edit-job-id">
@@ -597,7 +613,6 @@
                             </div>
                         </div>
 
-                        <!-- Salary & Compensation Structure Section -->
                         <div class="bg-gray-50 p-4 rounded-2xl border space-y-3">
                             <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-wallet text-emerald-600"></i> Compensation & Salary Range</h4>
                             
@@ -656,35 +671,38 @@
                         </div>
                     </div>
 
-                    <!-- STEP 2: Job Description -->
+                    <!-- STEP 2: Rich Text Job Description Editor -->
                     <div id="wizard-step-2" class="space-y-4 hidden">
                         <div>
-                            <div class="flex justify-between items-center mb-1.5">
+                            <div class="flex flex-wrap justify-between items-center mb-1.5 gap-2">
                                 <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Job Description & Requirements *</label>
-                                <div class="flex gap-1.5 bg-gray-100 p-1 rounded-xl text-xs font-bold">
-                                    <button type="button" onclick="insertFormatting('bold')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bold"><b>B</b></button>
-                                    <button type="button" onclick="insertFormatting('italic')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Italic"><i>I</i></button>
-                                    <button type="button" onclick="insertFormatting('bullet')" class="px-3 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bullet List">• List</button>
+                                <div class="flex gap-1 bg-gray-100 p-1 rounded-xl text-xs font-bold">
+                                    <button type="button" onclick="formatRichText('bold')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                                    <button type="button" onclick="formatRichText('italic')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                                    <button type="button" onclick="formatRichText('underline')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                                    <button type="button" onclick="formatRichText('insertUnorderedList')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+                                    <button type="button" onclick="formatRichText('removeFormat')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm text-red-600 transition cursor-pointer" title="Clear Formatting"><i class="fa-solid fa-rotate-left"></i></button>
                                 </div>
                             </div>
-                            <textarea id="job-description" rows="10" required class="w-full border rounded-2xl p-4 text-sm outline-none leading-relaxed bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="Paste full position responsibilities and requirements here..."></textarea>
+                            
+                            <div id="rich-editor" contenteditable="true" class="w-full border rounded-2xl p-4 text-sm outline-none leading-relaxed bg-gray-50 focus:bg-white focus:border-blue-600 transition custom-scrollbar jd-content" placeholder="Type or paste job description here..."></div>
                         </div>
                     </div>
                 </form>
             </div>
 
-            <!-- Modal Footer with Wizard Navigation Buttons -->
+            <!-- Modal Footer with Clean Dynamic Button Control -->
             <div class="p-4 sm:p-5 border-t bg-gray-50 flex justify-between items-center gap-3 flex-shrink-0 z-10 shadow-inner">
                 <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-semibold text-gray-600 hover:bg-gray-100 bg-white transition cursor-pointer">Cancel</button>
                 
-                <div class="flex gap-2">
-                    <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" class="hidden px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer">
+                <div class="flex gap-2 items-center">
+                    <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" style="display: none;" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer">
                         <i class="fa-solid fa-arrow-left mr-1"></i> Back
                     </button>
                     <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
                         Next: Description <i class="fa-solid fa-arrow-right ml-1"></i>
                     </button>
-                    <button type="submit" form="job-form" id="wizard-submit-btn" class="hidden btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
+                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none;" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
                         Save Position <i class="fa-solid fa-check ml-1"></i>
                     </button>
                 </div>
@@ -692,7 +710,6 @@
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
     <script>
         const SUPABASE_URL = 'https://fnktheeuobmbnrwuvbbk.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_-1QJIB7cq4tsg80a13Cgbw_q1MAOqy8';
@@ -707,8 +724,14 @@
         let activeJobIdForSlug = null;
         let currentWizardStep = 1;
         let currentJobApplicants = [];
+        let uploadedResumeFile = null;
 
-        // --- Wizard Step Controller ---
+        function formatRichText(command) {
+            document.execCommand(command, false, null);
+            const editor = document.getElementById('rich-editor');
+            if (editor) editor.focus();
+        }
+
         function switchWizardStep(step) {
             const step1 = document.getElementById('wizard-step-1');
             const step2 = document.getElementById('wizard-step-2');
@@ -724,20 +747,24 @@
                     showToast('Please fill out Job Title and Company Name first!', 'error');
                     return;
                 }
-                step1.classList.add('hidden');
-                step2.classList.remove('hidden');
+                step1.style.display = 'none';
+                step2.style.display = 'block';
                 indicator.innerText = 'Step 2 of 2: Job Description';
-                prevBtn.classList.remove('hidden');
-                nextBtn.classList.add('hidden');
-                submitBtn.classList.remove('hidden');
+                
+                if (prevBtn) prevBtn.style.display = 'inline-flex';
+                if (nextBtn) nextBtn.style.display = 'none';
+                if (submitBtn) submitBtn.style.display = 'inline-flex';
+                
                 currentWizardStep = 2;
             } else {
-                step2.classList.add('hidden');
-                step1.classList.remove('hidden');
+                step2.style.display = 'none';
+                step1.style.display = 'block';
                 indicator.innerText = 'Step 1 of 2: Basic Info & Salary';
-                prevBtn.classList.add('hidden');
-                nextBtn.classList.remove('hidden');
-                submitBtn.classList.add('hidden');
+                
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'inline-flex';
+                if (submitBtn) submitBtn.style.display = 'none';
+                
                 currentWizardStep = 1;
             }
         }
@@ -758,7 +785,9 @@
 
         function updateSEOMetaTags(title, company, location, category, description) {
             const fullTitle = `${title} at ${company} (${location}) | Jobrit Pro`;
-            const shortDesc = (description || '').substring(0, 160) + '...';
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = description;
+            const shortDesc = (tempDiv.textContent || tempDiv.innerText || '').substring(0, 160) + '...';
 
             document.title = fullTitle;
             
@@ -1312,7 +1341,9 @@
             document.getElementById('detail-industry-text').innerText = job.category || 'General';
             document.getElementById('detail-workmode').innerText = job.work_mode || 'Remote';
             document.getElementById('detail-posted-time').innerText = getTimeAgo(job.created_at);
-            document.getElementById('detail-description').innerText = job.description || 'No description provided.';
+            
+            const descContainer = document.getElementById('detail-description');
+            descContainer.innerHTML = job.description || 'No description provided.';
             
             const actionBtn = document.getElementById('detail-modal-action-btn');
             if (currentRole === 'employer') {
@@ -1424,7 +1455,6 @@
                             </p>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap w-full md:w-auto justify-end">
-                            <!-- Status Update Dropdown -->
                             <select onchange="updateApplicantStatus('${app.id}', this.value)" class="text-xs border rounded-xl px-3 py-2 bg-gray-50 font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
                                 <option value="Shortlisted" ${currentStatus === 'Shortlisted' ? 'selected' : ''}>⭐ Shortlisted</option>
@@ -1513,7 +1543,8 @@
             document.getElementById('job-zip').value = job.zip || '';
             document.getElementById('job-project').value = job.project || '';
             document.getElementById('job-status-flag').value = job.status || 'Open';
-            document.getElementById('job-description').value = job.description || '';
+            
+            document.getElementById('rich-editor').innerHTML = job.description || '';
 
             document.getElementById('job-pay-type').value = job.pay_type || 'Annual';
             document.getElementById('job-currency').value = job.currency || 'INR';
@@ -1522,6 +1553,89 @@
             document.getElementById('job-salary-max').value = job.salary_max || '';
 
             document.getElementById('job-modal').classList.remove('hidden');
+        }
+
+        async function handleResumeUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            uploadedResumeFile = file;
+            const loader = document.getElementById('parsing-loader');
+            loader.classList.remove('hidden');
+
+            try {
+                let extractedText = '';
+
+                if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                    const pdfDocument = await loadingTask.promise;
+                    
+                    let fullText = '';
+                    for (let i = 1; i <= Math.min(pdfDocument.numPages, 2); i++) {
+                        const page = await pdfDocument.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        fullText += pageText + ' ';
+                    }
+                    extractedText = fullText;
+                } else {
+                    extractedText = file.name;
+                }
+
+                const emailMatch = extractedText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+                const email = emailMatch ? emailMatch[0] : '';
+
+                let phone = '';
+                const phonePatterns = [
+                    /(\+91[\-\s]?)?[789]\d{9}/, 
+                    /\+?\d{1,3}[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/, 
+                    /\b\d{10}\b/
+                ];
+                for (let pattern of phonePatterns) {
+                    const match = extractedText.match(pattern);
+                    if (match) {
+                        phone = match[0];
+                        break;
+                    }
+                }
+
+                let candidateName = '';
+                const cleanNameFromFileName = file.name
+                    .replace(/\.[^/.]+$/, "")
+                    .replace(/[-_]/g, " ")
+                    .replace(/resume|cv|biodata/gi, "")
+                    .trim();
+
+                if (cleanNameFromFileName.length >= 3 && cleanNameFromFileName.length <= 30) {
+                    candidateName = cleanNameFromFileName.charAt(0).toUpperCase() + cleanNameFromFileName.slice(1);
+                } else {
+                    const words = extractedText.trim().split(/\s+/);
+                    if (words.length > 2) {
+                        const potentialName = `${words[0]} ${words[1]}`;
+                        if (/^[A-Z][a-z]+(\s[A-Z][a-z]+)?$/.test(potentialName)) {
+                            candidateName = potentialName;
+                        }
+                    }
+                }
+
+                if (candidateName) document.getElementById('applicant-name').value = candidateName;
+                if (email) document.getElementById('applicant-email').value = email;
+                if (phone) document.getElementById('applicant-phone').value = phone;
+
+                showToast('Resume uploaded successfully!', 'success');
+
+                document.getElementById('apply-step-upload').classList.add('hidden');
+                document.getElementById('apply-step-form').classList.remove('hidden');
+
+            } catch (err) {
+                console.warn('Auto-parse error:', err);
+                showToast('Uploaded successfully! Please review your details.', 'success');
+                document.getElementById('apply-step-upload').classList.add('hidden');
+                document.getElementById('apply-step-form').classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
+            }
         }
 
         async function submitApplication(event) {
@@ -1536,19 +1650,18 @@
             const name = document.getElementById('applicant-name').value.trim();
             const email = document.getElementById('applicant-email').value.trim();
             const phone = document.getElementById('applicant-phone').value.trim();
-            const fileInput = document.getElementById('applicant-resume-file');
             const submitBtn = document.getElementById('submit-app-btn');
-            const file = fileInput.files[0];
+            const file = uploadedResumeFile;
 
             if (!file) {
-                showToast('Please upload your resume file.', 'error');
+                showToast('Please upload your resume file first.', 'error');
                 return;
             }
 
             try {
                 if (submitBtn) {
                     submitBtn.disabled = true;
-                    submitBtn.innerText = 'Submitting...';
+                    submitBtn.innerText = 'Submitting Application...';
                 }
 
                 showToast('Uploading resume & submitting application...', 'success');
@@ -1585,7 +1698,6 @@
 
                 showToast('Application submitted successfully!', 'success');
                 closeApplyModal();
-                document.getElementById('apply-form').reset();
                 fetchApplicationsFeed();
 
             } catch (err) {
@@ -1616,7 +1728,8 @@
             const city = document.getElementById('job-city').value.trim();
             const zip = document.getElementById('job-zip').value.trim();
             const status = document.getElementById('job-status-flag').value;
-            const description = document.getElementById('job-description').value.trim();
+            
+            const description = document.getElementById('rich-editor').innerHTML.trim();
             
             const pay_type = document.getElementById('job-pay-type').value;
             const currency = document.getElementById('job-currency').value;
@@ -1653,6 +1766,7 @@
                 showToast(editId ? 'Job updated successfully!' : 'Job posted successfully!', 'success');
                 closeModal();
                 document.getElementById('job-form').reset();
+                document.getElementById('rich-editor').innerHTML = '';
                 fetchJobsFeed();
             } catch (err) {
                 console.error('Job Save Error:', err.message);
@@ -1663,6 +1777,12 @@
         function openApplyModal(jobId, jobTitle) {
             document.getElementById('apply-job-id').value = jobId;
             document.getElementById('apply-job-title').innerText = jobTitle;
+            uploadedResumeFile = null;
+            document.getElementById('apply-form').reset();
+            
+            document.getElementById('apply-step-upload').classList.remove('hidden');
+            document.getElementById('apply-step-form').classList.add('hidden');
+            
             document.getElementById('apply-modal').classList.remove('hidden');
         }
 
@@ -1680,27 +1800,12 @@
                 return;
             }
             document.getElementById('job-form').reset();
+            document.getElementById('rich-editor').innerHTML = '';
             switchWizardStep(1);
             document.getElementById('edit-job-id').value = '';
             document.getElementById('job-company').value = currentRecruiter.company_name;
             document.getElementById('job-modal-title').innerText = 'Post Free Global Position';
             document.getElementById('job-modal').classList.remove('hidden');
-        }
-
-        function insertFormatting(type) {
-            const textarea = document.getElementById('job-description');
-            if (!textarea) return;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const text = textarea.value;
-            let replacement = '';
-
-            if (type === 'bold') replacement = `**${text.substring(start, end) || 'Bold Text'}**`;
-            if (type === 'italic') replacement = `*${text.substring(start, end) || 'Italic Text'}*`;
-            if (type === 'bullet') replacement = `\n- ${text.substring(start, end) || 'List item'}\n`;
-
-            textarea.value = text.substring(0, start) + replacement + text.substring(end);
-            textarea.focus();
         }
     </script>
 </body>
