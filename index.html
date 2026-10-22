@@ -112,26 +112,26 @@
 
         .landing-card-recruiter {
             background: #ffffff;
-            border: 2px solid #059669;
+            border: 1px solid #d1d5db;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.12);
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.08);
         }
         .landing-card-recruiter:hover {
             transform: translateY(-6px);
-            border-color: #047857;
-            box-shadow: 0 25px 40px -10px rgba(5, 150, 105, 0.3);
+            border-color: #059669;
+            box-shadow: 0 25px 40px -10px rgba(5, 150, 105, 0.2);
         }
 
         .landing-card-seeker {
             background: #ffffff;
-            border: 2px solid #2563eb;
+            border: 1px solid #d1d5db;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.12);
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.08);
         }
         .landing-card-seeker:hover {
             transform: translateY(-6px);
-            border-color: #1d4ed8;
-            box-shadow: 0 25px 40px -10px rgba(37, 99, 235, 0.3);
+            border-color: #2563eb;
+            box-shadow: 0 25px 40px -10px rgba(37, 99, 235, 0.2);
         }
 
         .jd-content, #rich-editor {
@@ -264,6 +264,7 @@
                 </div>
             </div>
 
+            <!-- Trust Bar Strip -->
             <div class="pt-8 flex flex-wrap items-center justify-center gap-8 text-xs sm:text-sm text-gray-500 font-bold border-t max-w-2xl mx-auto">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-emerald-600"></i> Secure Cloud ATS</span>
                 <span class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Lightning Fast Sync</span>
@@ -1203,7 +1204,6 @@
                 const totalApplicants = jobApps.length;
                 const unreadApplicants = jobApps.filter(app => !viewedApplicants.includes(String(app.id))).length;
                 
-                // FIXED: Accurate real views without hardcoded dummy fallbacks
                 const totalViews = (job.views_count !== undefined && job.views_count !== null) ? job.views_count : 0;
 
                 let locationParts = [job.city, job.state, job.country].filter(Boolean);
