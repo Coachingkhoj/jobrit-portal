@@ -583,8 +583,30 @@
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country / Region *</label>
                                 <select id="job-country-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
                                     <option value="Worldwide Remote">✈️ Worldwide Remote</option>
-                                    <option value="India" selected>India</option>
-                                    <option value="United States">United States</option>
+                                    <optgroup label="North America">
+                                        <option value="United States" selected>United States</option>
+                                        <option value="Canada">Canada</option>
+                                        <option value="Mexico">Mexico</option>
+                                    </optgroup>
+                                    <optgroup label="Europe & UK">
+                                        <option value="United Kingdom">United Kingdom</option>
+                                        <option value="Germany">Germany</option>
+                                        <option value="France">France</option>
+                                        <option value="Netherlands">Netherlands</option>
+                                        <option value="Ireland">Ireland</option>
+                                    </optgroup>
+                                    <optgroup label="Asia-Pacific (APAC)">
+                                        <option value="India">India</option>
+                                        <option value="Singapore">Singapore</option>
+                                        <option value="Australia">Australia</option>
+                                        <option value="Japan">Japan</option>
+                                        <option value="Philippines">Philippines</option>
+                                    </optgroup>
+                                    <optgroup label="Middle East (GCC)">
+                                        <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
+                                        <option value="Saudi Arabia">Saudi Arabia</option>
+                                    </optgroup>
+                                    <option value="Other">🌍 Other / International</option>
                                 </select>
                             </div>
                             <div>
@@ -612,23 +634,40 @@
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
                                 <select id="job-category-input" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                                    <option value="IT & Software Services">IT & Software Services</option>
-                                    <option value="Aerospace & Defense">Aerospace & Defense</option>
-                                    <option value="Healthcare & Medical">Healthcare & Medical</option>
-                                    <option value="Sales & Business Development">Sales & Business Development</option>
+                                    <optgroup label="Information Technology (IT) & Engineering">
+                                        <option value="IT & Software Services">IT & Software Services</option>
+                                        <option value="Aerospace & Defense">Aerospace & Defense</option>
+                                        <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                                    </optgroup>
+                                    <optgroup label="Healthcare & Sciences">
+                                        <option value="Healthcare & Medical">Healthcare & Medical</option>
+                                        <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
+                                    </optgroup>
+                                    <optgroup label="Business, Sales & Support">
+                                        <option value="Sales & Business Development">Sales & Business Development</option>
+                                        <option value="Customer Support & Operations">Customer Support & Operations</option>
+                                        <option value="Human Resources & Staffing">Human Resources & Staffing</option>
+                                    </optgroup>
+                                    <optgroup label="Supply Chain & Services">
+                                        <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                                        <option value="Finance & Banking">Finance & Banking</option>
+                                        <option value="Construction & Real Estate">Construction & Real Estate</option>
+                                        <option value="Education & EdTech">Education & EdTech</option>
+                                    </optgroup>
+                                    <option value="Other / General">🌍 Other / General</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">State / Region</label>
-                                <input type="text" id="job-state" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Delhi NCR">
+                                <input type="text" id="job-state" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Washington">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City Name</label>
-                                <input type="text" id="job-city" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Noida">
+                                <input type="text" id="job-city" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="Everett">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP / PIN</label>
-                                <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="201301">
+                                <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="98201">
                             </div>
                         </div>
                     </div>
