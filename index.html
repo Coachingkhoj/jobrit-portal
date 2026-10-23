@@ -645,18 +645,21 @@
                 </form>
             </div>
 
+            <!-- Modal Footer Section updated with clean bordered action buttons -->
             <div class="p-4 sm:p-5 border-t bg-gray-50 flex justify-between items-center gap-3 flex-shrink-0 z-20 shadow-inner">
-                <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-semibold text-gray-600 hover:bg-gray-100 bg-white transition cursor-pointer">Close</button>
+                <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-semibold text-gray-600 hover:bg-gray-100 bg-white transition cursor-pointer">
+                    Close
+                </button>
                 
                 <div class="flex gap-2 items-center">
                     <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" style="display: none;" class="px-4 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer">
                         <i class="fa-solid fa-arrow-left mr-1"></i> Back
                     </button>
-                    <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
-                        Next: Description <i class="fa-solid fa-arrow-right ml-1"></i>
+                    <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="px-4 py-2.5 border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold rounded-xl text-xs sm:text-sm transition cursor-pointer flex items-center gap-1.5 bg-white">
+                        Next: Description <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none;" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">
-                        Save & Post Instantly <i class="fa-solid fa-check ml-1"></i>
+                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none;" class="px-4 py-2.5 border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-bold rounded-xl text-xs sm:text-sm transition cursor-pointer flex items-center gap-1.5 bg-white">
+                        Save & Post Instantly <i class="fa-solid fa-check"></i>
                     </button>
                 </div>
             </div>
