@@ -29,7 +29,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
+
         .btn-primary-action {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
             color: #ffffff !important;
@@ -391,7 +391,7 @@
         </main>
     </div>
 
-    <!-- Recruiter Sign In Modal (Strictly Centered Fixed Dialog - No Screen Stretching) -->
+    <!-- Recruiter Sign In Modal -->
     <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white shadow-2xl rounded-3xl w-full max-w-sm p-6 border flex flex-col justify-between space-y-5 relative">
             <div class="flex justify-between items-start">
@@ -446,7 +446,7 @@
         </div>
     </div>
 
-    <!-- Job Detail Modal (LinkedIn & Facebook Auto-Copy Share Hub) -->
+    <!-- Job Detail Modal -->
     <div id="job-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
         <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
             <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-start gap-4 flex-shrink-0 z-20 shadow-sm">
@@ -464,19 +464,6 @@
                         <span><i class="fa-solid fa-industry text-blue-600 mr-1"></i> Industry: <span id="detail-industry-text" class="font-normal text-gray-600">General</span></span>
                         <span><i class="fa-solid fa-laptop-house text-blue-600 mr-1"></i> Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">Remote</span></span>
                         <span><i class="fa-solid fa-clock text-blue-600 mr-1"></i> Posted: <span id="detail-posted-time" class="font-normal text-gray-600">Just Now</span></span>
-                    </div>
-                    
-                    <!-- LinkedIn, Facebook & Direct Link Share Buttons -->
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <button onclick="shareToLinkedInGroups()" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm" title="Auto-copy text & open LinkedIn">
-                            <i class="fa-brands fa-linkedin text-sm"></i> Share to LinkedIn
-                        </button>
-                        <button onclick="shareToFacebookGroups()" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm" title="Auto-copy text & open Facebook">
-                            <i class="fa-brands fa-facebook text-sm"></i> Share to Facebook
-                        </button>
-                        <button onclick="copyJobDirectLink()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-xl border transition text-xs font-bold flex items-center gap-1.5 cursor-pointer" title="Copy Direct Job Link">
-                            <i class="fa-solid fa-copy"></i> Copy Link
-                        </button>
                     </div>
                 </div>
 
@@ -691,53 +678,6 @@
         let currentWizardStep = 1;
         let currentJobApplicants = [];
         let uploadedResumeFile = null;
-
-        // LinkedIn & Facebook 1-Click Auto-Copy & Group Share Handlers
-        window.shareToLinkedInGroups = function() {
-            if (!activeJobIdForSlug) return;
-            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
-            if (!job) return;
-
-            copyFullJobPostForSocial();
-            showToast('📋 Job Copied! Press Ctrl+V (Paste) in LinkedIn.', 'success');
-            
-            const slug = createJobSlug(job.title, job.id);
-            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(directUrl)}`, '_blank');
-        };
-
-        window.shareToFacebookGroups = function() {
-            if (!activeJobIdForSlug) return;
-            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
-            if (!job) return;
-
-            copyFullJobPostForSocial();
-            showToast('📋 Job Copied! Press Ctrl+V (Paste) in Facebook.', 'success');
-
-            const slug = createJobSlug(job.title, job.id);
-            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
-            const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}`;
-            window.open(fbShareUrl, '_blank');
-        };
-
-        window.copyFullJobPostForSocial = function() {
-            if (!activeJobIdForSlug) return;
-            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
-            if (!job) return;
-
-            const slug = createJobSlug(job.title, job.id);
-            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
-
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = job.description || '';
-            const plainDescription = tempDiv.textContent || tempDiv.innerText || '';
-
-            const fullPostText = `🚨 WE ARE HIRING! 🚀\n\n📌 Position: ${job.title}\n🏢 Company: ${job.company || 'Company'}\n📍 Location: ${job.city || job.country || 'Remote'} (${job.work_mode || 'Remote'})\n\n📝 Description:\n${plainDescription}\n\n👉 Apply directly here: ${directUrl}`;
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(fullPostText);
-            }
-        };
 
         document.addEventListener('DOMContentLoaded', () => {
             const richEditor = document.getElementById('rich-editor');
@@ -1048,7 +988,7 @@
             if (!container) return;
             
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? '#047857' : '#b91c1c'; // Solid Dark Emerald or Solid Dark Red
+            const bgColor = type === 'success' ? '#047857' : '#b91c1c';
             
             toast.style.cssText = `
                 position: fixed;
@@ -1343,21 +1283,6 @@
             }
 
             document.getElementById('job-detail-modal').classList.remove('hidden');
-        }
-
-        function copyJobDirectLink() {
-            if (!activeJobIdForSlug) return;
-            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
-            if (!job) return;
-
-            const slug = createJobSlug(job.title, job.id);
-            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
-
-            navigator.clipboard.writeText(directUrl).then(() => {
-                showToast('Direct job link copied to clipboard!', 'success');
-            }).catch(() => {
-                showToast('Failed to copy link', 'error');
-            });
         }
 
         function closeJobDetailModal(updateHash = true) {
