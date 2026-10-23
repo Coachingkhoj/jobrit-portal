@@ -181,7 +181,8 @@
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col justify-between antialiased">
 
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 
     <header class="bg-white shadow-sm border-b sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap justify-between items-center gap-3">
@@ -390,30 +391,28 @@
         </main>
     </div>
 
-    <!-- Recruiter Sign In Modal -->
-    <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-xs hidden z-50 flex justify-end">
-        <div class="bg-white shadow-2xl w-full max-w-xs h-full p-5 border-l flex flex-col justify-between overflow-y-auto custom-scrollbar relative">
-            <div class="space-y-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-base font-black text-gray-900 tracking-tight">Recruiter HQ Sign In</h3>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Access your active jobs & pipelines</p>
-                    </div>
-                    <button onclick="closeRecruiterAuthModal()" class="text-gray-400 hover:text-gray-700 font-bold text-base w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer flex-shrink-0">&times;</button>
+    <!-- Recruiter Sign In Modal (Strictly Centered Fixed Dialog - No Screen Stretching) -->
+    <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white shadow-2xl rounded-3xl w-full max-w-sm p-6 border flex flex-col justify-between space-y-5 relative">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-black text-gray-900 tracking-tight">Recruiter HQ Sign In</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Access your active jobs & pipelines</p>
                 </div>
-
-                <form onsubmit="handleRecruiterSignIn(event)" class="space-y-3 pt-2">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Work Email *</label>
-                        <input type="email" id="signin-email" required class="w-full border rounded-xl p-2.5 text-xs outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition" placeholder="recruiter@company.com">
-                    </div>
-                    <div class="pt-1">
-                        <button type="submit" class="w-full btn-primary-action justify-center text-xs font-bold cursor-pointer !py-2.5">Instant Sign In</button>
-                    </div>
-                </form>
+                <button onclick="closeRecruiterAuthModal()" class="text-gray-400 hover:text-gray-700 font-bold text-lg w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition cursor-pointer flex-shrink-0">&times;</button>
             </div>
 
-            <div class="pt-4 border-t text-center text-[10px] text-gray-400 font-medium">
+            <form onsubmit="handleRecruiterSignIn(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Work Email *</label>
+                    <input type="email" id="signin-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 transition font-semibold" placeholder="recruiter@company.com">
+                </div>
+                <div>
+                    <button type="submit" class="w-full btn-primary-action justify-center text-sm font-bold cursor-pointer !py-3">Instant Sign In</button>
+                </div>
+            </form>
+
+            <div class="pt-3 border-t text-center text-xs text-gray-400 font-medium">
                 <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> Secure Multi-Tenant ATS
             </div>
         </div>
@@ -447,7 +446,7 @@
         </div>
     </div>
 
-    <!-- Job Detail Modal -->
+    <!-- Job Detail Modal (LinkedIn & Facebook Auto-Copy Share Hub) -->
     <div id="job-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
         <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
             <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-start gap-4 flex-shrink-0 z-20 shadow-sm">
@@ -466,9 +465,19 @@
                         <span><i class="fa-solid fa-laptop-house text-blue-600 mr-1"></i> Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">Remote</span></span>
                         <span><i class="fa-solid fa-clock text-blue-600 mr-1"></i> Posted: <span id="detail-posted-time" class="font-normal text-gray-600">Just Now</span></span>
                     </div>
-                    <button onclick="copyJobDirectLink()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-xl border border-blue-200 transition text-xs font-bold flex items-center gap-1.5 cursor-pointer" title="Copy Direct Job Link">
-                        <i class="fa-solid fa-share-nodes"></i> Share / Copy Link
-                    </button>
+                    
+                    <!-- LinkedIn, Facebook & Direct Link Share Buttons -->
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button onclick="shareToLinkedInGroups()" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm" title="Auto-copy text & open LinkedIn">
+                            <i class="fa-brands fa-linkedin text-sm"></i> Share to LinkedIn
+                        </button>
+                        <button onclick="shareToFacebookGroups()" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl transition text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm" title="Auto-copy text & open Facebook">
+                            <i class="fa-brands fa-facebook text-sm"></i> Share to Facebook
+                        </button>
+                        <button onclick="copyJobDirectLink()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-xl border transition text-xs font-bold flex items-center gap-1.5 cursor-pointer" title="Copy Direct Job Link">
+                            <i class="fa-solid fa-copy"></i> Copy Link
+                        </button>
+                    </div>
                 </div>
 
                 <div>
@@ -582,30 +591,8 @@
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Target Country / Region *</label>
                                 <select id="job-country-input" required class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
                                     <option value="Worldwide Remote">✈️ Worldwide Remote</option>
-                                    <optgroup label="North America">
-                                        <option value="United States">United States</option>
-                                        <option value="Canada">Canada</option>
-                                        <option value="Mexico">Mexico</option>
-                                    </optgroup>
-                                    <optgroup label="Europe & UK">
-                                        <option value="United Kingdom">United Kingdom</option>
-                                        <option value="Germany">Germany</option>
-                                        <option value="France">France</option>
-                                        <option value="Netherlands">Netherlands</option>
-                                        <option value="Ireland">Ireland</option>
-                                    </optgroup>
-                                    <optgroup label="Asia-Pacific (APAC)">
-                                        <option value="India" selected>India</option>
-                                        <option value="Singapore">Singapore</option>
-                                        <option value="Australia">Australia</option>
-                                        <option value="Japan">Japan</option>
-                                        <option value="Philippines">Philippines</option>
-                                    </optgroup>
-                                    <optgroup label="Middle East (GCC)">
-                                        <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
-                                        <option value="Saudi Arabia">Saudi Arabia</option>
-                                    </optgroup>
-                                    <option value="Other">🌍 Other / International</option>
+                                    <option value="India" selected>India</option>
+                                    <option value="United States">United States</option>
                                 </select>
                             </div>
                             <div>
@@ -633,27 +620,10 @@
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Industry *</label>
                                 <select id="job-category-input" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold bg-gray-50 focus:bg-white">
-                                    <optgroup label="Information Technology (IT) & Engineering">
-                                        <option value="IT & Software Services">IT & Software Services</option>
-                                        <option value="Aerospace & Defense">Aerospace & Defense</option>
-                                        <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
-                                    </optgroup>
-                                    <optgroup label="Healthcare & Sciences">
-                                        <option value="Healthcare & Medical">Healthcare & Medical</option>
-                                        <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
-                                    </optgroup>
-                                    <optgroup label="Business, Sales & Support">
-                                        <option value="Sales & Business Development">Sales & Business Development</option>
-                                        <option value="Customer Support & Operations">Customer Support & Operations</option>
-                                        <option value="Human Resources & Staffing">Human Resources & Staffing</option>
-                                    </optgroup>
-                                    <optgroup label="Supply Chain & Services">
-                                        <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
-                                        <option value="Finance & Banking">Finance & Banking</option>
-                                        <option value="Construction & Real Estate">Construction & Real Estate</option>
-                                        <option value="Education & EdTech">Education & EdTech</option>
-                                    </optgroup>
-                                    <option value="Other / General">🌍 Other / General</option>
+                                    <option value="IT & Software Services">IT & Software Services</option>
+                                    <option value="Aerospace & Defense">Aerospace & Defense</option>
+                                    <option value="Healthcare & Medical">Healthcare & Medical</option>
+                                    <option value="Sales & Business Development">Sales & Business Development</option>
                                 </select>
                             </div>
                             <div>
@@ -669,48 +639,6 @@
                                 <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white" placeholder="201301">
                             </div>
                         </div>
-
-                        <div class="bg-gray-50 p-4 rounded-2xl border space-y-3">
-                            <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-wallet text-emerald-600"></i> Compensation & Salary Range</h4>
-                            
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Pay Structure *</label>
-                                    <select id="job-pay-type" class="w-full border rounded-xl p-2.5 text-xs outline-none font-semibold bg-white">
-                                        <option value="Annual">Annual CTC</option>
-                                        <option value="Monthly">Monthly Salary</option>
-                                        <option value="Hourly">Hourly Pay Rate</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Currency *</label>
-                                    <select id="job-currency" class="w-full border rounded-xl p-2.5 text-xs outline-none font-semibold bg-white">
-                                        <option value="INR" selected>INR (₹)</option>
-                                        <option value="USD">USD ($)</option>
-                                        <option value="EUR">EUR (€)</option>
-                                        <option value="GBP">GBP (£)</option>
-                                        <option value="AED">AED (د.إ)</option>
-                                    </select>
-                                </div>
-                                <div class="flex items-center pt-5">
-                                    <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
-                                        <input type="checkbox" id="job-show-salary" checked class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
-                                        <span>Display Salary Publicly</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Minimum Amount</label>
-                                    <input type="number" id="job-salary-min" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white" placeholder="e.g. 500000 or 25">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-700 mb-1 uppercase tracking-wider">Maximum Amount</label>
-                                    <input type="number" id="job-salary-max" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white" placeholder="e.g. 800000 or 50">
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div id="wizard-step-2" class="space-y-4 hidden">
@@ -720,13 +648,11 @@
                                 <div class="flex gap-1 bg-gray-100 p-1 rounded-xl text-xs font-bold">
                                     <button type="button" onclick="formatRichText('bold')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bold"><i class="fa-solid fa-bold"></i></button>
                                     <button type="button" onclick="formatRichText('italic')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                                    <button type="button" onclick="formatRichText('underline')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Underline"><i class="fa-solid fa-underline"></i></button>
                                     <button type="button" onclick="formatRichText('insertUnorderedList')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm transition cursor-pointer" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                                    <button type="button" onclick="formatRichText('removeFormat')" class="px-2.5 py-1 bg-white border rounded-lg hover:bg-gray-50 shadow-sm text-red-600 transition cursor-pointer" title="Clear Formatting"><i class="fa-solid fa-rotate-left"></i></button>
                                 </div>
                             </div>
                             
-                            <div id="rich-editor" contenteditable="true" class="w-full border rounded-2xl p-4 text-sm outline-none leading-relaxed bg-gray-50 focus:bg-white focus:border-blue-600 transition custom-scrollbar jd-content" placeholder="Type or paste job description here..."></div>
+                            <div id="rich-editor" contenteditable="true" class="w-full border rounded-2xl p-4 text-sm outline-none leading-relaxed bg-gray-50 focus:bg-white focus:border-blue-600 transition custom-scrollbar jd-content"></div>
                         </div>
                     </div>
                 </form>
@@ -765,6 +691,53 @@
         let currentWizardStep = 1;
         let currentJobApplicants = [];
         let uploadedResumeFile = null;
+
+        // LinkedIn & Facebook 1-Click Auto-Copy & Group Share Handlers
+        window.shareToLinkedInGroups = function() {
+            if (!activeJobIdForSlug) return;
+            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
+            if (!job) return;
+
+            copyFullJobPostForSocial();
+            showToast('📋 Job Copied! Press Ctrl+V (Paste) in LinkedIn.', 'success');
+            
+            const slug = createJobSlug(job.title, job.id);
+            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(directUrl)}`, '_blank');
+        };
+
+        window.shareToFacebookGroups = function() {
+            if (!activeJobIdForSlug) return;
+            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
+            if (!job) return;
+
+            copyFullJobPostForSocial();
+            showToast('📋 Job Copied! Press Ctrl+V (Paste) in Facebook.', 'success');
+
+            const slug = createJobSlug(job.title, job.id);
+            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
+            const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directUrl)}`;
+            window.open(fbShareUrl, '_blank');
+        };
+
+        window.copyFullJobPostForSocial = function() {
+            if (!activeJobIdForSlug) return;
+            const job = allJobsData.find(j => j.id == activeJobIdForSlug);
+            if (!job) return;
+
+            const slug = createJobSlug(job.title, job.id);
+            const directUrl = `${window.location.origin}${window.location.pathname}#/job/${slug}`;
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = job.description || '';
+            const plainDescription = tempDiv.textContent || tempDiv.innerText || '';
+
+            const fullPostText = `🚨 WE ARE HIRING! 🚀\n\n📌 Position: ${job.title}\n🏢 Company: ${job.company || 'Company'}\n📍 Location: ${job.city || job.country || 'Remote'} (${job.work_mode || 'Remote'})\n\n📝 Description:\n${plainDescription}\n\n👉 Apply directly here: ${directUrl}`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(fullPostText);
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             const richEditor = document.getElementById('rich-editor');
@@ -929,8 +902,11 @@
 
             if (currentRecruiter) {
                 navContainer.innerHTML = `
-                    <div class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-emerald-50 text-emerald-800 flex items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-user-shield text-emerald-600"></i> HQ: <span class="uppercase tracking-wider">${currentRecruiter.company_name}</span> (${currentRecruiter.name})
+                    <button onclick="setAppRole('employer')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-building-user"></i> My Dashboard
+                    </button>
+                    <div class="text-xs font-bold px-3 py-1.5 rounded-xl border bg-emerald-50 text-emerald-800 hidden sm:flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-user-shield text-emerald-600"></i> HQ: <span class="uppercase">${currentRecruiter.company_name}</span>
                     </div>
                     <button onclick="handleRecruiterLogout()" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-xl text-xs transition flex items-center gap-1 cursor-pointer">
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -941,9 +917,6 @@
                     <button onclick="openRecruiterAuthModal()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5 cursor-pointer border border-blue-200">
                         <i class="fa-solid fa-building-user text-blue-600"></i> Recruiter Sign In
                     </button>
-                    <div class="text-xs font-bold px-3.5 py-1.5 rounded-xl border bg-emerald-50 text-emerald-700 border-emerald-200 hidden sm:flex items-center gap-1.5 shadow-sm">
-                        <span>⚡</span> 100% Free
-                    </div>
                 `;
             }
         }
@@ -1073,13 +1046,45 @@
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             if (!container) return;
+            
             const toast = document.createElement('div');
-            toast.className = `p-4 rounded-2xl text-xs sm:text-sm font-bold shadow-2xl text-white transition-all transform translate-y-2 opacity-0 flex items-center gap-3 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'} text-base"></i> ${message}`;
+            const bgColor = type === 'success' ? '#047857' : '#b91c1c'; // Solid Dark Emerald or Solid Dark Red
+            
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                z-index: 2147483647;
+                background-color: ${bgColor};
+                color: #ffffff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                font-family: ui-sans-serif, system-ui, sans-serif;
+                font-size: 14px;
+                font-weight: 700;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                opacity: 0;
+                transform: translateY(10px);
+                pointer-events: auto;
+            `;
+            
+            const iconClass = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-triangle-exclamation';
+            toast.innerHTML = `<i class="${iconClass}" style="font-size: 16px; color: #ffffff;"></i> <span style="color: #ffffff !important;">${message}</span>`;
+            
             container.appendChild(toast);
-            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 50);
+            
             setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 50);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
         }
@@ -1510,12 +1515,6 @@
             
             document.getElementById('rich-editor').innerHTML = job.description || '';
 
-            document.getElementById('job-pay-type').value = job.pay_type || 'Annual';
-            document.getElementById('job-currency').value = job.currency || 'INR';
-            document.getElementById('job-show-salary').checked = job.show_salary !== false;
-            document.getElementById('job-salary-min').value = job.salary_min || '';
-            document.getElementById('job-salary-max').value = job.salary_max || '';
-
             document.getElementById('frictionless-recruiter-box').style.display = 'none';
             document.getElementById('company-input-wrapper').style.display = 'block';
 
@@ -1686,12 +1685,6 @@
             const status = 'Open';
             const description = document.getElementById('rich-editor').innerHTML.trim();
             
-            const pay_type = document.getElementById('job-pay-type').value;
-            const currency = document.getElementById('job-currency').value;
-            const show_salary = document.getElementById('job-show-salary').checked;
-            const salary_min = document.getElementById('job-salary-min').value ? Number(document.getElementById('job-salary-min').value) : null;
-            const salary_max = document.getElementById('job-salary-max').value ? Number(document.getElementById('job-salary-max').value) : null;
-
             const submitBtn = document.getElementById('wizard-submit-btn');
 
             try {
@@ -1755,10 +1748,7 @@
                 if (editId) {
                     response = await supabaseClient
                         .from('jobs')
-                        .update({ 
-                            title, company, category, country, work_mode, state, city, zip, status, description,
-                            pay_type, currency, show_salary, salary_min, salary_max 
-                        })
+                        .update({ title, company, category, country, work_mode, state, city, zip, status, description })
                         .eq('id', editId)
                         .select();
                 } else {
@@ -1766,7 +1756,6 @@
                         .from('jobs')
                         .insert([{ 
                             title, company, category, country, work_mode, state, city, zip, status, description, 
-                            pay_type, currency, show_salary, salary_min, salary_max,
                             recruiter_id: targetRecruiterId, 
                             created_at: new Date() 
                         }])
