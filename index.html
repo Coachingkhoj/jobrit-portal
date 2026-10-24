@@ -270,6 +270,10 @@
                     <input type="email" id="signin-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold" placeholder="recruiter@company.com">
                 </div>
                 <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Password *</label>
+                    <input type="password" id="signin-password" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold" placeholder="••••••••">
+                </div>
+                <div>
                     <button type="submit" class="w-full btn-primary-action justify-center text-sm font-bold cursor-pointer !py-3">Instant Sign In</button>
                 </div>
             </form>
@@ -383,9 +387,10 @@
                     <div id="wizard-step-1" class="space-y-4">
                         <div id="frictionless-recruiter-box" class="bg-blue-50 border border-blue-200 p-4 rounded-2xl space-y-3">
                             <h4 class="text-xs font-black text-blue-900 uppercase tracking-wider">Recruiter Details *</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <input type="text" id="quick-recruiter-name" class="w-full border rounded-xl p-2.5 text-xs bg-white font-semibold" placeholder="Your Full Name">
                                 <input type="email" id="quick-recruiter-email" class="w-full border rounded-xl p-2.5 text-xs bg-white font-semibold" placeholder="Work Email Address">
+                                <input type="password" id="quick-recruiter-password" class="w-full border rounded-xl p-2.5 text-xs bg-white font-semibold" placeholder="Create Password">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -566,8 +571,9 @@
                 if (!currentRecruiter) {
                     const qName = document.getElementById('quick-recruiter-name').value.trim();
                     const qEmail = document.getElementById('quick-recruiter-email').value.trim();
-                    if (!qName || !qEmail) {
-                        showToast('Please fill out Recruiter Name and Email!', 'error');
+                    const qPassword = document.getElementById('quick-recruiter-password').value.trim();
+                    if (!qName || !qEmail || !qPassword) {
+                        showToast('Please fill out Recruiter Name, Email, and Password!', 'error');
                         return;
                     }
                 }
@@ -678,10 +684,23 @@
         async function handleRecruiterSignIn(event) {
             event.preventDefault();
             const email = document.getElementById('signin-email').value.trim().toLowerCase();
+            const password = document.getElementById('signin-password').value.trim();
             try {
                 showToast('Authenticating...', 'success');
-                const { data, error } = await supabaseClient.from('recruiters').select('*').eq('email', email).single();
-                if (error || !data) throw new Error('Email not found. Publish a position to auto-create account!');
+                const { data, error } = await supabaseClient
+                    .from('recruiters')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                
+                if (error || !data) {
+                    throw new Error('Email not found. Publish a position to auto-create account!');
+                }
+                
+                if (data.password !== password) {
+                    throw new Error('Incorrect Password! Please try again.');
+                }
+
                 currentRecruiter = data;
                 localStorage.setItem('jobrit_current_recruiter', JSON.stringify(data));
                 showToast('Logged in successfully!', 'success');
@@ -1113,13 +1132,47 @@
 
             try {
                 let recId = currentRecruiter ? currentRecruiter.id : null;
+
                 if (!recId && !editId) {
-                    const qName = document.getElementById('quick-recruiter-name').value;
-                    const qEmail = document.getElementById('quick-recruiter-email').value.toLowerCase();
-                    const { data: newRec } = await supabaseClient.from('recruiters').insert([{ name: qName, email: qEmail, password: 'pwd', hiring_type: 'Agency', company_name: company }]).select().single();
-                    recId = newRec.id;
-                    currentRecruiter = newRec;
-                    localStorage.setItem('jobrit_current_recruiter', JSON.stringify(newRec));
+                    const qName = document.getElementById('quick-recruiter-name').value.trim();
+                    const qEmail = document.getElementById('quick-recruiter-email').value.trim().toLowerCase();
+                    const qPassword = document.getElementById('quick-recruiter-password').value.trim();
+
+                    if (!qName || !qEmail || !qPassword) {
+                        showToast('Please enter your Name, Email, and Password!', 'error');
+                        return;
+                    }
+
+                    // Check if email already exists in recruiters table
+                    const { data: existingRec } = await supabaseClient
+                        .from('recruiters')
+                        .select('*')
+                        .eq('email', qEmail)
+                        .maybeSingle();
+
+                    if (existingRec) {
+                        if (existingRec.password && existingRec.password !== qPassword) {
+                            showToast('An account with this email already exists. Please enter your correct password or sign in first!', 'error');
+                            return;
+                        } else {
+                            recId = existingRec.id;
+                            currentRecruiter = existingRec;
+                            localStorage.setItem('jobrit_current_recruiter', JSON.stringify(existingRec));
+                        }
+                    } else {
+                        // Create new recruiter with password
+                        const { data: newRec, error: createError } = await supabaseClient
+                            .from('recruiters')
+                            .insert([{ name: qName, email: qEmail, password: qPassword, hiring_type: 'Agency', company_name: company }])
+                            .select()
+                            .single();
+
+                        if (createError) throw createError;
+
+                        recId = newRec.id;
+                        currentRecruiter = newRec;
+                        localStorage.setItem('jobrit_current_recruiter', JSON.stringify(newRec));
+                    }
                 }
 
                 let jobPayload = { 
