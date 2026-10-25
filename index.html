@@ -25,7 +25,6 @@
     </script>
 
     <style>
-        body.modal-open { overflow: hidden !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -87,7 +86,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto pt-4 text-left">
                 <!-- Recruiter Card -->
-                <div onclick="openPostModal()" class="enterprise-card enterprise-card-recruiter p-7 sm:p-8 cursor-pointer flex flex-col justify-between space-y-6 group">
+                <div onclick="openPostView()" class="enterprise-card enterprise-card-recruiter p-7 sm:p-8 cursor-pointer flex flex-col justify-between space-y-6 group">
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
                             <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl bg-emerald-100 text-emerald-700 border border-emerald-200">
@@ -254,144 +253,60 @@
         </main>
     </div>
 
-    <!-- Recruiter Sign In Modal -->
-    <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white shadow-2xl rounded-3xl w-full max-w-sm p-6 border flex flex-col justify-between space-y-5 relative">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h3 class="text-lg font-black text-gray-900 tracking-tight">Recruiter HQ Sign In</h3>
-                    <p class="text-xs text-gray-500 mt-0.5">Access your active jobs & pipelines</p>
-                </div>
-                <button onclick="closeRecruiterAuthModal()" class="text-gray-400 hover:text-gray-700 font-bold text-lg w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer">&times;</button>
-            </div>
-            <form onsubmit="handleRecruiterSignIn(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Work Email *</label>
-                    <input type="email" id="signin-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold" placeholder="recruiter@company.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Password *</label>
-                    <input type="password" id="signin-password" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold" placeholder="••••••••">
-                </div>
-                <div>
-                    <button type="submit" class="w-full btn-primary-action justify-center text-sm font-bold cursor-pointer !py-3">Instant Sign In</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- ================= FULL SCREEN INDEPENDENT VIEWS ================= -->
 
-    <!-- Applicants Modal -->
-    <div id="applicants-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
-            <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-center gap-4 flex-shrink-0 z-20 shadow-sm">
-                <div>
-                    <h3 id="applicants-modal-title" class="text-lg sm:text-xl font-black text-gray-900">Candidate Pipeline & Resumes</h3>
-                    <p id="applicants-modal-subtitle" class="text-xs text-gray-500 mt-0.5">Inspect submissions and review resumes instantly</p>
-                </div>
-                <button onclick="closeApplicantsModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center cursor-pointer shadow-lg">&times;</button>
+    <!-- Full Screen View: Job Detail -->
+    <div id="job-detail-full-view" class="hidden flex-grow flex flex-col bg-gray-50 py-8 px-4 sm:px-6">
+        <div class="max-w-4xl mx-auto w-full space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="closeJobDetailView()" class="px-4 py-2 border rounded-xl text-xs font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <button id="detail-view-action-btn" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">Apply Now</button>
             </div>
-            <div class="px-4 sm:px-6 pt-4 bg-gray-50 border-b pb-3">
-                <input type="text" id="applicant-search-input" oninput="filterApplicantsList()" placeholder="Search applicant by name or email..." class="w-full border rounded-xl px-3 py-2 bg-white text-xs sm:text-sm focus:outline-none font-medium">
-            </div>
-            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow bg-gray-50 space-y-3" id="applicants-list-container"></div>
-            <div class="p-4 border-t bg-white flex justify-end flex-shrink-0 z-20">
-                <button onclick="closeApplicantsModal()" class="px-5 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 bg-white transition cursor-pointer">Close Window</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Job Detail Modal -->
-    <div id="job-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
-            <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-start gap-4 flex-shrink-0 z-20 shadow-sm">
+            <div class="bg-white rounded-3xl shadow-md border p-6 sm:p-8 space-y-6">
                 <div>
                     <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Information Technology (IT)</span>
-                    <h3 id="detail-title" class="text-lg sm:text-2xl font-black text-gray-900 mt-2 leading-snug">Job Title</h3>
+                    <h3 id="detail-title" class="text-xl sm:text-3xl font-black text-gray-900 mt-3 leading-snug">Job Title</h3>
                     <p id="detail-company-location" class="text-xs sm:text-sm font-bold text-gray-600 mt-1">Company • Location</p>
                 </div>
-                <button onclick="closeJobDetailModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center cursor-pointer shadow-lg">&times;</button>
-            </div>
-            <div class="p-4 sm:p-6 space-y-5 overflow-y-auto custom-scrollbar flex-grow bg-white">
-                <div class="bg-gray-50 p-4 rounded-2xl border text-xs font-bold text-gray-700 flex flex-wrap gap-4">
+                <div class="bg-gray-50 p-4 rounded-2xl border text-xs font-bold text-gray-700 flex flex-wrap gap-6">
                     <span>Industry: <span id="detail-industry-text" class="font-normal text-gray-600">General</span></span>
                     <span>Job Type: <span id="detail-employment-type-text" class="font-normal text-gray-600">Full-time</span></span>
                     <span>Work Mode: <span id="detail-workmode" class="font-normal text-gray-600">Remote</span></span>
                     <span>Salary: <span id="detail-salary-text" class="font-normal text-gray-600">Competitive</span></span>
                 </div>
                 <div>
-                    <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider mb-2.5 border-b pb-1.5">Job Description</h4>
-                    <div id="detail-description" class="bg-white border rounded-2xl p-5 text-xs sm:text-sm jd-content shadow-inner"></div>
+                    <h4 class="text-xs font-black text-gray-900 uppercase tracking-wider mb-3 border-b pb-2">Job Description</h4>
+                    <div id="detail-description" class="bg-white border rounded-2xl p-6 text-xs sm:text-sm jd-content shadow-inner"></div>
                 </div>
-            </div>
-            <div class="p-4 sm:p-5 border-t bg-gray-50 flex justify-between items-center gap-3 flex-shrink-0 z-20">
-                <button onclick="closeJobDetailModal()" class="px-5 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-200 bg-white cursor-pointer">Close</button>
-                <button id="detail-modal-action-btn" class="btn-primary-action text-xs sm:text-sm font-bold cursor-pointer">Apply Now</button>
             </div>
         </div>
     </div>
 
-    <!-- 1-Click Apply Modal -->
-    <div id="apply-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border">
-            <div class="flex justify-between items-center border-b pb-4 mb-5">
+    <!-- Full Screen View: Post / Edit Job Form -->
+    <div id="job-post-full-view" class="hidden flex-grow flex flex-col bg-gray-50 py-8 px-4 sm:px-6">
+        <div class="max-w-3xl mx-auto w-full space-y-6">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-base font-black text-gray-900">1-Click Instant Apply</h3>
-                    <p id="apply-job-title" class="text-xs text-blue-600 font-bold mt-0.5 truncate max-w-[280px]"></p>
+                    <h3 id="job-post-view-title" class="text-xl sm:text-2xl font-black text-gray-900">Publish Position (Local or Global)</h3>
+                    <p id="wizard-step-indicator" class="text-xs text-blue-600 font-bold mt-0.5">Step 1 of 2: Basic Info & Compensation</p>
                 </div>
-                <button onclick="closeApplyModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer">&times;</button>
+                <button onclick="closePostView()" class="px-4 py-2 border rounded-xl text-xs font-bold text-gray-700 bg-white hover:bg-gray-100 transition cursor-pointer flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-xmark"></i> Cancel & Return
+                </button>
             </div>
-            <form id="apply-form" onsubmit="submitApplication(event)" class="space-y-4">
-                <input type="hidden" id="apply-job-id">
-                <div id="apply-step-upload" class="space-y-4 py-2">
-                    <div class="text-center p-6 border-2 border-dashed border-blue-300 rounded-2xl bg-blue-50/50 hover:bg-blue-50 transition relative">
-                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-600 mb-2"></i>
-                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Upload Resume (PDF / DOCX)</h4>
-                        <input type="file" id="applicant-resume-file" accept=".pdf,.doc,.docx" onchange="handleResumeUpload(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" required>
-                    </div>
-                    <div id="parsing-loader" class="hidden text-center py-3 text-xs font-bold text-blue-600 animate-pulse">Reading resume & auto-extracting details...</div>
-                </div>
-                <div id="apply-step-form" class="space-y-3 hidden">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
-                        <input type="text" id="applicant-name" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Email Address *</label>
-                        <input type="email" id="applicant-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number *</label>
-                        <input type="tel" id="applicant-phone" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold">
-                    </div>
-                    <div class="flex justify-end gap-3 pt-3 border-t">
-                        <button type="button" onclick="closeApplyModal()" class="px-4 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer">Cancel</button>
-                        <button type="submit" id="submit-app-btn" class="btn-primary-action text-sm font-bold cursor-pointer">Submit Application</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Post / Edit Job Modal -->
-    <div id="job-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden z-50 overflow-y-auto p-3 sm:p-6 flex items-center justify-center">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col my-auto border overflow-hidden relative">
-            <div class="p-4 sm:p-5 border-b flex justify-between items-center bg-white flex-shrink-0 z-20">
-                <div>
-                    <h3 id="job-modal-title" class="text-base sm:text-lg font-black text-gray-900">Publish Position (Local or Global)</h3>
-                    <p id="wizard-step-indicator" class="text-xs text-blue-600 font-bold">Step 1 of 2: Basic Info & Compensation</p>
-                </div>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer">&times;</button>
-            </div>
-            <div class="p-4 sm:p-6 bg-white overflow-y-auto custom-scrollbar flex-grow space-y-4">
-                <form id="job-form" onsubmit="handleJobFormSubmit(event)" class="space-y-4">
+            
+            <div class="bg-white rounded-3xl shadow-md border p-6 sm:p-8 space-y-6">
+                <form id="job-form" onsubmit="handleJobFormSubmit(event)" class="space-y-6">
                     <input type="hidden" id="edit-job-id">
-                    <div id="wizard-step-1" class="space-y-4">
+                    <div id="wizard-step-1" class="space-y-5">
                         <div id="frictionless-recruiter-box" class="bg-blue-50 border border-blue-200 p-4 rounded-2xl space-y-3">
                             <h4 class="text-xs font-black text-blue-900 uppercase tracking-wider">Recruiter Details *</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <input type="text" id="quick-recruiter-name" class="w-full border rounded-xl p-2.5 text-xs bg-white font-semibold" placeholder="Your Full Name">
-                                <input type="email" id="quick-recruiter-email" class="w-full border rounded-xl p-2.5 text-xs bg-white font-semibold" placeholder="Work Email Address">
-                                <input type="password" id="quick-recruiter-password" class="w-full border rounded-xl p-2.5 text-xs bg-white font-semibold" placeholder="Create Password">
+                                <input type="text" id="quick-recruiter-name" class="w-full border rounded-xl p-3 text-xs bg-white font-semibold" placeholder="Your Full Name">
+                                <input type="email" id="quick-recruiter-email" class="w-full border rounded-xl p-3 text-xs bg-white font-semibold" placeholder="Work Email Address">
+                                <input type="password" id="quick-recruiter-password" class="w-full border rounded-xl p-3 text-xs bg-white font-semibold" placeholder="Create Password">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -442,11 +357,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Title *</label>
-                                <input type="text" id="job-title-input" required class="w-full border rounded-xl p-3 text-sm bg-gray-50" placeholder="e.g. Software Engineer">
+                                <input type="text" id="job-title-input" required class="w-full border rounded-xl p-3 text-sm bg-gray-50 font-semibold" placeholder="e.g. Software Engineer">
                             </div>
                             <div id="company-input-wrapper">
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Company Name *</label>
-                                <input type="text" id="job-company" required class="w-full border rounded-xl p-3 text-sm bg-gray-50" placeholder="e.g. My Startup">
+                                <input type="text" id="job-company" required class="w-full border rounded-xl p-3 text-sm bg-gray-50 font-semibold" placeholder="e.g. My Startup">
                             </div>
                         </div>
 
@@ -519,7 +434,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">State</label>
-                                <input type="text" id="job-state" class="w-full border rounded-xl p-3 text-sm bg-gray-50" placeholder="State">
+                                <input type="text" id="job-state" class="w-full border rounded-xl p-3 text-sm bg-gray-50 font-semibold" placeholder="State">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City</label>
@@ -527,26 +442,117 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP</label>
-                                <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm bg-gray-50" placeholder="ZIP">
+                                <input type="text" id="job-zip" class="w-full border rounded-xl p-3 text-sm bg-gray-50 font-semibold" placeholder="ZIP">
                             </div>
                         </div>
                     </div>
                     <div id="wizard-step-2" class="space-y-4 hidden">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Job Description *</label>
-                            <div id="rich-editor" contenteditable="true" class="w-full border rounded-2xl p-4 text-sm bg-gray-50 jd-content"></div>
+                            <div id="rich-editor" contenteditable="true" class="w-full border rounded-2xl p-4 text-sm bg-gray-50 jd-content shadow-inner"></div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="p-4 sm:p-5 border-t bg-gray-50 flex justify-between items-center gap-3 flex-shrink-0 z-20">
-                <button type="button" onclick="closeModal()" class="px-4 py-2.5 border rounded-xl text-xs font-semibold text-gray-600 bg-white cursor-pointer">Close</button>
+
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl border shadow-sm">
+                <button type="button" onclick="closePostView()" class="px-5 py-2.5 border rounded-xl text-xs font-bold text-gray-600 bg-white hover:bg-gray-100 cursor-pointer">Cancel</button>
                 <div class="flex gap-2 items-center">
-                    <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" style="display: none;" class="px-4 py-2.5 border rounded-xl text-xs font-bold text-gray-700 bg-white cursor-pointer">Back</button>
-                    <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="px-4 py-2.5 border border-blue-600 text-blue-600 font-bold rounded-xl text-xs bg-white cursor-pointer">Next: Description <i class="fa-solid fa-arrow-right"></i></button>
-                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none;" class="px-4 py-2.5 border border-emerald-600 text-emerald-700 font-bold rounded-xl text-xs bg-white cursor-pointer">Publish Position <i class="fa-solid fa-check"></i></button>
+                    <button type="button" id="wizard-prev-btn" onclick="switchWizardStep(1)" style="display: none;" class="px-5 py-2.5 border rounded-xl text-xs font-bold text-gray-700 bg-white hover:bg-gray-100 cursor-pointer">Back</button>
+                    <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="px-5 py-2.5 border border-blue-600 text-blue-600 font-bold rounded-xl text-xs bg-white hover:bg-blue-50 cursor-pointer">Next: Description <i class="fa-solid fa-arrow-right"></i></button>
+                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none;" class="px-5 py-2.5 border border-emerald-600 text-emerald-700 font-bold rounded-xl text-xs bg-white hover:bg-emerald-50 cursor-pointer">Publish Position <i class="fa-solid fa-check"></i></button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ================= EXISTING MODALS (Retained for Auth & Applicants Pipeline) ================= -->
+
+    <!-- Recruiter Sign In Modal -->
+    <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white shadow-2xl rounded-3xl w-full max-w-sm p-6 border flex flex-col justify-between space-y-5 relative">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-lg font-black text-gray-900 tracking-tight">Recruiter HQ Sign In</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Access your active jobs & pipelines</p>
+                </div>
+                <button onclick="closeRecruiterAuthModal()" class="text-gray-400 hover:text-gray-700 font-bold text-lg w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer">&times;</button>
+            </div>
+            <form onsubmit="handleRecruiterSignIn(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Work Email *</label>
+                    <input type="email" id="signin-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold" placeholder="recruiter@company.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Password *</label>
+                    <input type="password" id="signin-password" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold" placeholder="••••••••">
+                </div>
+                <div>
+                    <button type="submit" class="w-full btn-primary-action justify-center text-sm font-bold cursor-pointer !py-3">Instant Sign In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Applicants Modal -->
+    <div id="applicants-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full flex flex-col max-h-[85vh] my-auto border overflow-hidden relative">
+            <div class="p-4 sm:p-6 border-b bg-white flex justify-between items-center gap-4 flex-shrink-0 z-20 shadow-sm">
+                <div>
+                    <h3 id="applicants-modal-title" class="text-lg sm:text-xl font-black text-gray-900">Candidate Pipeline & Resumes</h3>
+                    <p id="applicants-modal-subtitle" class="text-xs text-gray-500 mt-0.5">Inspect submissions and review resumes instantly</p>
+                </div>
+                <button onclick="closeApplicantsModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center cursor-pointer shadow-lg">&times;</button>
+            </div>
+            <div class="px-4 sm:px-6 pt-4 bg-gray-50 border-b pb-3">
+                <input type="text" id="applicant-search-input" oninput="filterApplicantsList()" placeholder="Search applicant by name or email..." class="w-full border rounded-xl px-3 py-2 bg-white text-xs sm:text-sm focus:outline-none font-medium">
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow bg-gray-50 space-y-3" id="applicants-list-container"></div>
+            <div class="p-4 border-t bg-white flex justify-end flex-shrink-0 z-20">
+                <button onclick="closeApplicantsModal()" class="px-5 py-2.5 border rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:bg-gray-100 bg-white transition cursor-pointer">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1-Click Apply Modal -->
+    <div id="apply-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border">
+            <div class="flex justify-between items-center border-b pb-4 mb-5">
+                <div>
+                    <h3 class="text-base font-black text-gray-900">1-Click Instant Apply</h3>
+                    <p id="apply-job-title" class="text-xs text-blue-600 font-bold mt-0.5 truncate max-w-[280px]"></p>
+                </div>
+                <button onclick="closeApplyModal()" class="text-gray-400 hover:text-gray-700 font-bold text-xl w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer">&times;</button>
+            </div>
+            <form id="apply-form" onsubmit="submitApplication(event)" class="space-y-4">
+                <input type="hidden" id="apply-job-id">
+                <div id="apply-step-upload" class="space-y-4 py-2">
+                    <div class="text-center p-6 border-2 border-dashed border-blue-300 rounded-2xl bg-blue-50/50 hover:bg-blue-50 transition relative">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-600 mb-2"></i>
+                        <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Upload Resume (PDF / DOCX)</h4>
+                        <input type="file" id="applicant-resume-file" accept=".pdf,.doc,.docx" onchange="handleResumeUpload(event)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" required>
+                    </div>
+                    <div id="parsing-loader" class="hidden text-center py-3 text-xs font-bold text-blue-600 animate-pulse">Reading resume & auto-extracting details...</div>
+                </div>
+                <div id="apply-step-form" class="space-y-3 hidden">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name *</label>
+                        <input type="text" id="applicant-name" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Email Address *</label>
+                        <input type="email" id="applicant-email" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number *</label>
+                        <input type="tel" id="applicant-phone" required class="w-full border rounded-xl p-3 text-sm outline-none bg-gray-50 focus:bg-white focus:border-blue-600 font-semibold">
+                    </div>
+                    <div class="flex justify-end gap-3 pt-3 border-t">
+                        <button type="button" onclick="closeApplyModal()" class="px-4 py-2.5 border rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100 cursor-pointer">Cancel</button>
+                        <button type="submit" id="submit-app-btn" class="btn-primary-action text-sm font-bold cursor-pointer">Submit Application</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -650,7 +656,7 @@
                     openJobDetail(jobId, false);
                 }
             } else if (hash === '' || hash === '#/') {
-                closeJobDetailModal(false);
+                closeJobDetailView(false);
             }
         }
 
@@ -685,13 +691,11 @@
         }
 
         function openRecruiterAuthModal() {
-            document.body.classList.add('modal-open');
             document.getElementById('recruiter-auth-modal').classList.remove('hidden');
         }
 
         function closeRecruiterAuthModal() {
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
-            document.body.classList.remove('modal-open');
         }
 
         async function handleRecruiterSignIn(event) {
@@ -754,6 +758,8 @@
             updateAuthNavUI();
             document.getElementById('landing-hero-section').classList.add('hidden');
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
+            document.getElementById('job-detail-full-view').classList.add('hidden');
+            document.getElementById('job-post-full-view').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
 
             const actionContainer = document.getElementById('employer-action-container');
@@ -764,7 +770,7 @@
             if (role === 'employer') {
                 heroTitle.innerText = `${currentRecruiter ? currentRecruiter.company_name : 'Recruiter HQ'} • Dashboard`;
                 heroSubtitle.innerText = 'Manage your candidate pipelines and publish verified local, national, or global positions.';
-                actionContainer.innerHTML = `<button onclick="openPostModal()" class="btn-post-job text-xs sm:text-sm font-bold cursor-pointer"><i class="fa-solid fa-circle-plus"></i> Post New Position</button>`;
+                actionContainer.innerHTML = `<button onclick="openPostView()" class="btn-post-job text-xs sm:text-sm font-bold cursor-pointer"><i class="fa-solid fa-circle-plus"></i> Post New Position</button>`;
                 folderTabBar.classList.remove('hidden');
             } else {
                 heroTitle.innerText = 'Universal Public Job Feed';
@@ -782,7 +788,8 @@
             history.pushState("", document.title, window.location.pathname + window.location.search);
             resetSEOMetaTags();
             updateAuthNavUI();
-            document.body.classList.remove('modal-open');
+            document.getElementById('job-detail-full-view').classList.add('hidden');
+            document.getElementById('job-post-full-view').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
             document.getElementById('recruiter-auth-modal').classList.add('hidden');
             document.getElementById('landing-hero-section').classList.remove('hidden');
@@ -906,7 +913,7 @@
 
                     actionButtonHtml = `
                         <button onclick="openApplicantsModal('${job.id}', '${job.title}')" class="px-3.5 py-2 border rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 cursor-pointer">Applicants (${totalApplicants})${unreadApplicants > 0 ? ' 🔥' : ''}</button>
-                        <button onclick="openEditModal('${job.id}')" class="px-3.5 py-2 border rounded-xl text-xs font-bold text-blue-700 bg-blue-50 cursor-pointer">Edit</button>
+                        <button onclick="openEditView('${job.id}')" class="px-3.5 py-2 border rounded-xl text-xs font-bold text-blue-700 bg-blue-50 cursor-pointer">Edit</button>
                         <button onclick="toggleJobStatus('${job.id}', '${pauseNextStatus}')" class="px-3 py-2 border rounded-xl text-xs font-bold text-amber-700 bg-amber-50 cursor-pointer">${pauseBtnText}</button>
                         <button onclick="toggleJobStatus('${job.id}', '${closeNextStatus}')" class="px-3 py-2 border rounded-xl text-xs font-bold text-red-700 bg-red-50 cursor-pointer">${closeBtnText}</button>
                     `;
@@ -974,7 +981,7 @@
 
         function switchJobFolder(folder) {
             currentFolder = folder;
-            currentPage = 1; // Reset to page 1 on folder switch
+            currentPage = 1;
             ['Open', 'Paused', 'Closed', 'All'].forEach(f => {
                 const btn = document.getElementById(`folder-btn-${f}`);
                 if (btn) {
@@ -989,7 +996,7 @@
         }
 
         function filterJobs() { 
-            currentPage = 1; // Reset to page 1 on filter/search
+            currentPage = 1; 
             renderJobsUI(); 
         }
 
@@ -1005,9 +1012,12 @@
             }
         }
 
+        // ================= FULL SCREEN NAVIGATION FUNCTIONS =================
+
         function openJobDetail(jobId) {
             const job = allJobsData.find(j => j.id == jobId);
             if (!job) return;
+            
             document.getElementById('detail-title').innerText = job.title;
             let locText = job.city ? `${job.city}${job.state ? ', ' + job.state : ''} ${job.country || ''}` : (job.country || 'Remote');
             document.getElementById('detail-company-location').innerText = `${job.company} • ${locText}`;
@@ -1020,21 +1030,102 @@
             
             let cleanDesc = (job.description || 'No description.').replace(/<!--SALARY_META:(.*?)-->/g, '');
             document.getElementById('detail-description').innerHTML = cleanDesc;
-            document.getElementById('detail-modal-action-btn').setAttribute('onclick', `closeJobDetailModal(); openApplyModal('${job.id}', '${job.title}')`);
-            document.body.classList.add('modal-open');
-            document.getElementById('job-detail-modal').classList.remove('hidden');
+            document.getElementById('detail-view-action-btn').setAttribute('onclick', `openApplyModal('${job.id}', '${job.title}')`);
+            
+            // Hide dashboard, show full view
+            document.getElementById('landing-hero-section').classList.add('hidden');
+            document.getElementById('active-dashboard-wrapper').classList.add('hidden');
+            document.getElementById('job-post-full-view').classList.add('hidden');
+            document.getElementById('job-detail-full-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function closeJobDetailModal() {
-            document.getElementById('job-detail-modal').classList.add('hidden');
-            document.body.classList.remove('modal-open');
+        function closeJobDetailView() {
+            document.getElementById('job-detail-full-view').classList.add('hidden');
+            if (currentRole) {
+                document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
+            } else {
+                document.getElementById('landing-hero-section').classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        function openPostView() {
+            document.getElementById('job-form').reset();
+            document.getElementById('rich-editor').innerHTML = '';
+            document.getElementById('job-post-view-title').innerText = "Publish Position (Local or Global)";
+            
+            const recruiterBox = document.getElementById('frictionless-recruiter-box');
+            if (currentRecruiter) {
+                recruiterBox.style.display = 'none';
+                document.getElementById('job-company').value = currentRecruiter.company_name || '';
+            } else {
+                recruiterBox.style.display = 'block';
+            }
+
+            switchWizardStep(1);
+            document.getElementById('edit-job-id').value = '';
+
+            // Hide dashboard, show full view
+            document.getElementById('landing-hero-section').classList.add('hidden');
+            document.getElementById('active-dashboard-wrapper').classList.add('hidden');
+            document.getElementById('job-detail-full-view').classList.add('hidden');
+            document.getElementById('job-post-full-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openEditView(jobId) {
+            const job = allJobsData.find(j => j.id == jobId);
+            if (!job) return;
+
+            document.getElementById('job-post-view-title').innerText = "Edit Position Details";
+            document.getElementById('frictionless-recruiter-box').style.display = 'none';
+            switchWizardStep(1);
+            
+            const meta = parseSalaryMeta(job);
+
+            document.getElementById('edit-job-id').value = job.id;
+            document.getElementById('job-title-input').value = job.title || '';
+            document.getElementById('job-company').value = job.company || '';
+            document.getElementById('job-category-input').value = job.category || '';
+            document.getElementById('job-country-input').value = job.country || '';
+            document.getElementById('job-employment-type-input').value = meta.employment_type || 'Full-time';
+            document.getElementById('job-work-mode-input').value = job.work_mode || 'Remote';
+            document.getElementById('job-currency').value = meta.currency;
+            document.getElementById('job-pay-rate').value = meta.pay_rate;
+            document.getElementById('job-salary-min').value = meta.salary_min;
+            document.getElementById('job-salary-max').value = meta.salary_max;
+            document.getElementById('job-state').value = job.state || '';
+            document.getElementById('job-city').value = job.city || '';
+            document.getElementById('job-zip').value = job.zip || '';
+            
+            let cleanDesc = (job.description || '').replace(/<!--SALARY_META:(.*?)-->/g, '');
+            document.getElementById('rich-editor').innerHTML = cleanDesc;
+            
+            // Hide dashboard, show full view
+            document.getElementById('landing-hero-section').classList.add('hidden');
+            document.getElementById('active-dashboard-wrapper').classList.add('hidden');
+            document.getElementById('job-detail-full-view').classList.add('hidden');
+            document.getElementById('job-post-full-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closePostView() {
+            document.getElementById('job-post-full-view').classList.add('hidden');
+            if (currentRole) {
+                document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
+            } else {
+                document.getElementById('landing-hero-section').classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ================= APPLICANTS & APPLY MODALS =================
 
         function openApplicantsModal(jobId, jobTitle) {
             document.getElementById('applicants-modal-title').innerText = `Applicants for: ${jobTitle}`;
             currentJobApplicants = allApplicationsData.filter(app => app.job_id == jobId);
             renderApplicantsTable(currentJobApplicants);
-            document.body.classList.add('modal-open');
             document.getElementById('applicants-modal').classList.remove('hidden');
         }
 
@@ -1063,7 +1154,6 @@
 
         function closeApplicantsModal() {
             document.getElementById('applicants-modal').classList.add('hidden');
-            document.body.classList.remove('modal-open');
         }
 
         function openApplyModal(jobId, title) {
@@ -1071,13 +1161,11 @@
             document.getElementById('apply-job-title').innerText = title;
             document.getElementById('apply-step-upload').classList.remove('hidden');
             document.getElementById('apply-step-form').classList.add('hidden');
-            document.body.classList.add('modal-open');
             document.getElementById('apply-modal').classList.remove('hidden');
         }
 
         function closeApplyModal() {
             document.getElementById('apply-modal').classList.add('hidden');
-            document.body.classList.remove('modal-open');
         }
 
         async function handleResumeUpload(event) {
@@ -1111,59 +1199,6 @@
             } catch (err) {
                 showToast('Error: ' + err.message, 'error');
             }
-        }
-
-        function openPostModal() {
-            document.getElementById('job-form').reset();
-            document.getElementById('rich-editor').innerHTML = '';
-            
-            const recruiterBox = document.getElementById('frictionless-recruiter-box');
-            if (currentRecruiter) {
-                recruiterBox.style.display = 'none';
-                document.getElementById('job-company').value = currentRecruiter.company_name || '';
-            } else {
-                recruiterBox.style.display = 'block';
-            }
-
-            switchWizardStep(1);
-            document.getElementById('edit-job-id').value = '';
-            document.body.classList.add('modal-open');
-            document.getElementById('job-modal').classList.remove('hidden');
-        }
-
-        function openEditModal(jobId) {
-            const job = allJobsData.find(j => j.id == jobId);
-            if (!job) return;
-            document.getElementById('frictionless-recruiter-box').style.display = 'none';
-            switchWizardStep(1);
-            
-            const meta = parseSalaryMeta(job);
-
-            document.getElementById('edit-job-id').value = job.id;
-            document.getElementById('job-title-input').value = job.title || '';
-            document.getElementById('job-company').value = job.company || '';
-            document.getElementById('job-category-input').value = job.category || '';
-            document.getElementById('job-country-input').value = job.country || '';
-            document.getElementById('job-employment-type-input').value = meta.employment_type || 'Full-time';
-            document.getElementById('job-work-mode-input').value = job.work_mode || 'Remote';
-            document.getElementById('job-currency').value = meta.currency;
-            document.getElementById('job-pay-rate').value = meta.pay_rate;
-            document.getElementById('job-salary-min').value = meta.salary_min;
-            document.getElementById('job-salary-max').value = meta.salary_max;
-            document.getElementById('job-state').value = job.state || '';
-            document.getElementById('job-city').value = job.city || '';
-            document.getElementById('job-zip').value = job.zip || '';
-            
-            let cleanDesc = (job.description || '').replace(/<!--SALARY_META:(.*?)-->/g, '');
-            document.getElementById('rich-editor').innerHTML = cleanDesc;
-            
-            document.body.classList.add('modal-open');
-            document.getElementById('job-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('job-modal').classList.add('hidden');
-            document.body.classList.remove('modal-open');
         }
 
         async function handleJobFormSubmit(event) {
@@ -1200,7 +1235,6 @@
                         return;
                     }
 
-                    // Check if email already exists in recruiters table
                     const { data: existingRec } = await supabaseClient
                         .from('recruiters')
                         .select('*')
@@ -1217,7 +1251,6 @@
                             localStorage.setItem('jobrit_current_recruiter', JSON.stringify(existingRec));
                         }
                     } else {
-                        // Create new recruiter with password
                         const { data: newRec, error: createError } = await supabaseClient
                             .from('recruiters')
                             .insert([{ name: qName, email: qEmail, password: qPassword, hiring_type: 'Agency', company_name: company }])
@@ -1244,7 +1277,7 @@
                 }
 
                 showToast('Position Published Successfully! 🚀', 'success');
-                closeModal();
+                closePostView();
                 setAppRole('employer');
                 await fetchJobsFeed();
             } catch (err) {
