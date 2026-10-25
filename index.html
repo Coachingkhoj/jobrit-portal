@@ -680,8 +680,12 @@
                 </div>
                 <button onclick="closeApplicantsModal()" class="text-white hover:bg-red-700 font-black text-xl w-10 h-10 rounded-full bg-red-600 flex items-center justify-center cursor-pointer shadow-lg">&times;</button>
             </div>
-            <div class="px-4 sm:px-6 pt-4 bg-slate-50 border-b border-slate-200 pb-3">
+            <div class="px-4 sm:px-6 pt-4 bg-slate-50 border-b border-slate-200 pb-3 flex items-center justify-between gap-3">
                 <input type="text" id="applicant-search-input" oninput="filterApplicantsList()" placeholder="Search applicant by name or email..." class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white text-xs sm:text-sm focus:outline-none font-medium text-slate-800">
+                <div class="flex items-center gap-2 bg-white border border-slate-200 p-1 rounded-xl text-xs font-bold flex-shrink-0">
+                    <button onclick="switchApplicantTab('seen')" id="app-tab-seen" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white transition cursor-pointer">Seen / Reviewed</button>
+                    <button onclick="switchApplicantTab('new')" id="app-tab-new" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">New Unseen (<span id="modal-new-count">0</span>)</button>
+                </div>
             </div>
             <div class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-grow bg-slate-50 space-y-3" id="applicants-list-container"></div>
             <div class="p-4 border-t border-slate-200 bg-white flex justify-end flex-shrink-0 z-20">
@@ -745,6 +749,8 @@
         let activeJobIdForSlug = null;
         let currentWizardStep = 1;
         let currentJobApplicants = [];
+        let currentActiveJobId = null;
+        let currentApplicantTab = 'seen';
         let uploadedResumeFile = null;
 
         // Pagination Variables
@@ -793,7 +799,6 @@
                 prevBtn.style.display = 'inline-flex';
                 nextBtn.style.display = 'none';
                 
-                // Explicit display inline-flex assignment
                 submitBtn.style.setProperty('display', 'inline-flex', 'important');
 
                 if (stepperTab1 && stepperTab2) {
@@ -1081,11 +1086,14 @@
             const kpiApplicants = document.getElementById('kpi-applicants-count');
             const kpiViews = document.getElementById('kpi-views-count');
 
+            let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
+
             const recruiterJobIds = allJobsData.map(j => String(j.id));
             const recruiterApplications = allApplicationsData.filter(app => recruiterJobIds.includes(String(app.job_id)));
+            const seenRecruiterApps = recruiterApplications.filter(app => viewedApplicants.includes(String(app.id)));
 
             if (kpiActive) kpiActive.innerText = openCount;
-            if (kpiApplicants) kpiApplicants.innerText = recruiterApplications.length;
+            if (kpiApplicants) kpiApplicants.innerText = seenRecruiterApps.length;
             if (kpiViews) {
                 const totalViewsSum = allJobsData.reduce((acc, curr) => acc + (curr.views_count || 0), 0);
                 kpiViews.innerText = totalViewsSum;
@@ -1103,15 +1111,12 @@
             const startIndex = (currentPage - 1) * jobsPerPage;
             const paginatedJobs = filtered.slice(startIndex, startIndex + jobsPerPage);
 
-            let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
-
             let jobsHtml = paginatedJobs.map(job => {
                 const currentStatus = job.status || 'Open';
                 const timeAgoText = getTimeAgo(job.created_at);
                 const jobApps = allApplicationsData.filter(app => app.job_id == job.id);
-                const totalApplicants = jobApps.length;
+                const seenAppsCount = jobApps.filter(app => viewedApplicants.includes(String(app.id))).length;
                 const unreadApplicants = jobApps.filter(app => !viewedApplicants.includes(String(app.id))).length;
-                const totalViews = job.views_count || 0;
 
                 const meta = parseSalaryMeta(job);
                 let salaryText = '';
@@ -1130,9 +1135,14 @@
 
                     actionButtonHtml = `
                         <div class="flex items-center gap-2 flex-wrap justify-end">
-                            <button onclick="openApplicantsModal('${job.id}', '${job.title}')" class="px-3.5 py-2 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
-                                <i class="fa-solid fa-users text-[11px]"></i> Applicants (${totalApplicants})${unreadApplicants > 0 ? ' 🔥' : ''}
+                            <button onclick="openApplicantsModal('${job.id}', '${job.title}', 'seen')" class="px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 transition cursor-pointer flex items-center gap-1.5 shadow-2xl">
+                                <i class="fa-solid fa-users text-[11px] text-blue-600"></i> Applicants (${seenAppsCount})
                             </button>
+                            ${unreadApplicants > 0 ? `
+                                <button onclick="openApplicantsModal('${job.id}', '${job.title}', 'new')" class="px-3.5 py-2 border border-red-200 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition cursor-pointer flex items-center gap-1.5 shadow-2xl animate-pulse">
+                                    <i class="fa-solid fa-bell text-[11px]"></i> +${unreadApplicants} New
+                                </button>
+                            ` : ''}
                             <button onclick="openEditView('${job.id}')" class="px-3 py-2 border border-blue-200 rounded-xl text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition cursor-pointer flex items-center gap-1 shadow-2xs">
                                 <i class="fa-solid fa-pen-to-square"></i> Edit
                             </button>
@@ -1153,17 +1163,6 @@
                     `;
                 }
 
-                let analyticsRow = '';
-                if (currentRole === 'employer') {
-                    analyticsRow = `
-                        <div class="flex items-center gap-2.5 pt-2.5 text-xs font-semibold text-slate-600 flex-wrap">
-                            <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 flex items-center gap-1"><i class="fa-solid fa-eye text-blue-600"></i> ${totalViews} Views</span>
-                            <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 flex items-center gap-1"><i class="fa-solid fa-user-check text-indigo-600"></i> ${totalApplicants} Applied</span>
-                            ${unreadApplicants > 0 ? `<span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-lg border border-red-200 font-bold flex items-center gap-1"><i class="fa-solid fa-bell"></i> ${unreadApplicants} New</span>` : `<span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-100 flex items-center gap-1"><i class="fa-solid fa-check"></i> All Viewed</span>`}
-                        </div>
-                    `;
-                }
-
                 return `
                     <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 transition shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
                         <div class="space-y-1.5 flex-grow">
@@ -1176,7 +1175,6 @@
                             </div>
                             <h4 class="font-black text-slate-900 text-base sm:text-lg cursor-pointer hover:text-blue-600 transition" onclick="openJobDetail('${job.id}')">${job.title}</h4>
                             <p class="text-xs text-slate-500 font-medium">${locText} • ${job.work_mode || 'Remote'} ${salaryText} • ${timeAgoText}</p>
-                            ${analyticsRow}
                         </div>
                         <div class="w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">${actionButtonHtml}</div>
                     </div>
@@ -1261,7 +1259,6 @@
             document.getElementById('detail-description').innerHTML = cleanDesc;
             document.getElementById('detail-view-action-btn').setAttribute('onclick', `openApplyModal('${job.id}', '${job.title}')`);
             
-            // Hide dashboard, show full view
             document.getElementById('landing-hero-section').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
             document.getElementById('job-post-full-view').classList.add('hidden');
@@ -1295,7 +1292,6 @@
             switchWizardStep(1);
             document.getElementById('edit-job-id').value = '';
 
-            // Hide dashboard, show full view
             document.getElementById('landing-hero-section').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
             document.getElementById('job-detail-full-view').classList.add('hidden');
@@ -1331,7 +1327,6 @@
             let cleanDesc = (job.description || '').replace(/<!--SALARY_META:(.*?)-->/g, '');
             document.getElementById('rich-editor').innerHTML = cleanDesc;
             
-            // Hide dashboard, show full view
             document.getElementById('landing-hero-section').classList.add('hidden');
             document.getElementById('active-dashboard-wrapper').classList.add('hidden');
             document.getElementById('job-detail-full-view').classList.add('hidden');
@@ -1351,38 +1346,111 @@
 
         // ================= APPLICANTS & APPLY MODALS =================
 
-        function openApplicantsModal(jobId, jobTitle) {
+        function openApplicantsModal(jobId, jobTitle, tab = 'seen') {
+            currentActiveJobId = jobId;
+            currentApplicantTab = tab;
             document.getElementById('applicants-modal-title').innerText = `Applicants for: ${jobTitle}`;
-            currentJobApplicants = allApplicationsData.filter(app => app.job_id == jobId);
-            renderApplicantsTable(currentJobApplicants);
+            
+            const jobApps = allApplicationsData.filter(app => app.job_id == jobId);
+            let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
+
+            const unreadCount = jobApps.filter(app => !viewedApplicants.includes(String(app.id))).length;
+            const newCountEl = document.getElementById('modal-new-count');
+            if (newCountEl) newCountEl.innerText = unreadCount;
+
+            // If user clicked New Tab or New Badge, automatically mark these applications as seen when closing or viewing
+            renderFilteredApplicantsList();
             document.getElementById('applicants-modal').classList.remove('hidden');
+        }
+
+        function switchApplicantTab(tab) {
+            currentApplicantTab = tab;
+            const btnSeen = document.getElementById('app-tab-seen');
+            const btnNew = document.getElementById('app-tab-new');
+
+            if (tab === 'seen') {
+                btnSeen.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white transition cursor-pointer";
+                btnNew.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer";
+            } else {
+                btnNew.className = "px-3 py-1.5 rounded-lg bg-red-600 text-white transition cursor-pointer";
+                btnSeen.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer";
+            }
+            renderFilteredApplicantsList();
+        }
+
+        function renderFilteredApplicantsList() {
+            const jobApps = allApplicationsData.filter(app => app.job_id == currentActiveJobId);
+            let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
+
+            let filteredList = [];
+            if (currentApplicantTab === 'seen') {
+                filteredList = jobApps.filter(app => viewedApplicants.includes(String(app.id)));
+            } else {
+                filteredList = jobApps.filter(app => !viewedApplicants.includes(String(app.id)));
+            }
+
+            currentJobApplicants = filteredList;
+            renderApplicantsTable(filteredList);
+        }
+
+        function markApplicantAsSeen(appId) {
+            let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
+            if (!viewedApplicants.includes(String(appId))) {
+                viewedApplicants.push(String(appId));
+                localStorage.setItem('jobrit_viewed_applicants', JSON.stringify(viewedApplicants));
+            }
+            renderFilteredApplicantsList();
+            renderJobsUI();
+            
+            const jobApps = allApplicationsData.filter(app => app.job_id == currentActiveJobId);
+            const unreadCount = jobApps.filter(app => !viewedApplicants.includes(String(app.id))).length;
+            const newCountEl = document.getElementById('modal-new-count');
+            if (newCountEl) newCountEl.innerText = unreadCount;
         }
 
         function renderApplicantsTable(applicants) {
             const container = document.getElementById('applicants-list-container');
             if (!container) return;
             if (applicants.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-slate-500 font-semibold text-xs">No applications found.</div>`;
+                container.innerHTML = `<div class="text-center py-10 text-slate-500 font-semibold text-xs">No applications found in this section.</div>`;
                 return;
             }
-            container.innerHTML = applicants.map((app, index) => `
-                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex justify-between items-center">
-                    <div>
-                        <h4 class="font-black text-slate-900 text-sm">${app.name}</h4>
-                        <p class="text-xs text-slate-600">${app.email} • ${app.phone}</p>
+            container.innerHTML = applicants.map((app, index) => {
+                let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
+                let isUnread = !viewedApplicants.includes(String(app.id));
+
+                return `
+                    <div class="bg-white p-4 rounded-2xl border ${isUnread ? 'border-red-300 bg-red-50/30' : 'border-slate-200'} shadow-2xs flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-black text-slate-900 text-sm">${app.name}</h4>
+                                ${isUnread ? '<span class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse">NEW</span>' : ''}
+                            </div>
+                            <p class="text-xs text-slate-600">${app.email} • ${app.phone}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="${app.resume_link}" target="_blank" onclick="markApplicantAsSeen('${app.id}')" class="px-3 py-1.5 border border-blue-200 rounded-xl text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition">View Resume</a>
+                        </div>
                     </div>
-                    <a href="${app.resume_link}" target="_blank" class="px-3 py-1.5 border border-blue-200 rounded-xl text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition">View Resume</a>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function filterApplicantsList() {
             const q = document.getElementById('applicant-search-input').value.toLowerCase();
-            renderApplicantsTable(currentJobApplicants.filter(a => a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)));
+            const jobApps = allApplicationsData.filter(app => app.job_id == currentActiveJobId);
+            let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
+
+            let baseList = currentApplicantTab === 'seen' 
+                ? jobApps.filter(app => viewedApplicants.includes(String(app.id)))
+                : jobApps.filter(app => !viewedApplicants.includes(String(app.id)));
+
+            renderApplicantsTable(baseList.filter(a => a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)));
         }
 
         function closeApplicantsModal() {
             document.getElementById('applicants-modal').classList.add('hidden');
+            renderJobsUI();
         }
 
         function openApplyModal(jobId, title) {
