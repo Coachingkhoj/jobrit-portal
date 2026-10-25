@@ -633,8 +633,9 @@
                     <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 cursor-pointer flex items-center gap-1.5 shadow-md">
                         Next: Description <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none;" class="px-6 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 cursor-pointer flex items-center gap-1.5 shadow-md">
-                        Publish Position <i class="fa-solid fa-circle-check"></i>
+                    <!-- Enhanced Visibility Fix for Submit Button -->
+                    <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none; background-color: #059669 !important; color: #ffffff !important;" class="px-6 py-2.5 font-bold rounded-xl text-xs hover:bg-emerald-700 cursor-pointer items-center gap-1.5 shadow-md">
+                        <span style="color: #ffffff !important; font-weight: 700;">Publish Position</span> <i class="fa-solid fa-circle-check" style="color: #ffffff !important;"></i>
                     </button>
                 </div>
             </div>
@@ -791,7 +792,9 @@
                 if(indicator) indicator.innerText = 'Step 2 of 2: Description';
                 prevBtn.style.display = 'inline-flex';
                 nextBtn.style.display = 'none';
-                submitBtn.style.display = 'inline-flex';
+                
+                // Explicit display inline-flex assignment
+                submitBtn.style.setProperty('display', 'inline-flex', 'important');
 
                 if (stepperTab1 && stepperTab2) {
                     stepperTab1.className = "border border-slate-200 bg-slate-50 p-3.5 rounded-2xl flex items-center gap-3 transition";
@@ -805,7 +808,8 @@
                 if(indicator) indicator.innerText = 'Step 1 of 2: Basic Info & Compensation';
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'inline-flex';
-                submitBtn.style.display = 'none';
+                
+                submitBtn.style.setProperty('display', 'none', 'important');
 
                 if (stepperTab1 && stepperTab2) {
                     stepperTab1.className = "border-2 border-blue-600 bg-blue-50/50 p-3.5 rounded-2xl flex items-center gap-3 transition";
@@ -1072,7 +1076,7 @@
             document.getElementById('count-folder-closed').innerText = closedCount;
             document.getElementById('count-folder-all').innerText = totalCount;
 
-            // Update KPI Stats Counters in Banner (Strictly Filtered to Current Recruiter/Active Jobs)
+            // Update KPI Stats Counters in Banner
             const kpiActive = document.getElementById('kpi-active-count');
             const kpiApplicants = document.getElementById('kpi-applicants-count');
             const kpiViews = document.getElementById('kpi-views-count');
