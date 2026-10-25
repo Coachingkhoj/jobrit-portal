@@ -159,8 +159,8 @@
                     <div id="employer-action-container"></div>
                 </div>
 
-                <!-- KPI / Quick Stats Banner -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <!-- KPI / Quick Stats Banner (3 Columns Clean Layout) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-2xs">
                         <div>
                             <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Active Positions</p>
@@ -177,15 +177,6 @@
                         </div>
                         <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
                             <i class="fa-solid fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-2xs">
-                        <div>
-                            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Views</p>
-                            <h4 id="kpi-views-count" class="text-lg font-black text-slate-900 mt-0.5">0</h4>
-                        </div>
-                        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
-                            <i class="fa-solid fa-eye"></i>
                         </div>
                     </div>
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-2xs">
@@ -633,7 +624,6 @@
                     <button type="button" id="wizard-next-btn" onclick="switchWizardStep(2)" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 cursor-pointer flex items-center gap-1.5 shadow-md">
                         Next: Description <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <!-- Enhanced Visibility Fix for Submit Button -->
                     <button type="submit" form="job-form" id="wizard-submit-btn" style="display: none; background-color: #059669 !important; color: #ffffff !important;" class="px-6 py-2.5 font-bold rounded-xl text-xs hover:bg-emerald-700 cursor-pointer items-center gap-1.5 shadow-md">
                         <span style="color: #ffffff !important; font-weight: 700;">Publish Position</span> <i class="fa-solid fa-circle-check" style="color: #ffffff !important;"></i>
                     </button>
@@ -642,7 +632,7 @@
         </div>
     </div>
 
-    <!-- ================= EXISTING MODALS (Retained for Auth & Applicants Pipeline) ================= -->
+    <!-- ================= EXISTING MODALS ================= -->
 
     <!-- Recruiter Sign In Modal -->
     <div id="recruiter-auth-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
@@ -1084,7 +1074,6 @@
             // Update KPI Stats Counters in Banner
             const kpiActive = document.getElementById('kpi-active-count');
             const kpiApplicants = document.getElementById('kpi-applicants-count');
-            const kpiViews = document.getElementById('kpi-views-count');
 
             let viewedApplicants = JSON.parse(localStorage.getItem('jobrit_viewed_applicants') || '[]');
 
@@ -1094,10 +1083,6 @@
 
             if (kpiActive) kpiActive.innerText = openCount;
             if (kpiApplicants) kpiApplicants.innerText = seenRecruiterApps.length;
-            if (kpiViews) {
-                const totalViewsSum = allJobsData.reduce((acc, curr) => acc + (curr.views_count || 0), 0);
-                kpiViews.innerText = totalViewsSum;
-            }
 
             if (filtered.length === 0) {
                 container.innerHTML = `<div class="text-center py-12 text-slate-500 font-semibold text-xs bg-slate-50 rounded-2xl border border-dashed border-slate-300">No active positions matching your criteria.</div>`;
@@ -1358,7 +1343,6 @@
             const newCountEl = document.getElementById('modal-new-count');
             if (newCountEl) newCountEl.innerText = unreadCount;
 
-            // If user clicked New Tab or New Badge, automatically mark these applications as seen when closing or viewing
             renderFilteredApplicantsList();
             document.getElementById('applicants-modal').classList.remove('hidden');
         }
