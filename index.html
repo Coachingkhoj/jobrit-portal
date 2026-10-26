@@ -862,7 +862,14 @@
             } else {
                 updateAuthNavUI();
             }
-            if (window.location.hash.startsWith('#/job/')) await handleURLRouting();
+            
+            // First fetch jobs feed to make sure data is loaded
+            if (allJobsData.length === 0) await fetchJobsFeed();
+
+            // Then check hash to open specific job if direct URL is loaded
+            if (window.location.hash.startsWith('#/job/')) {
+                await handleURLRouting();
+            }
         });
 
         function updateAuthNavUI() {
