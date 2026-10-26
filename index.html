@@ -842,19 +842,11 @@
                 const slug = hash.replace('#/job/', '');
                 const jobId = extractJobIdFromSlug(slug);
                 if (jobId) {
-                    if (allJobsData.length === 0) {
-                        try {
-                            let query = supabaseClient.from('jobs').select('*');
-                            const { data } = await query.order('created_at', { ascending: false });
-                            allJobsData = data || [];
-                        } catch (e) {}
-                    }
-                    
                     document.getElementById('landing-hero-section').classList.add('hidden');
                     document.getElementById('active-dashboard-wrapper').classList.add('hidden');
                     document.getElementById('job-post-full-view').classList.add('hidden');
                     
-                    openJobDetail(jobId, false);
+                    await openJobDetail(jobId, false);
                 }
             } else if (hash === '' || hash === '#/') {
                 closeJobDetailView(false);
@@ -1240,8 +1232,17 @@
 
         // ================= FULL SCREEN NAVIGATION FUNCTIONS =================
 
-        function openJobDetail(jobId, updateHash = true) {
-            const job = allJobsData.find(j => j.id == jobId);
+        async function openJobDetail(jobId, updateHash = true) {
+            let job = allJobsData.find(j => String(j.id) === String(jobId));
+            
+            // Fail-safe fetch directly from database if array is not loaded yet
+            if (!job) {
+                try {
+                    const { data } = await supabaseClient.from('jobs').select('*').eq('id', jobId).single();
+                    if (data) job = data;
+                } catch(e) {}
+            }
+
             if (!job) return;
             
             if (updateHash) {
