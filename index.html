@@ -1226,10 +1226,15 @@
 
         // ================= FULL SCREEN NAVIGATION FUNCTIONS =================
 
-        function openJobDetail(jobId) {
+        function openJobDetail(jobId, updateHash = true) {
             const job = allJobsData.find(j => j.id == jobId);
             if (!job) return;
             
+            if (updateHash) {
+                const slug = createJobSlug(job.title, job.id);
+                window.location.hash = `#/job/${slug}`;
+            }
+
             document.getElementById('detail-title').innerText = job.title;
             let locText = job.city ? `${job.city}${job.state ? ', ' + job.state : ''} ${job.country || ''}` : (job.country || 'Remote');
             document.getElementById('detail-company-location').innerText = `${job.company} • ${locText}`;
@@ -1251,7 +1256,10 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function closeJobDetailView() {
+        function closeJobDetailView(updateHash = true) {
+            if (updateHash && window.location.hash.startsWith('#/job/')) {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
             document.getElementById('job-detail-full-view').classList.add('hidden');
             if (currentRole) {
                 document.getElementById('active-dashboard-wrapper').classList.remove('hidden');
