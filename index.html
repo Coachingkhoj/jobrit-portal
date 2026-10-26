@@ -822,6 +822,8 @@
 
         function extractJobIdFromSlug(slug) {
             if (!slug) return null;
+            const uuidMatch = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+            if (uuidMatch) return uuidMatch[0];
             const parts = slug.split('-');
             return parts[parts.length - 1];
         }
@@ -845,6 +847,7 @@
                     document.getElementById('landing-hero-section').classList.add('hidden');
                     document.getElementById('active-dashboard-wrapper').classList.add('hidden');
                     document.getElementById('job-post-full-view').classList.add('hidden');
+                    document.getElementById('job-detail-full-view').classList.remove('hidden');
                     
                     await openJobDetail(jobId, false);
                 }
@@ -1233,9 +1236,9 @@
         // ================= FULL SCREEN NAVIGATION FUNCTIONS =================
 
         async function openJobDetail(jobId, updateHash = true) {
-            let job = allJobsData.find(j => String(j.id) === String(jobId));
+            let job = allJobsData.find(j => String(j.id).toLowerCase() === String(jobId).toLowerCase());
             
-            // Fail-safe fetch directly from database if array is not loaded yet
+            // Fail-safe fetch directly from database if array is empty or job not found locally
             if (!job) {
                 try {
                     const { data } = await supabaseClient.from('jobs').select('*').eq('id', jobId).single();
