@@ -842,8 +842,18 @@
                 const slug = hash.replace('#/job/', '');
                 const jobId = extractJobIdFromSlug(slug);
                 if (jobId) {
-                    if (allJobsData.length === 0) await fetchJobsFeed();
-                    if (currentRole === '') setAppRole('seeker', false);
+                    if (allJobsData.length === 0) {
+                        try {
+                            let query = supabaseClient.from('jobs').select('*');
+                            const { data } = await query.order('created_at', { ascending: false });
+                            allJobsData = data || [];
+                        } catch (e) {}
+                    }
+                    
+                    document.getElementById('landing-hero-section').classList.add('hidden');
+                    document.getElementById('active-dashboard-wrapper').classList.add('hidden');
+                    document.getElementById('job-post-full-view').classList.add('hidden');
+                    
                     openJobDetail(jobId, false);
                 }
             } else if (hash === '' || hash === '#/') {
@@ -857,18 +867,15 @@
                 try { currentRecruiter = JSON.parse(savedRecruiter); } catch(e) { currentRecruiter = null; }
             }
             const savedRole = localStorage.getItem('jobrit_current_role');
-            if (savedRole === 'employer' || savedRole === 'seeker') {
-                setAppRole(savedRole, false);
-            } else {
-                updateAuthNavUI();
-            }
-            
-            // First fetch jobs feed to make sure data is loaded
-            if (allJobsData.length === 0) await fetchJobsFeed();
 
-            // Then check hash to open specific job if direct URL is loaded
             if (window.location.hash.startsWith('#/job/')) {
                 await handleURLRouting();
+            } else {
+                if (savedRole === 'employer' || savedRole === 'seeker') {
+                    setAppRole(savedRole, false);
+                } else {
+                    updateAuthNavUI();
+                }
             }
         });
 
