@@ -318,7 +318,7 @@
                     <!-- Job Title & Meta Header -->
                     <div class="space-y-3 border-b border-slate-100 pb-6">
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">Information Technology (IT)</span>
+                            <span id="detail-category" class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-lg border border-blue-100">General</span>
                             <span class="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Actively Hiring
                             </span>
@@ -1060,7 +1060,7 @@
             let filtered = allJobsData.filter(job => {
                 const status = job.status || 'Open';
                 
-                // CRITICAL FIX: Seeker side par sirf Strictly 'Open' status ki jobs dikhengi
+                // Seeker side strictly 'Open' status filter
                 if (currentRole !== 'employer' && status.toLowerCase() !== 'open') return false;
                 
                 // Employer side filter
@@ -1260,7 +1260,12 @@
             document.getElementById('detail-title').innerText = job.title;
             let locText = job.city ? `${job.city}${job.state ? ', ' + job.state : ''} ${job.country || ''}` : (job.country || 'Remote');
             document.getElementById('detail-company-location').innerText = `${job.company} • ${locText}`;
-            document.getElementById('detail-industry-text').innerText = job.category || 'General';
+            
+            // FIX APPLIED HERE: Dynamically populate industry category in detail view instead of hardcoded IT
+            const jobCategory = job.category || 'General';
+            document.getElementById('detail-category').innerText = jobCategory;
+            document.getElementById('detail-industry-text').innerText = jobCategory;
+
             document.getElementById('detail-workmode').innerText = job.work_mode || 'Remote';
             
             const meta = parseSalaryMeta(job);
