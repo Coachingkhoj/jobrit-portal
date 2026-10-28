@@ -1059,7 +1059,11 @@
 
             let filtered = allJobsData.filter(job => {
                 const status = job.status || 'Open';
-                if (currentRole === 'seeker' && status.toLowerCase() !== 'open') return false;
+                
+                // CRITICAL FIX: Seeker side par sirf Strictly 'Open' status ki jobs dikhengi
+                if (currentRole !== 'employer' && status.toLowerCase() !== 'open') return false;
+                
+                // Employer side filter
                 if (currentRole === 'employer' && currentFolder !== 'All' && status.toLowerCase() !== currentFolder.toLowerCase()) return false;
                 
                 if (searchCountry && !((job.country || '').toLowerCase().includes(searchCountry))) return false;
@@ -1572,25 +1576,9 @@
                     }
                 }
 
-                // FIXED: Added employment_type and pay_type properly into payload
                 let jobPayload = { 
-                    title, 
-                    company, 
-                    category, 
-                    country, 
-                    work_mode, 
-                    salary_min, 
-                    salary_max, 
-                    currency, 
-                    pay_rate, 
-                    pay_type: pay_rate, 
-                    employment_type: employment_type, 
-                    state, 
-                    city, 
-                    zip, 
-                    description, 
-                    recruiter_id: recId, 
-                    status: 'Open' 
+                    title, company, category, country, work_mode, 
+                    salary_min, salary_max, currency, pay_rate, pay_type: pay_rate, state, city, zip, description, recruiter_id: recId, status: 'Open' 
                 };
 
                 if (editId) {
