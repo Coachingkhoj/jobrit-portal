@@ -211,7 +211,7 @@
             <div class="glass-card p-2.5 rounded-2xl shadow-md border border-slate-200 max-w-5xl mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2 text-slate-900 items-center">
                     
-                    <div class="lg:col-span-3 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white">
+                    <div class="lg:col-span-3 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-globe text-blue-600 mr-2 text-xs"></i>
                         <select id="hero-country" class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700 cursor-pointer">
                             <option value="">All Countries / Worldwide</option>
@@ -243,17 +243,17 @@
                         </select>
                     </div>
 
-                    <div class="lg:col-span-3 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white">
+                    <div class="lg:col-span-3 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-magnifying-glass text-blue-600 mr-2 text-xs"></i>
                         <input type="text" id="hero-title" placeholder="Title, Company, Keyword..." class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700">
                     </div>
 
-                    <div class="lg:col-span-2 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white">
+                    <div class="lg:col-span-2 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-location-dot text-red-500 mr-2 text-xs"></i>
                         <input type="text" id="hero-location" placeholder="City, State..." class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700">
                     </div>
 
-                    <div class="lg:col-span-2 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white">
+                    <div class="lg:col-span-2 flex items-center border border-slate-200 rounded-xl px-3 py-2 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-filter text-indigo-600 mr-2 text-xs"></i>
                         <select id="hero-industry" class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700 cursor-pointer">
                             <option value="">All Industries...</option>
@@ -319,7 +319,7 @@
         </div>
     </section>
 
-    <!-- Active Dashboard Wrapper (Duplicate Button Removed) -->
+    <!-- Active Dashboard Wrapper -->
     <div id="active-dashboard-wrapper" class="hidden flex-grow flex flex-col bg-slate-50">
         <section class="bg-white border-b border-slate-200 py-6 px-4 sm:px-6 shadow-xs">
             <div class="max-w-6xl mx-auto space-y-5">
@@ -330,7 +330,6 @@
                         </h2>
                         <p id="hero-subtitle" class="text-xs text-slate-500 font-medium">Manage candidate pipelines and explore verified local, national, and global opportunities.</p>
                     </div>
-                    <!-- employer-action-container left empty to prevent duplicate button clutter -->
                     <div id="employer-action-container"></div>
                 </div>
 
@@ -365,7 +364,7 @@
                 </div>
 
                 <div class="bg-slate-50 p-3 rounded-xl shadow-inner grid grid-cols-1 md:grid-cols-12 gap-2.5 text-slate-900 border border-slate-200">
-                    <div class="md:col-span-3 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs">
+                    <div class="md:col-span-3 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-globe text-blue-600 mr-2 text-xs"></i>
                         <select id="search-country" onchange="filterJobs()" class="w-full bg-transparent text-xs focus:outline-none font-semibold text-slate-700 cursor-pointer">
                             <option value="">All Countries / Worldwide</option>
@@ -396,15 +395,15 @@
                             <option value="Other">🌍 Other / International</option>
                         </select>
                     </div>
-                    <div class="md:col-span-3 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs">
+                    <div class="md:col-span-3 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-magnifying-glass text-blue-600 mr-2 text-xs"></i>
                         <input type="text" id="search-title" oninput="filterJobs()" placeholder="Title, Company, Keyword..." class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700">
                     </div>
-                    <div class="md:col-span-2 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs">
+                    <div class="md:col-span-2 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-location-dot text-red-500 mr-2 text-xs"></i>
                         <input type="text" id="search-location" oninput="filterJobs()" placeholder="City, State..." class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700">
                     </div>
-                    <div class="md:col-span-4 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs">
+                    <div class="md:col-span-4 flex items-center border border-slate-300 rounded-xl px-3 py-2 bg-white shadow-2xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
                         <i class="fa-solid fa-filter text-indigo-600 mr-2 text-xs"></i>
                         <select id="search-industry" onchange="filterJobs()" class="w-full bg-transparent text-xs focus:outline-none font-semibold text-slate-700 cursor-pointer">
                             <option value="">All Industries...</option>
@@ -1277,7 +1276,10 @@
                     salaryText = `• ${meta.symbol}${meta.salary_min}${meta.salary_max ? ' - ' + meta.symbol + meta.salary_max : ''} / ${meta.pay_rate}`;
                 }
 
-                let locText = job.city ? `${job.city}${job.state ? ', ' + job.state : ''} ${job.country || ''}` : (job.country || 'Remote');
+                // FIXED: Location formatting with proper commas and spacing
+                let locText = job.city 
+                    ? `${job.city}${job.state ? ', ' + job.state : ''}${job.country ? ', ' + job.country : ''}` 
+                    : (job.country || 'Remote');
 
                 let actionButtonHtml = '';
                 if (currentRole === 'employer') {
@@ -1331,7 +1333,7 @@
                                 <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-100">${meta.employment_type}</span>
                                 <span class="text-slate-300">•</span>
                                 <span class="text-xs font-bold text-slate-700">${job.company}</span>
-                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md ${currentStatus === 'Closed' ? 'bg-red-100 text-red-700' : currentStatus === 'Paused' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${currentStatus}</span>
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-md ${currentStatus === 'Closed' ? 'bg-red-100 text-red-700' : currentStatus === 'Paused' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${currentStatus}</span>
                             </div>
                             <h4 class="font-black text-slate-900 text-sm sm:text-base cursor-pointer hover:text-blue-600 transition" onclick="openJobDetail('${job.id}')">${job.title}</h4>
                             <p class="text-xs text-slate-500 font-medium">${locText} • ${job.work_mode || 'Remote'} ${salaryText} • ${timeAgoText}</p>
@@ -1361,14 +1363,12 @@
 
         function toggleActionDropdown(jobId) {
             const dropdown = document.getElementById(`action-dropdown-${jobId}`);
-            // Close all other dropdowns first
             document.querySelectorAll('[id^="action-dropdown-"]').forEach(el => {
                 if(el.id !== `action-dropdown-${jobId}`) el.classList.add('hidden');
             });
             if(dropdown) dropdown.classList.toggle('hidden');
         }
 
-        // Close dropdown when clicking outside
         window.addEventListener('click', (e) => {
             if (!e.target.closest('[id^="action-dropdown-"]') && !e.target.closest('button[onclick^="toggleActionDropdown"]')) {
                 document.querySelectorAll('[id^="action-dropdown-"]').forEach(el => el.classList.add('hidden'));
