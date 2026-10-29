@@ -209,7 +209,7 @@
                 </div>
             </div>
 
-            <!-- Single-Row Balanced Search Bar -->
+            <!-- Single-Row Balanced Search Bar with ALL Original Industry Options -->
             <div class="glass-card p-2.5 rounded-2xl shadow-md border border-slate-200 max-w-5xl mx-auto">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2 text-slate-900 items-center">
                     
@@ -228,11 +228,14 @@
                                 <option value="Germany">Germany</option>
                                 <option value="France">France</option>
                                 <option value="Netherlands">Netherlands</option>
+                                <option value="Ireland">Ireland</option>
                             </optgroup>
                             <optgroup label="Asia-Pacific (APAC)">
                                 <option value="India">India</option>
                                 <option value="Singapore">Singapore</option>
                                 <option value="Australia">Australia</option>
+                                <option value="Japan">Japan</option>
+                                <option value="Philippines">Philippines</option>
                             </optgroup>
                             <optgroup label="Middle East (GCC)">
                                 <option value="United Arab Emirates">United Arab Emirates (UAE)</option>
@@ -256,11 +259,27 @@
                         <i class="fa-solid fa-filter text-indigo-600 mr-2 text-xs"></i>
                         <select id="hero-industry" class="w-full bg-transparent text-xs focus:outline-none font-medium text-slate-700 cursor-pointer">
                             <option value="">All Industries...</option>
-                            <option value="IT & Software Services">IT & Software Services</option>
-                            <option value="Healthcare & Medical">Healthcare & Medical</option>
-                            <option value="Sales & Business Development">Sales & Business</option>
-                            <option value="Finance & Banking">Finance & Banking</option>
-                            <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                            <optgroup label="Information Technology (IT) & Engineering">
+                                <option value="IT & Software Services">IT & Software Services</option>
+                                <option value="Aerospace & Defense">Aerospace & Defense</option>
+                                <option value="Manufacturing & Industrial">Manufacturing & Industrial</option>
+                            </optgroup>
+                            <optgroup label="Healthcare & Sciences">
+                                <option value="Healthcare & Medical">Healthcare & Medical</option>
+                                <option value="Pharmaceuticals & Biotech">Pharmaceuticals & Biotech</option>
+                            </optgroup>
+                            <optgroup label="Business, Sales & Support">
+                                <option value="Sales & Business Development">Sales & Business Development</option>
+                                <option value="Customer Support & Operations">Customer Support & Operations</option>
+                                <option value="Human Resources & Staffing">Human Resources & Staffing</option>
+                            </optgroup>
+                            <optgroup label="Supply Chain & Services">
+                                <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                                <option value="Finance & Banking">Finance & Banking</option>
+                                <option value="Construction & Real Estate">Construction & Real Estate</option>
+                                <option value="Education & EdTech">Education & EdTech</option>
+                            </optgroup>
+                            <option value="Other / General">🌍 Other / General</option>
                         </select>
                     </div>
 
